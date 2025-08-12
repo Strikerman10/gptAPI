@@ -216,8 +216,10 @@ toggleThemeBtn.addEventListener('click', () => {
   }
 });
 
-loadChats();
-renderChatList();
+(async () => {
+  await loadChats();
+  renderChatList();
+  renderMessages();
+})();
 
-renderMessages();
 
