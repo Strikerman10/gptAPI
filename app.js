@@ -27,11 +27,17 @@ function loadChats() {
     if (raw) {
       chats = JSON.parse(raw);
       currentIndex = idx !== null ? Number(idx) : (chats.length ? 0 : null);
+      // ensure index is within bounds
+      if (currentIndex !== null && (currentIndex < 0 || currentIndex >= chats.length)) {
+        currentIndex = chats.length ? 0 : null;
+      }
+    } else {
+      chats = [];
+      currentIndex = null;
     }
   } catch(e){ chats = []; currentIndex = null; }
-  if (chats.length === 0) {
-    createNewChat();
-  }
+
+  // NOTE: do NOT auto-create a placeholder here — use the static New Chat button to create chats
 }
 
 function createNewChat() {
@@ -45,12 +51,26 @@ function createNewChat() {
   saveChats();
   renderChatList();
   renderMessages();
+
+  // Ensure the list shows the new item (newest at top) and focus the input so user can start typing
+  chatListEl.scrollTop = 0;
+  // small timeout to ensure DOM is painted before focusing (helps in some browsers)
+  setTimeout(() => {
+    inputEl.focus();
+  }, 10);
 }
 
 function deleteChatAt(i) {
   if (i < 0 || i >= chats.length) return;
   chats.splice(i, 1);
-  if (chats.length === 0) { createNewChat(); return; }
+  if (chats.length === 0) {
+    // leave no placeholder; require user to click the static New Chat button
+    currentIndex = null;
+    saveChats();
+    renderChatList();
+    renderMessages();
+    return;
+  }
   if (currentIndex === i) currentIndex = Math.max(0, i - 1);
   else if (currentIndex > i) currentIndex--;
   saveChats();
@@ -84,23 +104,25 @@ function renderChatList() {
     preview.appendChild(subDiv);
     item.appendChild(preview);
 
-    if (chat.title !== 'New Chat') {
-      const delBtn = document.createElement('button');
-      delBtn.className = 'delete-btn';
-      delBtn.setAttribute('aria-label', 'Delete chat');
-      delBtn.textContent = '×';
-      delBtn.addEventListener('click', (ev) => {
-        ev.stopPropagation();
-        if (!confirm('Delete this chat?')) return;
-        deleteChatAt(i);
-      });
-      item.appendChild(delBtn);
-    }
+    // Always provide a delete button for chats so user can remove them
+    const delBtn = document.createElement('button');
+    delBtn.className = 'delete-btn';
+    delBtn.setAttribute('aria-label', `Delete chat "${userText}"`);
+    delBtn.setAttribute('title', 'Delete chat');
+    delBtn.textContent = '×';
+    delBtn.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      if (!confirm('Delete this chat?')) return;
+      deleteChatAt(i);
+    });
+    item.appendChild(delBtn);
 
     item.addEventListener('click', () => {
       currentIndex = i;
       renderChatList();
       renderMessages();
+      // focus input when opening a chat so user can continue typing
+      setTimeout(() => inputEl.focus(), 10);
     });
 
     chatListEl.appendChild(item);
@@ -221,5 +243,3 @@ toggleThemeBtn.addEventListener('click', () => {
   renderChatList();
   renderMessages();
 })();
-
-
