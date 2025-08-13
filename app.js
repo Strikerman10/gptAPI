@@ -1,6 +1,14 @@
 const WORKER_URL = "https://gptapi-proxy.barney-willis2.workers.dev";
-const SYNC_URL = WORKER_URL;
+const SYNC_URL = WORKER_URL; // for clarity
 const MODEL = "gpt-5-mini";
+
+// Generate a stable anonymous ID for sync
+const USER_ID_KEY = "secure_chat_user_id";
+let userId = localStorage.getItem(USER_ID_KEY);
+if (!userId) {
+  userId = "anon_" + Math.random().toString(36).slice(2);
+  localStorage.setItem(USER_ID_KEY, userId);
+}
 
 let chats = [];
 let currentIndex = null;
@@ -13,55 +21,61 @@ const sidebarEl = document.querySelector('.sidebar');
 const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
 const toggleThemeBtn = document.getElementById('toggleThemeBtn');
 
-function saveChats() {
+async function saveChats() {
   try {
+    // Save locally
     localStorage.setItem('secure_chat_chats', JSON.stringify(chats));
     if (currentIndex === null) {
       localStorage.removeItem('secure_chat_index');
     } else {
       localStorage.setItem('secure_chat_index', String(currentIndex));
     }
-  } catch (e) {}
+
+    // Save to Worker
+    await fetch(`${SYNC_URL}/save`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, chats })
+    });
+  } catch (e) {
+    console.warn("Save to Worker failed:", e);
+  }
 }
 
-function loadChats() {
+async function loadChats() {
   try {
+    // Load from Worker
+    const res = await fetch(`${SYNC_URL}/load?userId=${encodeURIComponent(userId)}`);
+    if (res.ok) {
+      chats = await res.json();
+    } else {
+      chats = [];
+    }
+
+    // Also load local fallback (in case offline)
     const raw = localStorage.getItem('secure_chat_chats');
     const idx = localStorage.getItem('secure_chat_index');
     if (raw) {
-      chats = JSON.parse(raw);
+      const localChats = JSON.parse(raw);
+      // Merge local chats if Worker has none
+      if (chats.length === 0) chats = localChats;
+    }
 
-      // Filter out placeholder "New Chat" entries that only contain the system message
-      chats = chats.filter(c =>
-        !(c &&
-          c.title === 'New Chat' &&
-          Array.isArray(c.messages) &&
-          c.messages.length === 1 &&
-          c.messages[0] &&
-          c.messages[0].role === 'system')
-      );
-
-      if (idx !== null) {
-        const n = Number(idx);
-        currentIndex = Number.isFinite(n) ? n : (chats.length ? 0 : null);
-      } else {
-        currentIndex = chats.length ? 0 : null;
-      }
-
-      // ensure index is within bounds
-      if (currentIndex !== null && (currentIndex < 0 || currentIndex >= chats.length)) {
-        currentIndex = chats.length ? 0 : null;
-      }
+    if (idx !== null) {
+      const n = Number(idx);
+      currentIndex = Number.isFinite(n) ? n : (chats.length ? 0 : null);
     } else {
-      chats = [];
-      currentIndex = null;
+      currentIndex = chats.length ? 0 : null;
+    }
+
+    if (currentIndex !== null && (currentIndex < 0 || currentIndex >= chats.length)) {
+      currentIndex = chats.length ? 0 : null;
     }
   } catch (e) {
+    console.warn("Load from Worker failed:", e);
     chats = [];
     currentIndex = null;
   }
-
-  // do NOT auto-create a placeholder here — static New Chat button should be used
 }
 
 function createNewChat() {
@@ -75,20 +89,14 @@ function createNewChat() {
   saveChats();
   renderChatList();
   renderMessages();
-
-  // Ensure the list shows the new item (newest at top) and focus the input so user can start typing
   chatListEl.scrollTop = 0;
-  // small timeout to ensure DOM is painted before focusing (helps in some browsers)
-  setTimeout(() => {
-    inputEl.focus();
-  }, 10);
+  setTimeout(() => inputEl.focus(), 10);
 }
 
 function deleteChatAt(i) {
   if (i < 0 || i >= chats.length) return;
   chats.splice(i, 1);
   if (chats.length === 0) {
-    // leave no placeholder; require user to click the static New Chat button
     currentIndex = null;
     saveChats();
     renderChatList();
@@ -128,13 +136,10 @@ function renderChatList() {
     preview.appendChild(subDiv);
     item.appendChild(preview);
 
- // Always provide a delete button for chats so user can remove them
     const delBtn = document.createElement('button');
     delBtn.className = 'delete-btn';
     delBtn.setAttribute('aria-label', `Delete chat "${userText}"`);
-    delBtn.setAttribute('title', 'Delete chat');
-    // SVG cross icon — clearer than plain text
-    delBtn.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path d="M6 6L18 18M6 18L18 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    delBtn.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14"><path d="M6 6L18 18M6 18L18 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     delBtn.addEventListener('click', (ev) => {
       ev.stopPropagation();
       if (!confirm('Delete this chat?')) return;
@@ -146,7 +151,6 @@ function renderChatList() {
       currentIndex = i;
       renderChatList();
       renderMessages();
-      // focus input when opening a chat so user can continue typing
       setTimeout(() => inputEl.focus(), 10);
     });
 
@@ -169,7 +173,6 @@ function renderMessages() {
 
     const time = document.createElement('div');
     time.className = 'msg-time';
-
     if (!msg.timestamp) {
       msg.timestamp = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
     }
@@ -200,17 +203,14 @@ async function sendMessage() {
 
   renderMessages();
   inputEl.value = '';
-  saveChats();
+  await saveChats();
 
   try {
     const recentMessages = chat.messages.slice(-10);
     const res = await fetch(WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: recentMessages
-      }),
+      body: JSON.stringify({ model: MODEL, messages: recentMessages })
     });
 
     const data = await res.json();
@@ -224,17 +224,12 @@ async function sendMessage() {
     chat.messages[chat.messages.length - 1] = { role: 'assistant', content: "Error: " + (e.message || e), timestamp: thinkingMessage.timestamp };
   }
 
-  saveChats();
+  await saveChats();
   renderMessages();
 }
 
-document.getElementById('newChatBtn').addEventListener('click', () => {
-  createNewChat();
-});
-
-document.getElementById('sendBtn').addEventListener('click', () => {
-  sendMessage();
-});
+document.getElementById('newChatBtn').addEventListener('click', () => createNewChat());
+document.getElementById('sendBtn').addEventListener('click', () => sendMessage());
 
 inputEl.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) {
@@ -245,22 +240,13 @@ inputEl.addEventListener('keydown', (e) => {
 
 toggleSidebarBtn.addEventListener('click', () => {
   const isHidden = sidebarEl.style.display === 'none';
-  if (isHidden) {
-    sidebarEl.style.display = 'flex';
-    toggleSidebarBtn.textContent = 'Hide';
-  } else {
-    sidebarEl.style.display = 'none';
-    toggleSidebarBtn.textContent = 'Show';
-  }
+  sidebarEl.style.display = isHidden ? 'flex' : 'none';
+  toggleSidebarBtn.textContent = isHidden ? 'Hide' : 'Show';
 });
 
 toggleThemeBtn.addEventListener('click', () => {
   document.body.classList.toggle('dark-mode');
-  if (document.body.classList.contains('dark-mode')) {
-    toggleThemeBtn.textContent = 'Light';
-  } else {
-    toggleThemeBtn.textContent = 'Dark';
-  }
+  toggleThemeBtn.textContent = document.body.classList.contains('dark-mode') ? 'Light' : 'Dark';
 });
 
 (async () => {
@@ -268,4 +254,3 @@ toggleThemeBtn.addEventListener('click', () => {
   renderChatList();
   renderMessages();
 })();
-
