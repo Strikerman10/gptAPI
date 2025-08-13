@@ -309,4 +309,48 @@ body.dark-mode .chat-item.selected {
   .main-content {
     width: 85%;
   }
+/* Make sure chat-item reserves room for the delete button */
+.chat-item {
+  position: relative;
+  padding-right: 44px; /* room for delete button */
+  display: flex;
+  align-items: center;
+}
+
+/* Delete button styling */
+.delete-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: #888;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+/* Hover and focus states */
+.delete-btn:hover {
+  background: rgba(0,0,0,0.06);
+  color: #c0392b; /* red tint on hover */
+}
+.delete-btn:focus {
+  outline: 2px solid #4ea8ff;
+  outline-offset: 2px;
+}
+
+/* Dark-mode tweak */
+body.dark-mode .delete-btn:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+/* Slight visual polish for chat-title to avoid overlap */
+.chat-title {
+  word-break: break-word;
+  max-width: calc(100% - 56px);
 }
