@@ -16,8 +16,12 @@ const toggleThemeBtn = document.getElementById('toggleThemeBtn');
 function saveChats() {
   try {
     localStorage.setItem('secure_chat_chats', JSON.stringify(chats));
-    localStorage.setItem('secure_chat_index', String(currentIndex));
-  } catch(e){}
+    if (currentIndex === null) {
+      localStorage.removeItem('secure_chat_index');
+    } else {
+      localStorage.setItem('secure_chat_index', String(currentIndex));
+    }
+  } catch (e) {}
 }
 
 function loadChats() {
@@ -26,7 +30,24 @@ function loadChats() {
     const idx = localStorage.getItem('secure_chat_index');
     if (raw) {
       chats = JSON.parse(raw);
-      currentIndex = idx !== null ? Number(idx) : (chats.length ? 0 : null);
+
+      // Filter out placeholder "New Chat" entries that only contain the system message
+      chats = chats.filter(c =>
+        !(c &&
+          c.title === 'New Chat' &&
+          Array.isArray(c.messages) &&
+          c.messages.length === 1 &&
+          c.messages[0] &&
+          c.messages[0].role === 'system')
+      );
+
+      if (idx !== null) {
+        const n = Number(idx);
+        currentIndex = Number.isFinite(n) ? n : (chats.length ? 0 : null);
+      } else {
+        currentIndex = chats.length ? 0 : null;
+      }
+
       // ensure index is within bounds
       if (currentIndex !== null && (currentIndex < 0 || currentIndex >= chats.length)) {
         currentIndex = chats.length ? 0 : null;
@@ -35,9 +56,12 @@ function loadChats() {
       chats = [];
       currentIndex = null;
     }
-  } catch(e){ chats = []; currentIndex = null; }
+  } catch (e) {
+    chats = [];
+    currentIndex = null;
+  }
 
-  // NOTE: do NOT auto-create a placeholder here — use the static New Chat button to create chats
+  // do NOT auto-create a placeholder here — static New Chat button should be used
 }
 
 function createNewChat() {
@@ -104,12 +128,13 @@ function renderChatList() {
     preview.appendChild(subDiv);
     item.appendChild(preview);
 
-    // Always provide a delete button for chats so user can remove them
+ // Always provide a delete button for chats so user can remove them
     const delBtn = document.createElement('button');
     delBtn.className = 'delete-btn';
     delBtn.setAttribute('aria-label', `Delete chat "${userText}"`);
     delBtn.setAttribute('title', 'Delete chat');
-    delBtn.textContent = '×';
+    // SVG cross icon — clearer than plain text
+    delBtn.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path d="M6 6L18 18M6 18L18 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     delBtn.addEventListener('click', (ev) => {
       ev.stopPropagation();
       if (!confirm('Delete this chat?')) return;
@@ -243,3 +268,4 @@ toggleThemeBtn.addEventListener('click', () => {
   renderChatList();
   renderMessages();
 })();
+
