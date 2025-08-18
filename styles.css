@@ -29,7 +29,7 @@ html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, "Se
   --text: var(--color-5);
   --text-muted: color-mix(in srgb, var(--color-4) 50%, white 50%);
 
-  --primary: var(--color-3);
+  --primary: var(--color-1);
   --primary-contrast: #fff;
   --accent: var(--color-2);
   --accent-contrast: var(--color-5);
@@ -340,4 +340,5 @@ body { background: var(--bg); color: var(--text); }
   .sidebar { width: 30%; min-width: unset; }
   .main-content { width: 85%; }
 }
+
 
