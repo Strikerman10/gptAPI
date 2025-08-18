@@ -12,6 +12,17 @@
     <div class="sidebar" role="navigation" aria-label="Chat history">
       <div class="sidebar-header">💬 Chats</div>
       <button class="new-chat" id="newChatBtn">+ New Chat</button>
+
+      <!-- Theme Selector -->
+      <div style="padding:10px;">
+        <label for="theme-select" style="font-size:14px;font-weight:600; display:block; margin-bottom:6px;">Theme:</label>
+        <select id="theme-select" style="width:100%; padding:6px; border-radius:6px; border:1px solid var(--border); background:var(--surface-1); color:var(--text);">
+          <option value="green">Green (default)</option>
+          <option value="blue">Blue</option>
+          <option value="warm">Warm</option>
+        </select>
+      </div>
+
       <div class="chat-list" id="chatList" aria-live="polite"></div>
     </div>
 
@@ -32,6 +43,59 @@
   </div>
 
   <script src="app.js" defer></script>
+
+  <!-- Theme Switcher Script -->
+  <script>
+    // Define palettes
+    const palettes = {
+      green: {
+        "color-1": "#94e8b4",
+        "color-2": "#72bda3",
+        "color-3": "#5e8c61",
+        "color-4": "#4e6151",
+        "color-5": "#3b322c",
+      },
+      blue: {
+        "color-1": "#b3cfff",
+        "color-2": "#7a9eff",
+        "color-3": "#3d6aff",
+        "color-4": "#2a3a66",
+        "color-5": "#1a1c2c",
+      },
+      warm: {
+        "color-1": "#ffd7b5",
+        "color-2": "#ff9e66",
+        "color-3": "#e4572e",
+        "color-4": "#993d20",
+        "color-5": "#331a10",
+      }
+    };
+
+    // Apply palette
+    function setTheme(name) {
+      const colors = palettes[name];
+      if (!colors) return;
+      const root = document.documentElement;
+      Object.entries(colors).forEach(([key, val]) => {
+        root.style.setProperty(`--${key}`, val);
+      });
+      localStorage.setItem("theme", name); // persist selection
+    }
+
+    // Init on page load
+    document.addEventListener("DOMContentLoaded", () => {
+      const select = document.getElementById("theme-select");
+
+      // Load saved theme or fallback
+      const saved = localStorage.getItem("theme") || "green";
+      select.value = saved;
+      setTheme(saved);
+
+      // Listen for user changes
+      select.addEventListener("change", (e) => {
+        setTheme(e.target.value);
+      });
+    });
+  </script>
 </body>
 </html>
-
