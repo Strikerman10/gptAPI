@@ -1,6 +1,6 @@
 const WORKER_URL = "https://gptapi-proxy.barney-willis2.workers.dev";
 const SYNC_URL = WORKER_URL;
-const MODEL = "gpt-5-mini";
+const MODEL = "gpt-5";
 
 let chats = [];
 let currentIndex = null;
@@ -221,4 +221,5 @@ toggleThemeBtn.addEventListener('click', () => {
   renderChatList();
   renderMessages();
 })();
+
 
