@@ -341,6 +341,39 @@ body { background: var(--bg); color: var(--text); }
   .main-content { width: 85%; }
 }
 
+/* Chat header: keep title readable and avoid huge gap on phones */
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap; /* allow wrapping on small screens */
+}
+
+/* Keep the title on one line */
+.chat-header > span {
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+/* On wide screens, push controls to the right via the title's auto margin */
+@media (min-width: 600px) {
+  .chat-header > span { margin-right: auto; }
+}
+
+/* On phones, drop controls below the title and remove the big gap */
+@media (max-width: 599.98px) {
+  /* override inline margin-left:auto on the Hide button */
+  #toggleSidebarBtn { margin-left: 0 !important; }
+
+  /* make the title take the full first row */
+  .chat-header > span { flex-basis: 100%; }
+
+  /* optionally shrink controls slightly */
+  #toggleSidebarBtn, #toggleThemeBtn, #paletteSelector {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+}
 
 
 
