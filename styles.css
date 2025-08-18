@@ -3,65 +3,64 @@ styles.css
 *, *::before, *::after { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
 
-/* Theme tokens (based on your palette) */
+/* Theme tokens driven by just 5 palette colors */
 :root {
-  /* Base palette */
-  --celadon: #94e8b4;   /* hsla(143,65%,75%) */
-  --cambridge: #72bda3; /* hsla(159,36%,59%) */
-  --sea: #5e8c61;       /* hsla(124,20%,46%) */
-  --feldgrau: #4e6151;  /* hsla(129,11%,34%) */
-  --vandyke: #3b322c;   /* hsla(24,15%,20%) */
+  /* Base palette (only change these 5) */
+  --celadon:  #94e8b4;  /* light tint */
+  --cambridge:#72bda3;  /* accent/secondary */
+  --sea:      #5e8c61;  /* primary/brand */
+  --feldgrau: #4e6151;  /* mid neutral */
+  --vandyke:  #3b322c;  /* deep neutral */
 
-  /* Neutrals (light) */
-  --bg: hsl(140 16% 98%);
-  --surface-1: hsl(140 12% 97%);
-  --surface-2: hsl(140 10% 95%);
-  --surface-hover: hsl(140 12% 93%);
-  --border: hsl(140 10% 86%);
-  --text: hsl(24 18% 16%);
-  --text-muted: hsl(24 10% 45%);
-
-  /* Brand and accents */
-  --primary: hsl(124 24% 38%); /* tuned from sea for contrast */
-  --primary-contrast: #fff;
+  /* Derived (light mode) */
+  --primary: var(--sea);
+  --primary-contrast: #fff; /* If you make --sea very light, change this to #000 */
   --accent: var(--cambridge);
-  --accent-contrast: hsl(140 30% 12%);
+  --accent-contrast: #0b140f;
+
+  /* Surfaces and borders from the palette */
+  --bg:            color-mix(in hsl, white 94%, var(--celadon) 6%);
+  --surface-1:     color-mix(in hsl, white 90%, var(--celadon) 10%);
+  --surface-2:     color-mix(in hsl, white 86%, var(--celadon) 14%);
+  --surface-hover: color-mix(in hsl, white 82%, var(--celadon) 18%);
+  --border:        color-mix(in hsl, var(--feldgrau) 30%, white 70%);
+
+  /* Text */
+  --text:        color-mix(in hsl, black 85%, var(--vandyke) 15%);
+  --text-muted:  color-mix(in hsl, var(--vandyke) 45%, white 55%);
 
   /* Bubbles */
-  --user-bubble-bg: var(--primary);
+  --user-bubble-bg:   var(--primary);
   --user-bubble-text: var(--primary-contrast);
   --assistant-bubble-bg: color-mix(in hsl, var(--celadon) 85%, white 15%);
-  --assistant-bubble-text: hsl(140 35% 16%);
+  --assistant-bubble-text: color-mix(in hsl, var(--vandyke) 25%, white 75%);
 
   /* States */
-  --danger: hsl(0 72% 48%);
+  --danger: #d64545;
   --danger-contrast: #fff;
-  --ring: hsl(160 70% 40% / 0.35);
+  --ring: color-mix(in hsl, var(--cambridge) 55%, transparent);
 }
 
 body.dark-mode {
-  /* Neutrals (dark) */
-  --bg: hsl(140 14% 10%);
-  --surface-1: hsl(140 14% 13%);
-  --surface-2: hsl(140 12% 16%);
-  --surface-hover: hsl(140 12% 19%);
-  --border: hsl(140 10% 26%);
-  --text: hsl(140 20% 92%);
-  --text-muted: hsl(140 10% 70%);
-
-  /* Brand tuned for dark */
-  --primary: hsl(124 26% 50%);
+  /* Derived (dark mode) from the same 5 palette colors */
+  --primary: color-mix(in hsl, var(--sea) 75%, white 25%);
   --primary-contrast: #fff;
-  --accent: hsl(159 38% 62%);
-  --accent-contrast: #0b140f;
+  --accent: color-mix(in hsl, var(--cambridge) 80%, white 20%);
+  --accent-contrast: #06110d;
 
-  /* Bubbles (dark) */
-  --user-bubble-bg: var(--primary);
-  --user-bubble-text: var(--primary-contrast);
-  --assistant-bubble-bg: color-mix(in hsl, var(--feldgrau) 75%, black 25%);
-  --assistant-bubble-text: hsl(140 40% 85%);
+  --bg:            color-mix(in hsl, black 85%, var(--vandyke) 15%);
+  --surface-1:     color-mix(in hsl, black 80%, var(--vandyke) 20%);
+  --surface-2:     color-mix(in hsl, black 74%, var(--vandyke) 26%);
+  --surface-hover: color-mix(in hsl, black 70%, var(--vandyke) 30%);
+  --border:        color-mix(in hsl, var(--feldgrau) 55%, black 45%);
 
-  --ring: hsl(160 70% 55% / 0.35);
+  --text:       color-mix(in hsl, white 92%, var(--celadon) 8%);
+  --text-muted: color-mix(in hsl, white 65%, var(--celadon) 35%);
+
+  --assistant-bubble-bg: color-mix(in hsl, var(--feldgrau) 70%, black 30%);
+  --assistant-bubble-text: color-mix(in hsl, white 88%, var(--celadon) 12%);
+
+  --ring: color-mix(in hsl, var(--cambridge) 60%, transparent);
 }
 
 /* Improve native control theming */
@@ -353,3 +352,4 @@ body { background: var(--bg); color: var(--text); }
     width: 85%;
   }
 }
+
