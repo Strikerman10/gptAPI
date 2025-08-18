@@ -34,7 +34,7 @@ html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, "Se
   --accent: var(--color-2);
   --accent-contrast: var(--color-5);
 
-  --user-bubble-bg: var(--primary);
+  --user-bubble-bg: var(--color-4);
   --user-bubble-text: var(--primary-contrast);
   --assistant-bubble-bg: var(--color-1);
   --assistant-bubble-text: var(--color-5);
@@ -62,7 +62,7 @@ body.dark-mode {
   --accent: color-mix(in srgb, var(--color-2) 90%, white 10%);
   --accent-contrast: var(--color-5);
 
-  --user-bubble-bg: var(--primary);
+  --user-bubble-bg: var(--color-4);
   --user-bubble-text: var(--primary-contrast);
   --assistant-bubble-bg: color-mix(in srgb, var(--color-1) 30%, var(--color-4) 70%);
   --assistant-bubble-text: #fff;
@@ -340,3 +340,4 @@ body { background: var(--bg); color: var(--text); }
   .sidebar { width: 30%; min-width: unset; }
   .main-content { width: 85%; }
 }
+
