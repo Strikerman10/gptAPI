@@ -3,81 +3,73 @@ styles.css
 *, *::before, *::after { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
 
-/* Light mode styles (default) */
-body {
-  background: #fff;
-  color: #222;
+/* Theme tokens (based on your palette) */
+:root {
+  /* Base palette */
+  --celadon: #94e8b4;   /* hsla(143,65%,75%) */
+  --cambridge: #72bda3; /* hsla(159,36%,59%) */
+  --sea: #5e8c61;       /* hsla(124,20%,46%) */
+  --feldgrau: #4e6151;  /* hsla(129,11%,34%) */
+  --vandyke: #3b322c;   /* hsla(24,15%,20%) */
+
+  /* Neutrals (light) */
+  --bg: hsl(140 16% 98%);
+  --surface-1: hsl(140 12% 97%);
+  --surface-2: hsl(140 10% 95%);
+  --surface-hover: hsl(140 12% 93%);
+  --border: hsl(140 10% 86%);
+  --text: hsl(24 18% 16%);
+  --text-muted: hsl(24 10% 45%);
+
+  /* Brand and accents */
+  --primary: hsl(124 24% 38%); /* tuned from sea for contrast */
+  --primary-contrast: #fff;
+  --accent: var(--cambridge);
+  --accent-contrast: hsl(140 30% 12%);
+
+  /* Bubbles */
+  --user-bubble-bg: var(--primary);
+  --user-bubble-text: var(--primary-contrast);
+  --assistant-bubble-bg: color-mix(in hsl, var(--celadon) 85%, white 15%);
+  --assistant-bubble-text: hsl(140 35% 16%);
+
+  /* States */
+  --danger: hsl(0 72% 48%);
+  --danger-contrast: #fff;
+  --ring: hsl(160 70% 40% / 0.35);
 }
 
-/* Dark mode styles */
 body.dark-mode {
-  background: #121212;
-  color: #ddd;
+  /* Neutrals (dark) */
+  --bg: hsl(140 14% 10%);
+  --surface-1: hsl(140 14% 13%);
+  --surface-2: hsl(140 12% 16%);
+  --surface-hover: hsl(140 12% 19%);
+  --border: hsl(140 10% 26%);
+  --text: hsl(140 20% 92%);
+  --text-muted: hsl(140 10% 70%);
+
+  /* Brand tuned for dark */
+  --primary: hsl(124 26% 50%);
+  --primary-contrast: #fff;
+  --accent: hsl(159 38% 62%);
+  --accent-contrast: #0b140f;
+
+  /* Bubbles (dark) */
+  --user-bubble-bg: var(--primary);
+  --user-bubble-text: var(--primary-contrast);
+  --assistant-bubble-bg: color-mix(in hsl, var(--feldgrau) 75%, black 25%);
+  --assistant-bubble-text: hsl(140 40% 85%);
+
+  --ring: hsl(160 70% 55% / 0.35);
 }
-body.dark-mode .sidebar {
-  background: #1f1f1f;
-  border-right: 1px solid #444;
-  color: #ccc;
-}
-body.dark-mode .sidebar-header {
-  background: #444e88;
-  color: #fff;
-}
-body.dark-mode .new-chat {
-  background-color: #a00000;
-  color: #fff;
-}
-body.dark-mode .chat-list {
-  background: #1f1f1f;
-}
-body.dark-mode .chat-item:hover {
-  background: #000;
-}
-body.dark-mode .chat-title {
-  color: #ffffff;
-}
-body.dark-mode .chat-subtitle {
-  color: #ffff00;
-}
-body.dark-mode .delete-btn {
-  color: #ff6b6b;
-}
-body.dark-mode .delete-btn:hover {
-  background: rgba(255, 107, 107, 0.15);
-}
-body.dark-mode .chat-window {
-  background: #181818;
-}
-body.dark-mode .chat-header {
-  background: #444e88;
-  color: #fff;
-}
-body.dark-mode .message.user {
-  background: #005fdb;
-  color: #fff;
-}
-body.dark-mode .message.assistant {
-  background: #2a5d2a;
-  color: #c9f1c9;
-}
-body.dark-mode .input-area {
-  background: #222;
-  border-top: 1px solid #555;
-}
-body.dark-mode .input-area textarea {
-  background: #333;
-  border: 1px solid #555;
-  color: #ddd;
-}
-body.dark-mode .send-btn {
-  background: #005fdb;
-  color: #fff;
-}
-body.dark-mode .chat-item.selected {
-  background: transparent; /* or keep the dark background */
-  border: 2px solid red;
-  border-radius: 6px; /* optional, to soften the edges */
-}
+
+/* Improve native control theming */
+html { color-scheme: light; }
+body.dark-mode { color-scheme: dark; }
+
+/* Light/Dark base */
+body { background: var(--bg); color: var(--text); }
 
 /* App layout */
 .app-container {
@@ -90,31 +82,37 @@ body.dark-mode .chat-item.selected {
 /* Sidebar (fixed width) */
 .sidebar {
   flex: 0 0 30%;         /* 30% width */
-  min-width: 150px;  /* optional minimum width */
-  max-width: 400px;  /* optional maximum width */
+  min-width: 150px;      /* optional minimum width */
+  max-width: 400px;      /* optional maximum width */
   transition: width 0.3s ease;
-  background: #f7f7e6;
-  border-right: 1px solid #ddd;
+  background: var(--surface-1);
+  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   min-height: 0;           /* allow children to scroll */
+  color: var(--text);
 }
 
 .sidebar-header {
   height: 60px;
   line-height: 60px; /* vertically centers text */
   padding: 0 14px;   /* reduce vertical padding */
-  background: #2f6fbf;
-  color: #fff;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--primary), black 6%) 0%,
+    var(--primary) 100%
+  );
+  color: var(--primary-contrast);
   font-weight: 600;
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: nowrap;   /* Prevent wrapping on narrow screens */
-  flex-shrink: 0; /* prevent children from shrinking */
-  overflow: hidden;                  /* prevent content overflow */
-  white-space: nowrap;               /* prevent line breaks inside */
+  flex-shrink: 0;      /* prevent children from shrinking */
+  overflow: hidden;    /* prevent content overflow */
+  white-space: nowrap; /* prevent line breaks inside */
 }
+
 .main-content {
   width: 70%;        /* fills remaining space */
   transition: width 0.3s ease;
@@ -123,8 +121,8 @@ body.dark-mode .chat-item.selected {
 .new-chat {
   margin: 12px;
   padding: 10px 14px;
-  background-color: #8B0000; /* Dark Red */
-  color: white;
+  background-color: var(--primary);
+  color: var(--primary-contrast);
   border: none;
   border-radius: 8px;
   font-weight: 600;
@@ -136,6 +134,7 @@ body.dark-mode .chat-item.selected {
   padding: 8px;
   flex: 1;
   min-height: 0; /* allow scrolling */
+  background: var(--surface-1);
 }
 
 /* Make sure chat-item reserves room for the delete button and allow proper layout */
@@ -150,8 +149,9 @@ body.dark-mode .chat-item.selected {
   gap: 8px;
   cursor: pointer;
   margin-bottom: 8px;  /* Adds space between chat items */
+  color: var(--text);
 }
-.chat-item:hover { background: #eaeaea; }
+.chat-item:hover { background: var(--surface-hover); }
 
 .chat-preview {
   display: flex;
@@ -161,7 +161,7 @@ body.dark-mode .chat-item.selected {
 
 .chat-title {
   font-weight: 600;
-  color: #222;
+  color: var(--text);
   font-size: 14px;
   /* two-line clamp for user text: */
   display: -webkit-box;
@@ -174,7 +174,7 @@ body.dark-mode .chat-item.selected {
 
 .chat-subtitle {
   font-size: 12px;
-  color: #666;
+  color: var(--text-muted);
   margin-top: 6px;
   white-space: nowrap;
   overflow: hidden;
@@ -193,7 +193,7 @@ body.dark-mode .chat-item.selected {
   border-radius: 6px;
   border: none;
   background: transparent;
-  color: #c0392b;         /* red icon color by default */
+  color: var(--danger);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -208,20 +208,16 @@ body.dark-mode .chat-item.selected {
 /* hover/focus are prominent */
 .chat-item:hover .delete-btn,
 .delete-btn:focus {
-  background: #c0392b;
-  color: #fff;
+  background: var(--danger);
+  color: var(--danger-contrast);
   transform: translateY(-50%) scale(1.03);
   box-shadow: 0 2px 6px rgba(0,0,0,0.12);
 }
 
 /* keyboard focus ring */
 .delete-btn:focus {
-  box-shadow: 0 0 0 3px rgba(78,168,255,0.18);
+  box-shadow: 0 0 0 3px var(--ring);
 }
-
-/* dark mode tweaks */
-body.dark-mode .delete-btn { color: #ff7979; }
-body.dark-mode .chat-item:hover .delete-btn { background: #ff5a5a; color:#fff; }
 
 /* Chat window (flexible) */
 .chat-window {
@@ -229,15 +225,19 @@ body.dark-mode .chat-item:hover .delete-btn { background: #ff5a5a; color:#fff; }
   min-width: 0;            /* CRITICAL: lets chat area shrink properly */
   display: flex;
   flex-direction: column;
-  background: #fafafa;
+  background: var(--surface-2);
 }
 
 .chat-header {
   height: 60px;
   line-height: 60px;
   padding: 0 16px;
-  background: #2f6fbf;
-  color: white;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--primary), black 6%) 0%,
+    var(--primary) 100%
+  );
+  color: var(--primary-contrast);
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -276,19 +276,19 @@ body.dark-mode .chat-item:hover .delete-btn { background: #ff5a5a; color:#fff; }
 .message.user {
   margin-left: auto;       /* push bubble to right */
   margin-right: 0;
-  background: #1e90ff;
-  color: #fff;
-  text-align: left;       /* right-align text inside bubble */
-  max-width: 60%;          /* max bubble width, so it doesn't get too wide */
-  display: inline-block;   /* shrink bubble width to content */
-  word-wrap: break-word;   /* wrap long words */
+  background: var(--user-bubble-bg);
+  color: var(--user-bubble-text);
+  text-align: left;
+  max-width: 60%;
+  display: inline-block;
+  word-wrap: break-word;
 }
 
 .message.assistant {
   margin-right: auto;      /* pushes bubble to left */
   margin-left: 0;
-  background: #DFFFD6;
-  color: #1f3a1f;
+  background: var(--assistant-bubble-bg);
+  color: var(--assistant-bubble-text);
   text-align: left;
   max-width: 60%;
   display: inline-block;
@@ -300,7 +300,7 @@ body.dark-mode .chat-item:hover .delete-btn { background: #ff5a5a; color:#fff; }
 
 .msg-time {
   font-size: 11px;
-  color: #666;
+  color: var(--text-muted);
   margin-top: 6px;
 }
 
@@ -308,8 +308,8 @@ body.dark-mode .chat-item:hover .delete-btn { background: #ff5a5a; color:#fff; }
   display: flex;
   gap: 8px;
   padding: 12px;
-  border-top: 1px solid #e6e6e6;
-  background: #fff;
+  border-top: 1px solid var(--border);
+  background: var(--surface-1);
   align-items: center;
 }
 
@@ -319,19 +319,28 @@ body.dark-mode .chat-item:hover .delete-btn { background: #ff5a5a; color:#fff; }
   max-height: 200px;
   padding: 10px;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
   resize: vertical;
   font-size: 14px;
 }
 
 .send-btn {
   padding: 8px 14px;
-  background: #1e90ff;
-  color: #fff;
+  background: var(--primary);
+  color: var(--primary-contrast);
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
+}
+
+/* Selected chat item */
+.chat-item.selected {
+  background: color-mix(in hsl, var(--accent) 15%, transparent);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
 }
 
 /* On smaller screens, adjust sidebar and main content */
