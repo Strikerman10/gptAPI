@@ -370,6 +370,36 @@ body { background: var(--bg); color: var(--text); }
   .main-content {
     width: 85%;
   }
+  /* Force readable text in the message answer box */
+.composer textarea,
+.composer [contenteditable="true"],
+.message-input,
+.ProseMirror,
+.ql-editor {
+  color: #111 !important;              /* light mode text */
+  background-color: var(--surface-1) !important;
+  border-color: var(--border) !important;
+  caret-color: var(--primary);
 }
+
+/* Dark mode */
+body.dark-mode .composer textarea,
+body.dark-mode .composer [contenteditable="true"],
+body.dark-mode .message-input,
+body.dark-mode .ProseMirror,
+body.dark-mode .ql-editor {
+  color: #f1f5f9 !important;           /* dark mode text */
+  background-color: var(--surface-1) !important;
+  border-color: var(--border) !important;
+  caret-color: var(--accent);
+}
+
+/* Placeholder */
+.composer ::placeholder,
+.message-input::placeholder {
+  color: #667085 !important;           /* adjust if needed */
+}
+}
+
 
 
