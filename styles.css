@@ -12,6 +12,25 @@ html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, "Se
   --feldgrau: #4e6151;  /* mid neutral */
   --vandyke:  #3b322c;  /* deep neutral */
 
+/* Ensure message input is readable */
+textarea,
+input[type="text"],
+input[type="search"],
+.message-input,
+.composer textarea,
+.composer [contenteditable="true"] {
+  color: var(--text);
+  background-color: var(--surface-1);
+  border: 1px solid var(--border);
+  caret-color: var(--primary);
+}
+textarea::placeholder,
+input::placeholder,
+.message-input::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+  
   /* Derived (light mode) */
   --primary: var(--sea);
   --primary-contrast: #fff; /* If you make --sea very light, change this to #000 */
@@ -352,4 +371,5 @@ body { background: var(--bg); color: var(--text); }
     width: 85%;
   }
 }
+
 
