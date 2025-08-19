@@ -373,56 +373,8 @@ body { background: var(--bg); color: var(--text); }
     font-size: 12px;
     padding: 4px 8px;
   }
-   /* Layout: make the chat window a column and keep header above messages */
-.chat-window {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh; /* or 100% if you already manage height elsewhere */
 }
 
-.chat-header {
-  position: sticky; /* or relative if you don't want it to stick */
-  top: 0;
-  z-index: 10; /* keep it above .messages */
-  background: var(--surface-1, #fff);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: nowrap; /* keep everything on one line */
-}
-
-/* Make the messages area scroll under the header */
-.messages {
-  flex: 1 1 auto;
-  overflow: auto;
-  position: relative;
-  z-index: 0;
-}
-
-/* Title: push controls to the right and prevent ugly squashing */
-.chat-header > span {
-  margin-right: auto; /* replaces the button's margin-left:auto */
-  min-width: 0;       /* allow flex shrink */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-weight: 600;
-}
-
-/* Kill the inline margin-left:auto from the "Hide" button without editing HTML */
-#toggleSidebarBtn {
-  margin-left: 0 !important;
-}
-
-/* Slightly shrink controls on small screens */
-@media (max-width: 480px) {
-  #toggleSidebarBtn,
-  #toggleThemeBtn,
-  #paletteSelector {
-    font-size: 12px;
-    padding: 4px 8px;
-  }
-}
 
 
 
