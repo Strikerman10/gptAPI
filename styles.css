@@ -14,6 +14,7 @@ html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, "Se
   --color-3: #5e8c61; /* primary */
   --color-4: #4e6151; /* dark neutral */
   --color-5: #3b322c; /* very dark base */
+  --color-6: #800000; /*contrasting */
 }
 
 /* ===========================
@@ -129,7 +130,7 @@ body { background: var(--bg); color: var(--text); }
   margin: 12px;
   padding: 10px 14px;
   background-color: var(--primary);
-  color: var(--primary-contrast);
+  color: var(--colour-6);
   border: none;
   border-radius: 8px;
   font-weight: 600;
@@ -206,7 +207,7 @@ body { background: var(--bg); color: var(--text); }
   outline: none;
 }
 
-.delete-btn svg { width: 14px; height: 14px; display: block; }
+.delete-btn svg { width: 18px; height: 18px; display: block; }
 
 .chat-item:hover .delete-btn,
 .delete-btn:focus {
@@ -322,7 +323,7 @@ body { background: var(--bg); color: var(--text); }
 
 .send-btn {
   padding: 8px 14px;
-  background: var(--primary);
+  background: var(--color-6);
   color: var(--primary-contrast);
   border: none;
   border-radius: 8px;
@@ -374,6 +375,7 @@ body { background: var(--bg); color: var(--text); }
     padding: 4px 8px;
   }
 }
+
 
 
 
