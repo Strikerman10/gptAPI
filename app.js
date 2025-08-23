@@ -179,19 +179,24 @@ function renderMessages() {
 async function sendMessage() {
   const text = inputEl.value.trim();
   if (!text) return;
+
   if (currentIndex === null) createNewChat();
   const chat = chats[currentIndex];
 
-  chat.messages.push({
+  // Add user's message
+  const userMessage = {
     role: 'user',
     content: text,
     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-  });
+  };
+  chat.messages.push(userMessage);
 
+  // Set chat title if new
   if (chat.title === 'New Chat') {
     chat.title = text.length > 30 ? text.slice(0, 30) + '…' : text;
   }
 
+  // Add temporary "thinking" message
   const thinkingMessage = {
     role: 'assistant',
     content: 'Thinking...',
@@ -204,9 +209,8 @@ async function sendMessage() {
   saveChats();
 
   try {
-    // Send to /chat endpoint
-    const recentMessages = chat.messages.slice(-10);
-    const res = await fetch(`${WORKER_URL}/chat`, {
+    const recentMessages = chat.messages.slice(-10); // last 10 messages
+    const res = await fetch(`${WORKER_URL}/chat`, { // hit the /chat endpoint
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -215,14 +219,13 @@ async function sendMessage() {
       })
     });
 
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(`Worker response not OK: ${res.status} - ${text}`);
-    }
+    if (!res.ok) throw new Error(`Worker returned ${res.status}`);
 
     const data = await res.json();
-    if (data && data.choices && data.choices[0]) {
-      const answer = data.choices[0].message.content;
+
+    // Check OpenAI response
+    const answer = data?.choices?.[0]?.message?.content;
+    if (answer) {
       chat.messages[chat.messages.length - 1] = {
         role: 'assistant',
         content: answer,
@@ -241,13 +244,11 @@ async function sendMessage() {
       content: "Error: " + (e.message || e),
       timestamp: thinkingMessage.timestamp
     };
-    console.error("sendMessage error:", e);
   }
 
   saveChats();
   renderMessages();
 }
-
 
 // ==========================
 // Event Listeners
@@ -282,6 +283,7 @@ toggleThemeBtn.addEventListener('click', () => {
   renderChatList();
   renderMessages();
 })();
+
 
 
 
