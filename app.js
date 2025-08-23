@@ -1,5 +1,5 @@
-const WORKER_URL = "https://barney-chat-worker.barney-willis2.workers.dev"; // no trailing slash
-const MODEL = "gpt-5"; // use a valid OpenAI model
+const WORKER_URL = "https://barney-chat-worker.barney-willis2.workers.dev";
+const MODEL = "gpt-5";
 
 let chats = [];
 let currentIndex = null;
@@ -13,13 +13,15 @@ const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
 const toggleThemeBtn = document.getElementById('toggleThemeBtn');
 
 // ==========================
-// Chat Storage
+// Local Storage
 // ==========================
 function saveChats() {
   try {
     localStorage.setItem('secure_chat_chats', JSON.stringify(chats));
     localStorage.setItem('secure_chat_index', String(currentIndex));
-  } catch(e){}
+  } catch (e) {
+    console.warn("Failed to save chats locally:", e);
+  }
 }
 
 function loadChats() {
@@ -30,10 +32,12 @@ function loadChats() {
       chats = JSON.parse(raw);
       currentIndex = idx !== null ? Number(idx) : (chats.length ? 0 : null);
     }
-  } catch(e){ chats = []; currentIndex = null; }
-  if (chats.length === 0) {
-    createNewChat();
+  } catch (e) {
+    console.warn("Failed to load chats from localStorage:", e);
+    chats = [];
+    currentIndex = null;
   }
+  if (!chats.length) createNewChat();
 }
 
 // ==========================
@@ -45,19 +49,19 @@ async function loadChatsFromWorker() {
     if (!res.ok) {
       const text = await res.text();
       console.warn(`Worker /load response not OK: ${res.status} - ${text}`);
-      return;
+      return; // do not overwrite local storage
     }
 
     const workerChats = await res.json();
     if (Array.isArray(workerChats) && workerChats.length) {
       chats = workerChats;
       currentIndex = 0;
+      saveChats(); // store worker-loaded chats locally
       renderChatList();
       renderMessages();
     }
   } catch (e) {
     console.warn("Could not load chats from worker:", e);
-    alert("Unable to load chat history. Check your network or worker URL.");
   }
 }
 
@@ -80,7 +84,7 @@ function createNewChat() {
 function deleteChatAt(i) {
   if (i < 0 || i >= chats.length) return;
   chats.splice(i, 1);
-  if (chats.length === 0) { createNewChat(); return; }
+  if (!chats.length) { createNewChat(); return; }
   if (currentIndex === i) currentIndex = Math.max(0, i - 1);
   else if (currentIndex > i) currentIndex--;
   saveChats();
@@ -198,28 +202,30 @@ async function sendMessage() {
   saveChats();
 
   try {
-    const recentMessages = chat.messages.slice(-10); // last 10 messages
-    const res = await fetch(`${WORKER_URL}/chat`, { // hit the /chat endpoint
+    const recentMessages = chat.messages.slice(-10);
+    const res = await fetch(`${WORKER_URL}/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: recentMessages
-      })
+      body: JSON.stringify({ model: MODEL, messages: recentMessages })
     });
 
     if (!res.ok) throw new Error(`Worker returned ${res.status}`);
-
     const data = await res.json();
 
-    // Check OpenAI response
     const answer = data?.choices?.[0]?.message?.content;
-    chat.messages[chat.messages.length - 1] = {
-      role: 'assistant',
-      content: answer || "Error: No response from AI.",
-      timestamp: thinkingMessage.timestamp
-    };
-
+    if (answer) {
+      chat.messages[chat.messages.length - 1] = {
+        role: 'assistant',
+        content: answer,
+        timestamp: thinkingMessage.timestamp
+      };
+    } else {
+      chat.messages[chat.messages.length - 1] = {
+        role: 'assistant',
+        content: "Error: No response from AI.",
+        timestamp: thinkingMessage.timestamp
+      };
+    }
   } catch (e) {
     chat.messages[chat.messages.length - 1] = {
       role: 'assistant',
@@ -260,8 +266,8 @@ toggleThemeBtn.addEventListener('click', () => {
 // Startup
 // ==========================
 (async () => {
-  await loadChatsFromWorker(); // Try loading from worker first
-  loadChats(); // Fallback to local storage
+  loadChats();            // Load from localStorage first
+  await loadChatsFromWorker(); // Then merge or overwrite with worker if available
   renderChatList();
   renderMessages();
 })();
