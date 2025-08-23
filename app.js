@@ -1,4 +1,4 @@
-const WORKER_URL = "https://barney-chat-worker.barney-willis2.workers.dev/";
+const WORKER_URL = "https://barney-chat-worker.barney-willis2.workers.dev";
 const MODEL = "gpt-5";
 
 let chats = [];
@@ -250,4 +250,5 @@ toggleThemeBtn.addEventListener('click', () => {
   renderChatList();
   renderMessages();
 })();
+
 
