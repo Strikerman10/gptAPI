@@ -1,4 +1,4 @@
-const WORKER_URL = "https://barney-chat-worker.barney-willis2.workers.dev/";
+const WORKER_URL = "https://gptapi-proxy.barney-willis2.workers.dev";
 const MODEL = "gpt-5";
 
 let chats = [];
@@ -12,7 +12,9 @@ const sidebarEl = document.querySelector('.sidebar');
 const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
 const toggleThemeBtn = document.getElementById('toggleThemeBtn');
 
-// --- Helper: Save chats to localStorage ---
+// ==========================
+// Chat Storage
+// ==========================
 function saveChats() {
   try {
     localStorage.setItem('secure_chat_chats', JSON.stringify(chats));
@@ -20,8 +22,7 @@ function saveChats() {
   } catch(e){}
 }
 
-// --- Load chats from localStorage ---
-async function loadChats() {
+function loadChats() {
   try {
     const raw = localStorage.getItem('secure_chat_chats');
     const idx = localStorage.getItem('secure_chat_index');
@@ -30,51 +31,50 @@ async function loadChats() {
       currentIndex = idx !== null ? Number(idx) : (chats.length ? 0 : null);
     }
   } catch(e){ chats = []; currentIndex = null; }
-  
-  // If no chats, create a new one
   if (chats.length === 0) {
-    await createNewChat();
-  } else {
-    renderChatList();
-    renderMessages();
-  }
-
-  // Attempt to load saved chats from worker
-  await loadChatsFromWorker();
-}
-
-// --- Worker save/load functions ---
-async function saveChatsToWorker() {
-  if (!chats.length) return;
-  try {
-    await fetch(`${WORKER_URL}/save`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chats })
-    });
-  } catch(e) {
-    console.warn("Could not save chats to worker:", e);
+    createNewChat();
   }
 }
 
+// ==========================
+// Worker Integration
+// ==========================
 async function loadChatsFromWorker() {
+  if (!WORKER_URL) return;
   try {
-    const res = await fetch(`${WORKER_URL}/load`);
-    if (!res.ok) return;
+    const res = await fetch(`${WORKER_URL}/load`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" }
+    });
+
+    if (!res.ok) {
+      console.warn("Worker responded with status:", res.status, res.statusText);
+      return;
+    }
+
     const workerChats = await res.json();
-    if (workerChats.length) {
+
+    if (!Array.isArray(workerChats)) {
+      console.warn("Unexpected response format from worker:", workerChats);
+      return;
+    }
+
+    if (workerChats.length > 0) {
       chats = workerChats;
       currentIndex = 0;
       renderChatList();
       renderMessages();
     }
-  } catch(e) {
+  } catch (e) {
     console.warn("Could not load chats from worker:", e);
+    alert("Unable to load chat history. Check your network or worker URL.");
   }
 }
 
-// --- Chat creation/deletion ---
-async function createNewChat() {
+// ==========================
+// Chat Functions
+// ==========================
+function createNewChat() {
   const newChat = {
     id: Date.now().toString(),
     title: "New Chat",
@@ -85,7 +85,6 @@ async function createNewChat() {
   saveChats();
   renderChatList();
   renderMessages();
-  await saveChatsToWorker();
 }
 
 function deleteChatAt(i) {
@@ -97,10 +96,8 @@ function deleteChatAt(i) {
   saveChats();
   renderChatList();
   renderMessages();
-  saveChatsToWorker();
 }
 
-// --- Render chat list & messages ---
 function renderChatList() {
   chatListEl.innerHTML = '';
   chats.forEach((chat, i) => {
@@ -158,7 +155,6 @@ function renderMessages() {
   }
   const chat = chats[currentIndex];
   headerEl.textContent = "Barney's ChatGPT";
-
   chat.messages.slice(1).forEach(msg => {
     const mdiv = document.createElement('div');
     mdiv.className = 'message ' + (msg.role === 'user' ? 'user' : 'assistant');
@@ -166,7 +162,6 @@ function renderMessages() {
 
     const time = document.createElement('div');
     time.className = 'msg-time';
-
     if (!msg.timestamp) {
       msg.timestamp = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
     }
@@ -177,19 +172,20 @@ function renderMessages() {
     wrapper.appendChild(time);
     messagesEl.appendChild(wrapper);
   });
-
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-// --- Send a message to GPT via Worker ---
 async function sendMessage() {
   const text = inputEl.value.trim();
   if (!text) return;
-  if (currentIndex === null) await createNewChat();
+  if (currentIndex === null) createNewChat();
   const chat = chats[currentIndex];
 
   chat.messages.push({ role: 'user', content: text, timestamp: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
-  if (chat.title === 'New Chat') chat.title = text.length > 30 ? text.slice(0,30) + '…' : text;
+
+  if (chat.title === 'New Chat') {
+    chat.title = text.length > 30 ? text.slice(0,30) + '…' : text;
+  }
 
   const thinkingMessage = { role: 'assistant', content: 'Thinking...', timestamp: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) };
   chat.messages.push(thinkingMessage);
@@ -197,33 +193,42 @@ async function sendMessage() {
   renderMessages();
   inputEl.value = '';
   saveChats();
-  await saveChatsToWorker();
 
   try {
+    const recentMessages = chat.messages.slice(-10);
     const res = await fetch(`${WORKER_URL}/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: MODEL, messages: chat.messages.slice(-10) })
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: MODEL, messages: recentMessages })
     });
 
-    if (!res.ok) throw new Error(`Worker response ${res.status}`);
     const data = await res.json();
-    const answer = data?.choices?.[0]?.message?.content || "No response from AI.";
-
-    chat.messages[chat.messages.length - 1] = { role: 'assistant', content: answer, timestamp: thinkingMessage.timestamp };
-  } catch (err) {
-    chat.messages[chat.messages.length - 1] = { role: 'assistant', content: `Error: ${err.message}`, timestamp: thinkingMessage.timestamp };
+    if (data && data.choices && data.choices[0]) {
+      const answer = data.choices[0].message.content;
+      chat.messages[chat.messages.length - 1] = { role: 'assistant', content: answer, timestamp: thinkingMessage.timestamp };
+    } else {
+      chat.messages[chat.messages.length - 1] = { role: 'assistant', content: "Error: No response from AI.", timestamp: thinkingMessage.timestamp };
+    }
+  } catch (e) {
+    chat.messages[chat.messages.length - 1] = { role: 'assistant', content: "Error: " + (e.message || e), timestamp: thinkingMessage.timestamp };
   }
 
   saveChats();
   renderMessages();
-  await saveChatsToWorker();
 }
 
-// --- Event listeners ---
+// ==========================
+// Event Listeners
+// ==========================
 document.getElementById('newChatBtn').addEventListener('click', createNewChat);
 document.getElementById('sendBtn').addEventListener('click', sendMessage);
-inputEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }});
+
+inputEl.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
 
 toggleSidebarBtn.addEventListener('click', () => {
   const isHidden = sidebarEl.style.display === 'none';
@@ -236,9 +241,12 @@ toggleThemeBtn.addEventListener('click', () => {
   toggleThemeBtn.textContent = document.body.classList.contains('dark-mode') ? 'Light' : 'Dark';
 });
 
-// --- Initialize ---
+// ==========================
+// Startup
+// ==========================
 (async () => {
-  await loadChats();
+  await loadChatsFromWorker(); // Try loading from worker first
+  loadChats(); // Fallback to local storage
+  renderChatList();
+  renderMessages();
 })();
-
-
