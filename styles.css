@@ -138,14 +138,11 @@ body.dark-mode .chat-item.selected {
   min-height: 0; /* allow scrolling */
 }
 
-/* Make sure chat-item reserves room for the delete button and allow proper layout */
 .chat-item {
-  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-  padding-right: 64px; /* room for delete button */
   border-radius: 8px;
   gap: 8px;
   cursor: pointer;
@@ -169,7 +166,6 @@ body.dark-mode .chat-item.selected {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: calc(100% - 64px); /* avoid overlap with delete button */
 }
 
 .chat-subtitle {
@@ -181,47 +177,16 @@ body.dark-mode .chat-item.selected {
   text-overflow: ellipsis; /* single-line */
 }
 
-/* Stronger, clearer delete button styling */
 .delete-btn {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 32px;
-  height: 32px;
-  padding: 4px;
-  border-radius: 6px;
-  border: none;
   background: transparent;
-  color: #c0392b;         /* red icon color by default */
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border: none;
+  color: #c0392b;
+  font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.12s ease, color 0.12s ease, transform 0.06s ease, box-shadow 0.08s ease;
-  outline: none;
+  padding: 6px;
+  border-radius: 6px;
 }
-
-/* SVG icon sizing */
-.delete-btn svg { width: 14px; height: 14px; display: block; }
-
-/* hover/focus are prominent */
-.chat-item:hover .delete-btn,
-.delete-btn:focus {
-  background: #c0392b;
-  color: #fff;
-  transform: translateY(-50%) scale(1.03);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-}
-
-/* keyboard focus ring */
-.delete-btn:focus {
-  box-shadow: 0 0 0 3px rgba(78,168,255,0.18);
-}
-
-/* dark mode tweaks */
-body.dark-mode .delete-btn { color: #ff7979; }
-body.dark-mode .chat-item:hover .delete-btn { background: #ff5a5a; color:#fff; }
+.delete-btn:hover { background: rgba(192,30,30,0.08); }
 
 /* Chat window (flexible) */
 .chat-window {
@@ -239,8 +204,9 @@ body.dark-mode .chat-item:hover .delete-btn { background: #ff5a5a; color:#fff; }
   background: #2f6fbf;
   color: white;
   font-weight: 600;
-  display: flex;
-  align-items: center;
+
+  display: flex;          /* Added */
+  align-items: center;    /* Added */
 }
 
 .chat-header > span {
@@ -344,11 +310,3 @@ body.dark-mode .chat-item:hover .delete-btn { background: #ff5a5a; color:#fff; }
     width: 85%;
   }
 }
-
-
-
-
-
-
-
-
