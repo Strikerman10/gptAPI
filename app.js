@@ -181,13 +181,21 @@ async function sendMessage() {
   if (currentIndex === null) createNewChat();
   const chat = chats[currentIndex];
 
-  chat.messages.push({ role: 'user', content: text, timestamp: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
+  chat.messages.push({
+    role: 'user',
+    content: text,
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  });
 
   if (chat.title === 'New Chat') {
-    chat.title = text.length > 30 ? text.slice(0,30) + '…' : text;
+    chat.title = text.length > 30 ? text.slice(0, 30) + '…' : text;
   }
 
-  const thinkingMessage = { role: 'assistant', content: 'Thinking...', timestamp: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) };
+  const thinkingMessage = {
+    role: 'assistant',
+    content: 'Thinking...',
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  };
   chat.messages.push(thinkingMessage);
 
   renderMessages();
@@ -195,27 +203,50 @@ async function sendMessage() {
   saveChats();
 
   try {
+    // Send to /chat endpoint
     const recentMessages = chat.messages.slice(-10);
     const res = await fetch(`${WORKER_URL}/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: MODEL, messages: recentMessages })
+      body: JSON.stringify({
+        model: MODEL,
+        messages: recentMessages
+      })
     });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Worker response not OK: ${res.status} - ${text}`);
+    }
 
     const data = await res.json();
     if (data && data.choices && data.choices[0]) {
       const answer = data.choices[0].message.content;
-      chat.messages[chat.messages.length - 1] = { role: 'assistant', content: answer, timestamp: thinkingMessage.timestamp };
+      chat.messages[chat.messages.length - 1] = {
+        role: 'assistant',
+        content: answer,
+        timestamp: thinkingMessage.timestamp
+      };
     } else {
-      chat.messages[chat.messages.length - 1] = { role: 'assistant', content: "Error: No response from AI.", timestamp: thinkingMessage.timestamp };
+      chat.messages[chat.messages.length - 1] = {
+        role: 'assistant',
+        content: "Error: No response from AI.",
+        timestamp: thinkingMessage.timestamp
+      };
     }
   } catch (e) {
-    chat.messages[chat.messages.length - 1] = { role: 'assistant', content: "Error: " + (e.message || e), timestamp: thinkingMessage.timestamp };
+    chat.messages[chat.messages.length - 1] = {
+      role: 'assistant',
+      content: "Error: " + (e.message || e),
+      timestamp: thinkingMessage.timestamp
+    };
+    console.error("sendMessage error:", e);
   }
 
   saveChats();
   renderMessages();
 }
+
 
 // ==========================
 // Event Listeners
@@ -250,5 +281,6 @@ toggleThemeBtn.addEventListener('click', () => {
   renderChatList();
   renderMessages();
 })();
+
 
 
