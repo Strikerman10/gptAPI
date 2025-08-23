@@ -1,5 +1,5 @@
-const WORKER_URL = "https://barney-chat-worker.barney-willis2.workers.dev";
-const MODEL = "gpt-5";
+const WORKER_URL = "https://barney-chat-worker.barney-willis2.workers.dev"; // no trailing slash
+const MODEL = "gpt-5"; // use a valid OpenAI model
 
 let chats = [];
 let currentIndex = null;
@@ -50,17 +50,6 @@ async function loadChatsFromWorker() {
 
     const workerChats = await res.json();
     if (Array.isArray(workerChats) && workerChats.length) {
-      chats = workerChats;
-      currentIndex = 0;
-      renderChatList();
-      renderMessages();
-    }
-  } catch (e) {
-    console.warn("Could not load chats from worker:", e);
-  }
-}
-
-    if (workerChats.length > 0) {
       chats = workerChats;
       currentIndex = 0;
       renderChatList();
@@ -225,19 +214,12 @@ async function sendMessage() {
 
     // Check OpenAI response
     const answer = data?.choices?.[0]?.message?.content;
-    if (answer) {
-      chat.messages[chat.messages.length - 1] = {
-        role: 'assistant',
-        content: answer,
-        timestamp: thinkingMessage.timestamp
-      };
-    } else {
-      chat.messages[chat.messages.length - 1] = {
-        role: 'assistant',
-        content: "Error: No response from AI.",
-        timestamp: thinkingMessage.timestamp
-      };
-    }
+    chat.messages[chat.messages.length - 1] = {
+      role: 'assistant',
+      content: answer || "Error: No response from AI.",
+      timestamp: thinkingMessage.timestamp
+    };
+
   } catch (e) {
     chat.messages[chat.messages.length - 1] = {
       role: 'assistant',
@@ -283,8 +265,3 @@ toggleThemeBtn.addEventListener('click', () => {
   renderChatList();
   renderMessages();
 })();
-
-
-
-
-
