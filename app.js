@@ -40,24 +40,25 @@ function loadChats() {
 // Worker Integration
 // ==========================
 async function loadChatsFromWorker() {
-  if (!WORKER_URL) return;
   try {
-    const res = await fetch(`${WORKER_URL}/load`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" }
-    });
-
+    const res = await fetch(`${WORKER_URL}/load`);
     if (!res.ok) {
-      console.warn("Worker responded with status:", res.status, res.statusText);
+      const text = await res.text();
+      console.warn(`Worker /load response not OK: ${res.status} - ${text}`);
       return;
     }
 
     const workerChats = await res.json();
-
-    if (!Array.isArray(workerChats)) {
-      console.warn("Unexpected response format from worker:", workerChats);
-      return;
+    if (Array.isArray(workerChats) && workerChats.length) {
+      chats = workerChats;
+      currentIndex = 0;
+      renderChatList();
+      renderMessages();
     }
+  } catch (e) {
+    console.warn("Could not load chats from worker:", e);
+  }
+}
 
     if (workerChats.length > 0) {
       chats = workerChats;
@@ -281,6 +282,7 @@ toggleThemeBtn.addEventListener('click', () => {
   renderChatList();
   renderMessages();
 })();
+
 
 
 
