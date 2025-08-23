@@ -5,15 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Barney's ChatGPT</title>
   <link rel="stylesheet" href="styles.css">
-  <style>
-    /* Small tweak so dropdown looks decent */
-    #paletteSelector {
-      margin-left: 8px;
-      padding: 6px 12px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-  </style>
 </head>
 <body>
   <div class="app-container">
@@ -30,11 +21,6 @@
         <span>Barney's ChatGPT</span>
         <button id="toggleSidebarBtn" aria-label="Toggle Sidebar" style="margin-left: auto; padding: 6px 12px; font-size: 14px; cursor: pointer;">Hide</button>
         <button id="toggleThemeBtn" aria-label="Toggle Light/Dark Mode" style="margin-left: 8px; padding: 6px 12px; font-size: 14px; cursor: pointer;">Dark</button>
-        <select id="paletteSelector" aria-label="Select color palette">
-          <option value="Green">Green</option>
-          <option value="Blue">Blue</option>
-          <option value="Orange">Orange</option>
-        </select>
       </div>
       <div class="messages" id="messages" aria-live="polite"></div>
 
@@ -44,110 +30,6 @@
       </div>
     </div>
   </div>
-
-  <script>
-    /* -------------------------
-       🎨 Palette Library
-       ------------------------- */
-    const palettes = {
-      Green: {
-        "--color-1": "#94e8b4",
-        "--color-2": "#72bda3",
-        "--color-3": "#5e8c61",
-        "--color-4": "#4e6151",
-        "--color-5": "#3b322c",
-      },
-      Blue: {
-        "--color-1": "#b3cfff",
-        "--color-2": "#7a9eff",
-        "--color-3": "#437f97",
-        "--color-4": "#2c5c63",
-        "--color-5": "#1a1c2c",
-      },
-      Orange: {
-        "--color-1": "#ffd6a5",
-        "--color-2": "#ffb347",
-        "--color-3": "#ff7f50",
-        "--color-4": "#cc5500",
-        "--color-5": "#662200",
-      }
-
-      // 👉 Add more palettes here:
-      // "Pastel": { "--color-1": "...", "--color-2": "...", ... }
-    };
-
-    const neutrals = {
-      light: {
-        "--bg": "hsl(0 0% 99%)",
-        "--surface-1": "hsl(0 0% 98%)",
-        "--surface-2": "hsl(0 0% 96%)",
-        "--surface-hover": "hsl(0 0% 94%)",
-        "--border": "hsl(0 0% 85%)",
-        "--text": "hsl(0 0% 10%)",
-        "--text-muted": "hsl(0 0% 45%)",
-      },
-      dark: {
-        "--bg": "hsl(0 0% 8%)",
-        "--surface-1": "hsl(0 0% 12%)",
-        "--surface-2": "hsl(0 0% 16%)",
-        "--surface-hover": "hsl(0 0% 20%)",
-        "--border": "hsl(0 0% 30%)",
-        "--text": "hsl(0 0% 92%)",
-        "--text-muted": "hsl(0 0% 70%)",
-      }
-    };
-
-    let currentPalette = "Green";
-    let currentMode = "light";
-
-    function applyTheme() {
-      const root = document.documentElement;
-
-      // Apply palette
-      const palette = palettes[currentPalette];
-      for (const [key, value] of Object.entries(palette)) {
-        root.style.setProperty(key, value);
-      }
-
-      // Apply neutrals
-      const neutralSet = neutrals[currentMode];
-      for (const [key, value] of Object.entries(neutralSet)) {
-        root.style.setProperty(key, value);
-      }
-
-      // Save settings
-      localStorage.setItem("palette", currentPalette);
-      localStorage.setItem("mode", currentMode);
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const selector = document.getElementById("paletteSelector");
-      const themeBtn = document.getElementById("toggleThemeBtn");
-
-      // Load saved values (fallbacks if none exist)
-      currentPalette = localStorage.getItem("palette") || "Green";
-      currentMode = localStorage.getItem("mode") || "light";
-
-      // Sync UI
-      selector.value = currentPalette;
-      themeBtn.textContent = currentMode === "light" ? "Dark" : "Light";
-
-      // Event listeners
-      selector.addEventListener("change", (e) => {
-        currentPalette = e.target.value;
-        applyTheme();
-      });
-
-      themeBtn.addEventListener("click", () => {
-        currentMode = currentMode === "light" ? "dark" : "light";
-        themeBtn.textContent = currentMode === "light" ? "Dark" : "Light";
-        applyTheme();
-      });
-
-      // Initial load
-      applyTheme();
-    });
-  </script>
 
   <script src="app.js" defer></script>
 </body>
