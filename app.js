@@ -1,4 +1,4 @@
-const WORKER_URL = "https://YOUR_WORKER_SUBDOMAIN.workers.dev";
+const WORKER_URL = "https://gptapi-proxy.barney-willis2.workers.dev/";
 const MODEL = "gpt-5";
 
 let chats = [];
@@ -240,3 +240,4 @@ toggleThemeBtn.addEventListener('click', () => {
 (async () => {
   await loadChats();
 })();
+
