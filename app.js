@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const newChat = {
       id: Date.now().toString(),
       title: "New Chat",
-      messages: [{ role: "system", content: "You are a helpful assistant.", time: formatTime() }]
+      messages: [{ role: "system", content: "How can I help, Barney?", time: formatTime() }]
     };
     chats.unshift(newChat);
     currentIndex = 0;
@@ -239,3 +239,4 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
