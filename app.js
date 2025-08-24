@@ -121,12 +121,46 @@ document.addEventListener("DOMContentLoaded", () => {
     chats.forEach((chat, i) => {
       const item = document.createElement("div");
       item.className = "chat-item" + (i === currentIndex ? " selected" : "");
-      item.textContent = chat.title || "New Chat";
+
+      // preview text container
+      const preview = document.createElement("div");
+      preview.className = "chat-preview";
+      preview.innerHTML = `
+        <div class="chat-title">${chat.title || "New Chat"}</div>
+        <div class="chat-subtitle">
+          ${(chat.messages && chat.messages.length > 0) ? chat.messages[chat.messages.length - 1].content.slice(0, 30) : ""}
+        </div>
+      `;
+
+      // delete button
+      const delBtn = document.createElement("button");
+      delBtn.className = "delete-btn";
+      delBtn.setAttribute("aria-label", "Delete chat");
+      delBtn.textContent = "×";
+
+      delBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        chats.splice(i, 1);
+        if (currentIndex === i) {
+          currentIndex = chats.length ? 0 : null;
+        } else if (currentIndex > i) {
+          currentIndex--;
+        }
+        saveChats();
+        renderChatList();
+        renderMessages();
+        saveChatsToWorker();
+      });
+
+      // click anywhere else selects
       item.addEventListener("click", () => {
         currentIndex = i;
         renderChatList();
         renderMessages();
       });
+
+      item.appendChild(preview);
+      item.appendChild(delBtn);
       chatListEl.appendChild(item);
     });
   }
@@ -239,4 +273,3 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
-
