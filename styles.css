@@ -135,29 +135,25 @@ body { background: var(--bg); color: var(--text); }
 /* ✅ FIXED PREVIEW STYLING */
 .chat-preview {
   flex: 1 1 auto;
-  min-width: 0;        /* lets text actually take full width */
+  min-width: 0;
   overflow: hidden;
-  padding-right: 20px; /* keep space for delete button */
+  padding-right: 20px;
 }
 
 .chat-title,
 .chat-subtitle {
-  display: block;          /* reset from -webkit-box */
-  white-space: nowrap;     /* force a single long line */
-  overflow: hidden;        /* hide overflow text */
-  text-overflow: ellipsis; /* add ... at the end if too long */
+  display: block !important;
+  white-space: nowrap !important;     /* force a single long line */
+  overflow: hidden !important;
+  text-overflow: ellipsis !important; /* show … if too long */
+  -webkit-line-clamp: unset !important;
+  -webkit-box-orient: unset !important;
 }
 
 .chat-subtitle {
   font-size: 12px;
   color: var(--text-muted);
   margin-top: 4px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2; 
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: normal; 
 }
 
 /* ===========================
@@ -349,5 +345,3 @@ body { background: var(--bg); color: var(--text); }
     padding: 4px 8px;
   }
 }
-
-
