@@ -2,7 +2,7 @@
 // CONFIG
 // ==========================
 const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev"; // replace with your Worker URL
-const MODEL = "gpt-5-chat-latest";
+const MODEL = "gpt-chat-latest"; // updated model
 
 let chats = [];
 let currentIndex = null;
@@ -14,9 +14,8 @@ const headerEl = document.getElementById("chatHeader").querySelector("span");
 const inputEl = document.getElementById("input");
 const paletteSelector = document.getElementById("paletteSelector");
 const themeBtn = document.getElementById("toggleThemeBtn");
-const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
 const sidebarEl = document.querySelector(".sidebar");
-const mainContentEl = document.querySelector(".main-content");
+const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
 
 // ==========================
 // PALETTE & THEME
@@ -201,17 +200,11 @@ themeBtn.textContent = currentMode === "light" ? "Dark" : "Light";
 paletteSelector.addEventListener("change", e => { currentPalette = e.target.value; applyTheme(); });
 themeBtn.addEventListener("click", () => { currentMode = currentMode === "light" ? "dark" : "light"; themeBtn.textContent = currentMode === "light" ? "Dark" : "Light"; applyTheme(); });
 
-// Sidebar Hide/Show
+// Sidebar toggle
 toggleSidebarBtn.addEventListener("click", () => {
-  if (sidebarEl.style.display === "none") {
-    sidebarEl.style.display = "flex";
-    mainContentEl.style.width = "70%";
-    toggleSidebarBtn.textContent = "Hide";
-  } else {
-    sidebarEl.style.display = "none";
-    mainContentEl.style.width = "100%";
-    toggleSidebarBtn.textContent = "Show";
-  }
+  const isHidden = sidebarEl.style.display === "none";
+  sidebarEl.style.display = isHidden ? "flex" : "none";
+  toggleSidebarBtn.textContent = isHidden ? "Hide" : "Show";
 });
 
 // ==========================
