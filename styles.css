@@ -8,12 +8,12 @@ html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, "Se
    🎨 MASTER THEME COLORS
    =========================== */
 :root {
-  --color-1: #94e8b4; /* light accent */
-  --color-2: #72bda3; /* mid accent */
-  --color-3: #5e8c61; /* primary green */
-  --color-4: #4e6151; /* dark neutral */
-  --color-5: #3b322c; /* very dark base */
-  --color-6: #800000; /* deep maroon */
+  --color-1: #94e8b4;
+  --color-2: #72bda3;
+  --color-3: #5e8c61;
+  --color-4: #4e6151;
+  --color-5: #3b322c;
+  --color-6: #800000; /* maroon */
 }
 
 /* ===========================
@@ -132,33 +132,37 @@ body { background: var(--bg); color: var(--text); }
 }
 .chat-item:hover { background: var(--surface-hover); }
 
-.chat-preview { display: flex; flex-direction: column; min-width: 0; }
+/* UPDATED: preview expands fully */
+.chat-preview {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  padding-right: 40px; /* keep away from delete button */
+}
 
-/* UPDATED: longer title lines */
 .chat-title {
   font-weight: 600;
   color: var(--text);
   font-size: 14px;
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* still max 2 lines */
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 100%;       /* allow full width */
-  padding-right: 32px;   /* reserve space from delete button */
+  white-space: normal;
 }
 
-/* UPDATED: allow subtitle to two lines */
 .chat-subtitle {
   font-size: 12px;
   color: var(--text-muted);
-  margin-top: 6px;
+  margin-top: 4px;
   display: -webkit-box;
-  -webkit-line-clamp: 2;   /* up to 2 lines */
+  -webkit-line-clamp: 2;  /* allow up to 2 lines */
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: normal;     /* allow wrapping */
+  white-space: normal;
 }
 
 /* ===========================
@@ -305,7 +309,7 @@ body { background: var(--bg); color: var(--text); }
   margin-left: auto;
 }
 
-/* UPDATED: Header control buttons & select */
+/* UPDATED: maroon/green header buttons */
 .header-controls button,
 .header-controls select {
   font-size: 14px;
@@ -319,12 +323,12 @@ body { background: var(--bg); color: var(--text); }
 }
 .header-controls button:hover,
 .header-controls select:hover {
-  background: var(--color-3);   /* green on hover */
+  background: var(--color-3);   /* green hover */
   color: #fff;
 }
 .header-controls select:focus,
 .header-controls button:focus {
-  background: var(--color-6);   /* stay maroon when focused/selected */
+  background: var(--color-6);   /* stay maroon */
   color: #fff;
 }
 .header-controls select {
