@@ -168,8 +168,10 @@ body { background: var(--bg); color: var(--text); }
 }
 
 .chat-header .chat-title {
-  white-space: nowrap;
   font-weight: 600;
+  font-size: 16px;          /* match sidebar */
+  line-height: 60px;        /* match sidebar height */
+  white-space: nowrap;
 }
 
 .header-controls {
@@ -219,3 +221,4 @@ body { background: var(--bg); color: var(--text); }
     padding: 4px 8px;
   }
 }
+
