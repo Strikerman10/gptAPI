@@ -134,9 +134,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const chat = chats[currentIndex];
     chat.messages.forEach(msg => {
+      // ✅ FIX: add both "message" and role
       const div = document.createElement("div");
-      div.className = msg.role;
+      div.className = `message ${msg.role}`;
       div.textContent = msg.content;
+
+      // Optional: timestamp
+      const timeDiv = document.createElement("div");
+      timeDiv.className = "msg-time";
+      timeDiv.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      div.appendChild(timeDiv);
+
       messagesEl.appendChild(div);
     });
 
