@@ -2,7 +2,7 @@
 // CONFIG
 // ==========================
 const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev"; // replace with your Worker URL
-const MODEL = "gpt-5";
+const MODEL = "gpt-5-chat-latest";
 
 let chats = [];
 let currentIndex = null;
@@ -208,3 +208,4 @@ themeBtn.addEventListener("click", () => { currentMode = currentMode === "light"
   renderChatList();
   renderMessages();
 })();
+
