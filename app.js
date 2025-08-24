@@ -11,15 +11,12 @@ document.addEventListener("DOMContentLoaded", () => {
   // DOM elements
   const chatListEl = document.getElementById("chatList");
   const messagesEl = document.getElementById("messages");
-  const headerEl = document.getElementById("chatHeader").querySelector("span.chat-title");
+  const headerEl = document.getElementById("chatHeader").querySelector("span");
   const inputEl = document.getElementById("input");
   const paletteSelector = document.getElementById("paletteSelector");
   const themeBtn = document.getElementById("toggleThemeBtn");
-  const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
-  const toggleSidebarSpan = toggleSidebarBtn.querySelector("span");
-  const themeBtnSpan = themeBtn.querySelector("span");
   const sidebarEl = document.querySelector(".sidebar");
-  const paletteIconBtn = document.getElementById("paletteIconBtn");
+  const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
 
   // ==========================
   // PALETTE & THEME
@@ -45,11 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
     for (const [key, value] of Object.entries(palette)) root.style.setProperty(key, value);
     for (const [key, value] of Object.entries(neutralSet)) root.style.setProperty(key, value);
     document.body.classList.toggle("dark-mode", currentMode === "dark");
-
-    // Update button text + data-icon attribute for mobile
-    themeBtnSpan.textContent = currentMode === "light" ? "Dark" : "Light";
-    themeBtn.dataset.icon = currentMode === "light" ? "☀️" : "🌑";
-
     localStorage.setItem("palette", currentPalette);
     localStorage.setItem("mode", currentMode);
   }
@@ -173,31 +165,32 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function renderMessages() {
-    messagesEl.innerHTML = "";
-    headerEl.textContent = "Barney's ChatGPT"; // fixed header
+function renderMessages() {
+  messagesEl.innerHTML = "";
+  headerEl.textContent = "Barney's ChatGPT"; // fixed header
 
-    if (currentIndex === null || !chats[currentIndex]) return;
+  if (currentIndex === null || !chats[currentIndex]) return;
 
-    const chat = chats[currentIndex];
+  const chat = chats[currentIndex];
 
-    chat.messages.forEach(msg => {
-      // create message bubble
-      const div = document.createElement("div");
-      div.className = `message ${msg.role}`;
-      div.innerText = msg.content;
+  chat.messages.forEach(msg => {
+    // create message bubble
+    const div = document.createElement("div");
+    div.className = `message ${msg.role}`;
+    div.innerText = msg.content; // preserves line breaks
 
-      // create timestamp
-      const timeDiv = document.createElement("div");
-      timeDiv.className = "msg-time";
-      timeDiv.textContent = msg.time || "";
+    // create timestamp
+    const timeDiv = document.createElement("div");
+    timeDiv.className = "msg-time";
+    timeDiv.textContent = msg.time || "";
 
-      div.appendChild(timeDiv);
-      messagesEl.appendChild(div);
-    });
+    div.appendChild(timeDiv);
+    messagesEl.appendChild(div);
+  });
 
-    messagesEl.scrollTop = messagesEl.scrollHeight;
-  }
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
 
   // ==========================
   // SEND MESSAGE
@@ -256,22 +249,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Palette & Theme
   paletteSelector.value = currentPalette;
+  themeBtn.textContent = currentMode === "light" ? "Dark" : "Light";
+
   paletteSelector.addEventListener("change", e => { currentPalette = e.target.value; applyTheme(); });
   themeBtn.addEventListener("click", () => { 
     currentMode = currentMode === "light" ? "dark" : "light"; 
+    themeBtn.textContent = currentMode === "light" ? "Dark" : "Light"; 
     applyTheme(); 
-  });
-
-  // Palette icon button (mobile alternative to <select>)
-  paletteIconBtn.addEventListener("click", () => {
-    paletteSelector.click();
   });
 
   // Sidebar toggle
   toggleSidebarBtn.addEventListener("click", () => {
     const isHidden = sidebarEl.style.display === "none";
     sidebarEl.style.display = isHidden ? "flex" : "none";
-    toggleSidebarSpan.textContent = isHidden ? "Hide" : "Show";
+    toggleSidebarBtn.textContent = isHidden ? "Hide" : "Show";
   });
 
   // ==========================
@@ -284,4 +275,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderChatList();
     renderMessages();
   })();
+
 });
+
