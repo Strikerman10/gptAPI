@@ -1,18 +1,13 @@
-/* =========================== Reset & Base =========================== */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+/* ===========================
+   Reset & Base
+   =========================== */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
 
-html,
-body {
-  height: 100%;
-  margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-}
-
-/* =========================== 🎨 MASTER THEME COLORS Change these 5 only =========================== */
+/* ===========================
+   🎨 MASTER THEME COLORS
+   Change these 5 only
+   =========================== */
 :root {
   --color-1: #94e8b4; /* light accent */
   --color-2: #72bda3; /* mid accent */
@@ -22,63 +17,70 @@ body {
   --color-6: #800000; /* contrasting */
 }
 
-/* =========================== Derived Palette (Light) =========================== */
+/* ===========================
+   Derived Palette (Light)
+   =========================== */
 :root {
   --bg: #ffffff;
   --surface-1: color-mix(in srgb, var(--color-1) 10%, white 90%);
   --surface-2: color-mix(in srgb, var(--color-1) 15%, white 85%);
   --surface-hover: color-mix(in srgb, var(--color-1) 25%, white 75%);
   --border: color-mix(in srgb, var(--color-4) 25%, white 75%);
+
   --text: var(--color-5);
   --text-muted: color-mix(in srgb, var(--color-4) 50%, white 50%);
+
   --primary: var(--color-3);
   --primary-contrast: #fff;
   --accent: var(--color-2);
   --accent-contrast: var(--color-5);
+
   --user-bubble-bg: var(--color-4);
   --user-bubble-text: var(--primary-contrast);
   --assistant-bubble-bg: var(--color-1);
   --assistant-bubble-text: var(--color-5);
+
   --danger: hsl(0 72% 48%);
   --danger-contrast: #fff;
   --ring: color-mix(in srgb, var(--color-2) 60%, transparent);
 }
 
-/* =========================== Derived Palette (Dark Mode) =========================== */
+/* ===========================
+   Derived Palette (Dark Mode)
+   =========================== */
 body.dark-mode {
   --bg: var(--color-5);
   --surface-1: color-mix(in srgb, var(--color-4) 80%, black 20%);
   --surface-2: color-mix(in srgb, var(--color-4) 65%, black 35%);
   --surface-hover: color-mix(in srgb, var(--color-4) 50%, black 50%);
   --border: color-mix(in srgb, var(--color-4) 40%, black 60%);
+
   --text: #f2f2f2;
   --text-muted: color-mix(in srgb, #f2f2f2 60%, var(--color-4) 40%);
+
   --primary: color-mix(in srgb, var(--color-3) 80%, white 20%);
   --primary-contrast: #fff;
   --accent: color-mix(in srgb, var(--color-2) 90%, white 10%);
   --accent-contrast: var(--color-5);
+
   --user-bubble-bg: var(--color-4);
   --user-bubble-text: var(--primary-contrast);
   --assistant-bubble-bg: color-mix(in srgb, var(--color-1) 30%, var(--color-4) 70%);
   --assistant-bubble-text: #fff;
+
   --ring: color-mix(in srgb, var(--color-2) 70%, transparent);
 }
 
-/* =========================== Base Setup =========================== */
-html {
-  color-scheme: light;
-}
+/* ===========================
+   Base Setup
+   =========================== */
+html { color-scheme: light; }
+body.dark-mode { color-scheme: dark; }
+body { background: var(--bg); color: var(--text); }
 
-body.dark-mode {
-  color-scheme: dark;
-}
-
-body {
-  background: var(--bg);
-  color: var(--text);
-}
-
-/* =========================== App Layout =========================== */
+/* ===========================
+   App Layout
+   =========================== */
 .app-container {
   display: flex;
   height: 100vh;
@@ -156,10 +158,7 @@ body {
   margin-bottom: 8px;
   color: var(--text);
 }
-
-.chat-item:hover {
-  background: var(--surface-hover);
-}
+.chat-item:hover { background: var(--surface-hover); }
 
 .chat-preview {
   display: flex;
@@ -204,23 +203,18 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background-color 0.12s ease, color 0.12s ease, transform 0.06s ease,
-    box-shadow 0.08s ease;
+  transition: background-color 0.12s ease, color 0.12s ease, transform 0.06s ease, box-shadow 0.08s ease;
   outline: none;
 }
 
-.delete-btn svg {
-  width: 18px;
-  height: 18px;
-  display: block;
-}
+.delete-btn svg { width: 18px; height: 18px; display: block; }
 
 .chat-item:hover .delete-btn,
 .delete-btn:focus {
   background: var(--danger);
   color: var(--danger-contrast);
   transform: translateY(-50%) scale(1.03);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
 }
 
 .delete-btn:focus {
@@ -272,9 +266,7 @@ body {
   margin-right: 0;
 }
 
-.message {
-  white-space: pre-wrap;
-}
+.message { white-space: pre-wrap; }
 
 .message.user {
   margin-left: auto;
@@ -346,14 +338,8 @@ body {
 }
 
 @media (max-width: 768px) {
-  .sidebar {
-    width: 30%;
-    min-width: unset;
-  }
-
-  .main-content {
-    width: 85%;
-  }
+  .sidebar { width: 30%; min-width: unset; }
+  .main-content { width: 85%; }
 }
 
 /* Chat header: keep title readable and avoid huge gap on phones */
@@ -372,27 +358,19 @@ body {
 
 /* On wide screens, push controls to the right via the title's auto margin */
 @media (min-width: 600px) {
-  .chat-header > span {
-    margin-right: auto;
-  }
+  .chat-header > span { margin-right: auto; }
 }
 
 /* On phones, drop controls below the title and remove the big gap */
 @media (max-width: 599.98px) {
   /* override inline margin-left:auto on the Hide button */
-  #toggleSidebarBtn {
-    margin-left: 0 !important;
-  }
+  #toggleSidebarBtn { margin-left: 0 !important; }
 
   /* make the title take the full first row */
-  .chat-header > span {
-    flex-basis: 100%;
-  }
+  .chat-header > span { flex-basis: 100%; }
 
   /* optionally shrink controls slightly */
-  #toggleSidebarBtn,
-  #toggleThemeBtn,
-  #paletteSelector {
+  #toggleSidebarBtn, #toggleThemeBtn, #paletteSelector {
     font-size: 12px;
     padding: 4px 8px;
   }
