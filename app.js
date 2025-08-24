@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     Green: { "--color-1": "#94e8b4", "--color-2": "#72bda3", "--color-3": "#5e8c61", "--color-4": "#4e6151", "--color-5": "#3b322c", "--color-6": "#800000" },
     Blue: { "--color-1": "#b3cfff", "--color-2": "#7a9eff", "--color-3": "#437f97", "--color-4": "#2c5c63", "--color-5": "#1a1c2c", "--color-6": "#F67c03" },
     Orange: { "--color-1": "#ffd6a5", "--color-2": "#ffb347", "--color-3": "#ff7f50", "--color-4": "#cc5500", "--color-5": "#662200", "--color-6": "#0f4d92" }
+    Purple: { "--color-1": "#2e0219", "--color-2": "#4a001f", "--color-3": "#6a0f49", "--color-4": "#6c9d9a", "--color-5": "#95eee9", "--color-6": "#800000" }
   };
 
   const neutrals = {
@@ -277,4 +278,5 @@ function renderMessages() {
   })();
 
 });
+
 
