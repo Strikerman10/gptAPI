@@ -15,7 +15,6 @@
     }
   </style>
 </head>
-
 <body>
   <div class="app-container">
     <!-- Sidebar -->
@@ -29,23 +28,14 @@
     <div class="chat-window" role="main">
       <div class="chat-header" id="chatHeader">
         <span>Barney's ChatGPT</span>
-        <button id="toggleSidebarBtn"
-                aria-label="Toggle Sidebar"
-                style="margin-left: auto; padding: 6px 12px; font-size: 14px; cursor: pointer;">
-          Hide
-        </button>
-        <button id="toggleThemeBtn"
-                aria-label="Toggle Light/Dark Mode"
-                style="margin-left: 8px; padding: 6px 12px; font-size: 14px; cursor: pointer;">
-          Dark
-        </button>
+        <button id="toggleSidebarBtn" aria-label="Toggle Sidebar" style="margin-left: auto; padding: 6px 12px; font-size: 14px; cursor: pointer;">Hide</button>
+        <button id="toggleThemeBtn" aria-label="Toggle Light/Dark Mode" style="margin-left: 8px; padding: 6px 12px; font-size: 14px; cursor: pointer;">Dark</button>
         <select id="paletteSelector" aria-label="Select color palette">
           <option value="Green">Green</option>
           <option value="Blue">Blue</option>
           <option value="Orange">Orange</option>
         </select>
       </div>
-
       <div class="messages" id="messages" aria-live="polite"></div>
 
       <div class="input-area">
@@ -56,7 +46,9 @@
   </div>
 
   <script>
-    /* ------------------------- 🎨 Palette Library ------------------------- */
+    /* -------------------------
+       🎨 Palette Library
+       ------------------------- */
     const palettes = {
       Green: {
         "--color-1": "#94e8b4",
@@ -82,6 +74,7 @@
         "--color-5": "#662200",
         "--color-6": "#0f4d92",
       }
+
       // 👉 Add more palettes here:
       // "Pastel": { "--color-1": "...", "--color-2": "...", ... }
     };
@@ -120,4 +113,45 @@
       }
 
       // Apply neutrals
-      const neutralSet = neutrals[currentM]()
+      const neutralSet = neutrals[currentMode];
+      for (const [key, value] of Object.entries(neutralSet)) {
+        root.style.setProperty(key, value);
+      }
+
+      // Save settings
+      localStorage.setItem("palette", currentPalette);
+      localStorage.setItem("mode", currentMode);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const selector = document.getElementById("paletteSelector");
+      const themeBtn = document.getElementById("toggleThemeBtn");
+
+      // Load saved values (fallbacks if none exist)
+      currentPalette = localStorage.getItem("palette") || "Green";
+      currentMode = localStorage.getItem("mode") || "light";
+
+      // Sync UI
+      selector.value = currentPalette;
+      themeBtn.textContent = currentMode === "light" ? "Dark" : "Light";
+
+      // Event listeners
+      selector.addEventListener("change", (e) => {
+        currentPalette = e.target.value;
+        applyTheme();
+      });
+
+      themeBtn.addEventListener("click", () => {
+        currentMode = currentMode === "light" ? "dark" : "light";
+        themeBtn.textContent = currentMode === "light" ? "Dark" : "Light";
+        applyTheme();
+      });
+
+      // Initial load
+      applyTheme();
+    });
+  </script>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
