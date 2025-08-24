@@ -264,8 +264,8 @@ body {
   animation: fadeInUp 0.25s ease;
 }
 .message.user {
-  white-space: pre-wrap;  /* preserves line breaks */
-  word-break: break-word; /* breaks long words if needed */
+  white-space: pre-wrap;
+  word-break: break-word;
   background: var(--user-bubble-bg);
   color: var(--user-bubble-text);
   border-bottom-right-radius: 0.3rem;
@@ -364,18 +364,18 @@ body {
   cursor: pointer;
   border-radius: 8px;
   border: none;
-  background: var(--color-6);   /* maroon default */
+  background: var(--color-6);
   color: #fff;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 .header-controls button:hover,
 .header-controls select:hover {
-  background: var(--color-3);   /* green on hover */
+  background: var(--color-3);
   color: #fff;
 }
 .header-controls select:focus,
 .header-controls button:focus {
-  background: var(--color-6);   /* stay maroon when focused/selected */
+  background: var(--color-6);
   color: #fff;
 }
 .header-controls select {
@@ -400,10 +400,20 @@ body {
 @media (max-width: 599.98px) {
   .chat-header {
     flex-wrap: wrap;
+    height: auto; /* let it grow */
+    padding: 8px 12px;
   }
   .chat-header .chat-title {
-    flex-basis: 100%;
-    margin-bottom: 4px;
+    flex: 1 1 100%;
+    line-height: 1.4;
+    margin-bottom: 6px;
+    white-space: normal;
+  }
+  .header-controls {
+    flex: 1 1 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 6px;
   }
   .header-controls button,
   .header-controls select {
@@ -411,4 +421,3 @@ body {
     padding: 4px 8px;
   }
 }
-
