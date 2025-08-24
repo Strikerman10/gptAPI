@@ -106,6 +106,21 @@ body { background: var(--bg); color: var(--text); }
 
 .main-content { width: 70%; transition: width 0.3s ease; }
 
+/* Smooth sidebar hide/show */
+.sidebar {
+  transition: width 0.3s ease, opacity 0.3s ease;
+  overflow: hidden;
+}
+
+.sidebar.hidden {
+  width: 0;
+  opacity: 0;
+}
+
+.main-content {
+  transition: width 0.3s ease;
+}
+
 .new-chat {
   margin: 12px;
   padding: 10px 14px;
@@ -150,3 +165,4 @@ body { background: var(--bg); color: var(--text); }
 .chat-item.selected { background: color-mix(in srgb, var(--accent) 15%, transparent); border: 1px solid var(--accent); border-radius: 8px; }
 
 @media (max-width: 768px) { .sidebar { width: 30%; min-width: unset; } .main-content { width: 85%; } }
+
