@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // DOM elements
   const chatListEl = document.getElementById("chatList");
   const messagesEl = document.getElementById("messages");
-  const headerEl = document.getElementById("chatHeader"); // ✅ gets whole header div
+  const headerEl = document.getElementById("chatHeader").querySelector("span");
   const inputEl = document.getElementById("input");
   const paletteSelector = document.getElementById("paletteSelector");
   const themeBtn = document.getElementById("toggleThemeBtn");
@@ -49,12 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==========================
   // UTILITIES
   // ==========================
-  function escapeHtml(str) {
-    return String(str ?? "").replace(/[&<>'"]/g, c =>
-      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[c])
-    );
-  }
-
   function saveChats() {
     localStorage.setItem("secure_chat_chats", JSON.stringify(chats));
     localStorage.setItem("secure_chat_index", String(currentIndex));
@@ -131,14 +125,11 @@ document.addEventListener("DOMContentLoaded", () => {
       // preview text container
       const preview = document.createElement("div");
       preview.className = "chat-preview";
-
-      const lastMsg = (chat.messages && chat.messages.length > 0)
-        ? chat.messages[chat.messages.length - 1].content
-        : "";
-
       preview.innerHTML = `
-        <div class="chat-title">${escapeHtml(chat.title || "New Chat")}</div>
-        <div class="chat-subtitle">${escapeHtml(lastMsg)}</div>
+        <div class="chat-title">${chat.title || "New Chat"}</div>
+        <div class="chat-subtitle">
+          ${(chat.messages && chat.messages.length > 0) ? chat.messages[chat.messages.length - 1].content.slice(0, 30) : ""}
+        </div>
       `;
 
       // delete button
@@ -176,7 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderMessages() {
     messagesEl.innerHTML = "";
-    headerEl.textContent = "Barney's ChatGPT"; // ✅ sets header safely
+    headerEl.textContent = "Barney's ChatGPT"; // always fixed text
     if (currentIndex === null || !chats[currentIndex]) return;
 
     const chat = chats[currentIndex];
@@ -263,10 +254,11 @@ document.addEventListener("DOMContentLoaded", () => {
     applyTheme(); 
   });
 
-  // Sidebar toggle ✅ now uses class
+  // Sidebar toggle
   toggleSidebarBtn.addEventListener("click", () => {
-    sidebarEl.classList.toggle("hidden");
-    toggleSidebarBtn.textContent = sidebarEl.classList.contains("hidden") ? "Show" : "Hide";
+    const isHidden = sidebarEl.style.display === "none";
+    sidebarEl.style.display = isHidden ? "flex" : "none";
+    toggleSidebarBtn.textContent = isHidden ? "Hide" : "Show";
   });
 
   // ==========================
@@ -279,3 +271,5 @@ document.addEventListener("DOMContentLoaded", () => {
     renderChatList();
     renderMessages();
   })();
+
+});
