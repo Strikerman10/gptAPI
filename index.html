@@ -26,17 +26,27 @@
     </div>
 
     <!-- Chat Window -->
-    <div class="chat-window" role="main">
-      <div class="chat-header" id="chatHeader">
-        <span>Barney's ChatGPT</span>
-        <button id="toggleSidebarBtn" aria-label="Toggle Sidebar">Hide</button>
-        <button id="toggleThemeBtn" aria-label="Toggle Light/Dark Mode">Dark</button>
-        <select id="paletteSelector" aria-label="Select color palette">
-          <option value="Green">Green</option>
-          <option value="Blue">Blue</option>
-          <option value="Orange">Orange</option>
-        </select>
-      </div>
+<div class="chat-window" role="main">
+  <div class="chat-header" id="chatHeader">
+    <span class="chat-title">Barney's ChatGPT</span>
+    <div class="header-controls">
+      <button id="toggleSidebarBtn" aria-label="Toggle Sidebar">Hide</button>
+      <button id="toggleThemeBtn" aria-label="Toggle Light/Dark Mode">Dark</button>
+      <select id="paletteSelector" aria-label="Select color palette">
+        <option value="Green">Green</option>
+        <option value="Blue">Blue</option>
+        <option value="Orange">Orange</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="messages" id="messages" aria-live="polite"></div>
+
+  <div class="input-area">
+    <textarea id="input" placeholder="Type your message..."></textarea>
+    <button class="send-btn" id="sendBtn">Send</button>
+  </div>
+</div>
 
       <div class="messages" id="messages" aria-live="polite"></div>
 
@@ -50,3 +60,4 @@
   <script src="app.js" defer></script>
 </body>
 </html>
+
