@@ -264,10 +264,16 @@ body {
   animation: fadeInUp 0.25s ease;
 }
 .message.user {
-  align-self: flex-end;
+  white-space: pre-wrap;  /* preserves line breaks */
+  word-break: break-word; /* breaks long words if needed */
   background: var(--user-bubble-bg);
   color: var(--user-bubble-text);
   border-bottom-right-radius: 0.3rem;
+  max-width: 75%;
+  padding: 0.75rem 1rem;
+  line-height: 1.4;
+  display: inline-block;
+  position: relative;
 }
 .message.assistant {
   align-self: flex-start;
@@ -405,3 +411,4 @@ body {
     padding: 4px 8px;
   }
 }
+
