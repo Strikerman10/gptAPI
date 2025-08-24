@@ -255,7 +255,7 @@ body {
   padding: 0.75rem 1rem;
   border-radius: 1.25rem;
   line-height: 1.4;
-  white-space: pre-wrap;
+  white-space: normal;   /* ⬅️ updated for HTML/Markdown rendering */
   word-wrap: break-word;
   font-size: 0.95rem;
   display: inline-block;
