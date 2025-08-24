@@ -2,7 +2,7 @@
 // CONFIG
 // ==========================
 const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev"; // replace with your Worker URL
-const MODEL = "gpt-chat-latest"; // updated model
+const MODEL = "gpt-5-chat-latest"; // updated model
 
 let chats = [];
 let currentIndex = null;
@@ -217,3 +217,4 @@ toggleSidebarBtn.addEventListener("click", () => {
   renderChatList();
   renderMessages();
 })();
+
