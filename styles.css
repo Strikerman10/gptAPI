@@ -356,7 +356,7 @@ body {
   margin-left: auto;
 }
 
-/* UPDATED: Header control buttons & select */
+/* Header control buttons & select */
 .header-controls button,
 .header-controls select {
   font-size: 14px;
@@ -397,27 +397,46 @@ body {
     width: 85%;
   }
 }
+
+/* ===========================
+   Mobile Icon-only Header Controls
+   =========================== */
 @media (max-width: 599.98px) {
+  /* Keep header in one line */
   .chat-header {
-    flex-wrap: wrap;
-    height: auto; /* let it grow */
-    padding: 8px 12px;
+    height: 52px;
+    padding: 0 8px;
   }
   .chat-header .chat-title {
-    flex: 1 1 100%;
-    line-height: 1.4;
-    margin-bottom: 6px;
-    white-space: normal;
+    font-size: 14px;
+    line-height: 52px;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  .header-controls {
-    flex: 1 1 100%;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    gap: 6px;
+
+  /* Hide text labels inside buttons */
+  .header-controls button span {
+    display: none;
   }
-  .header-controls button,
-  .header-controls select {
-    font-size: 12px;
-    padding: 4px 8px;
+
+  /* Icon styles for buttons */
+  #toggleSidebarBtn::before {
+    content: "≡";
+    font-size: 18px;
+  }
+  #toggleThemeBtn::before {
+    content: attr(data-icon, "☀️"); /* will show ☀️ by default; update by JS to 🌑 */
+    font-size: 18px;
+  }
+
+  /* Hide the dropdown entirely on mobile */
+  #paletteSelector {
+    display: none;
+  }
+
+  /* Optional extra palette icon button */
+  #paletteIconBtn::before {
+    content: "🎨";
+    font-size: 18px;
   }
 }
