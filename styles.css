@@ -353,4 +353,20 @@ body { background: var(--bg); color: var(--text); }
     font-size: 12px;
     padding: 4px 8px;
   }
+   .chat-preview {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
 }
+
+.chat-title,
+.chat-subtitle {
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;   /* restrict to 2 lines */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+}
+
