@@ -165,30 +165,32 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function renderMessages() {
-    messagesEl.innerHTML = "";
-    headerEl.textContent = "Barney's ChatGPT"; // always fixed text
-    if (currentIndex === null || !chats[currentIndex]) return;
+function renderMessages() {
+  messagesEl.innerHTML = "";
+  headerEl.textContent = "Barney's ChatGPT"; // fixed header
 
-    const chat = chats[currentIndex];
-chat.messages.forEach(msg => {
-  const div = document.createElement("div");
-  div.className = `message ${msg.role}`;
-  div.innerText = msg.content; // preserves line breaks
-  messagesEl.appendChild(div);
-});
+  if (currentIndex === null || !chats[currentIndex]) return;
 
-      // timestamp
-      const timeDiv = document.createElement("div");
-      timeDiv.className = "msg-time";
-      timeDiv.textContent = msg.time || "";
-      div.appendChild(timeDiv);
+  const chat = chats[currentIndex];
 
-      messagesEl.appendChild(div);
-    });
+  chat.messages.forEach(msg => {
+    // create message bubble
+    const div = document.createElement("div");
+    div.className = `message ${msg.role}`;
+    div.innerText = msg.content; // preserves line breaks
 
-    messagesEl.scrollTop = messagesEl.scrollHeight;
-  }
+    // create timestamp
+    const timeDiv = document.createElement("div");
+    timeDiv.className = "msg-time";
+    timeDiv.textContent = msg.time || "";
+
+    div.appendChild(timeDiv);
+    messagesEl.appendChild(div);
+  });
+
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
 
   // ==========================
   // SEND MESSAGE
@@ -275,4 +277,5 @@ chat.messages.forEach(msg => {
   })();
 
 });
+
 
