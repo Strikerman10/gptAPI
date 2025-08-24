@@ -14,6 +14,9 @@ const headerEl = document.getElementById("chatHeader").querySelector("span");
 const inputEl = document.getElementById("input");
 const paletteSelector = document.getElementById("paletteSelector");
 const themeBtn = document.getElementById("toggleThemeBtn");
+const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
+const sidebarEl = document.querySelector(".sidebar");
+const mainContentEl = document.querySelector(".main-content");
 
 // ==========================
 // PALETTE & THEME
@@ -198,6 +201,19 @@ themeBtn.textContent = currentMode === "light" ? "Dark" : "Light";
 paletteSelector.addEventListener("change", e => { currentPalette = e.target.value; applyTheme(); });
 themeBtn.addEventListener("click", () => { currentMode = currentMode === "light" ? "dark" : "light"; themeBtn.textContent = currentMode === "light" ? "Dark" : "Light"; applyTheme(); });
 
+// Sidebar Hide/Show
+toggleSidebarBtn.addEventListener("click", () => {
+  if (sidebarEl.style.display === "none") {
+    sidebarEl.style.display = "flex";
+    mainContentEl.style.width = "70%";
+    toggleSidebarBtn.textContent = "Hide";
+  } else {
+    sidebarEl.style.display = "none";
+    mainContentEl.style.width = "100%";
+    toggleSidebarBtn.textContent = "Show";
+  }
+});
+
 // ==========================
 // INITIAL LOAD
 // ==========================
@@ -208,4 +224,3 @@ themeBtn.addEventListener("click", () => { currentMode = currentMode === "light"
   renderChatList();
   renderMessages();
 })();
-
