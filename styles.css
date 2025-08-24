@@ -292,7 +292,7 @@ body { background: var(--bg); color: var(--text); }
   align-items: center;
   gap: 8px;
   margin-left: auto;
-}
+   
 .header-controls button,
 .header-controls select {
   font-size: 14px;
@@ -300,20 +300,21 @@ body { background: var(--bg); color: var(--text); }
   cursor: pointer;
   border-radius: 8px;
   border: none;
-  background: var(--accent);
-  color: var(--accent-contrast);
+  background: var(--color-6);   /* maroon by default */
+  color: #fff;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
+
 .header-controls button:hover,
 .header-controls select:hover {
-  background: var(--primary);
-  color: var(--primary-contrast);
+  background: var(--color-3);   /* switch to primary green on hover */
+  color: #fff;
 }
-.header-controls select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  text-align-last: center;
+
+.header-controls select:focus,
+.header-controls button:focus {
+  background: var(--color-6);   /* selected/focused stays maroon */
+  color: #fff;
 }
 
 /* ===========================
@@ -335,3 +336,4 @@ body { background: var(--bg); color: var(--text); }
     padding: 4px 8px;
   }
 }
+
