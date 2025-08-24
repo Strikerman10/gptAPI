@@ -439,4 +439,28 @@ body {
     content: "🎨";
     font-size: 18px;
   }
+   /* ===== Palette icon visibility fixes ===== */
+#paletteIconBtn {
+  display: none; /* Default: hidden */
 }
+
+@media (max-width: 599.98px) {
+  /* Hide dropdown selector on mobile */
+  #paletteSelector {
+    display: none;
+  }
+  /* Show palette icon only on mobile */
+  #paletteIconBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-6);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+}
+
