@@ -126,20 +126,18 @@ function renderChatList() {
   });
 }
 
-function renderMessages() {
-  messagesEl.innerHTML = "";
-  if (currentIndex === null || !chats[currentIndex]) {
-    headerEl.textContent = "Barney's ChatGPT";
-    return;
-  }
-  const chat = chats[currentIndex];
-  headerEl.textContent = chat.title;
-  chat.messages.forEach(msg => {
-    const div = document.createElement("div");
-    div.className = "message " + msg.role;
-    div.textContent = msg.content;
-    messagesEl.appendChild(div);
-  });
+**Always keep the header static ("Barney's ChatGPT")**  
+   → Edit `renderMessages()` so it no longer switches to the chat title:
+   ```js
+   function renderMessages() {
+     messagesEl.innerHTML = "";
+     headerEl.textContent = "Barney's ChatGPT"; // always fixed text
+     if (currentIndex === null || !chats[currentIndex]) return;
+
+     const chat = chats[currentIndex];
+     chat.messages.forEach(msg => { ... });
+     messagesEl.scrollTop = messagesEl.scrollHeight;
+   });
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
@@ -217,4 +215,5 @@ toggleSidebarBtn.addEventListener("click", () => {
   renderChatList();
   renderMessages();
 })();
+
 
