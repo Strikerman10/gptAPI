@@ -344,4 +344,31 @@ body { background: var(--bg); color: var(--text); }
     font-size: 12px;
     padding: 4px 8px;
   }
+/* --- Force chat preview text to take the full line --- */
+.chat-item {
+  display: flex;
+  align-items: center;
+  /* ensure item uses full sidebar width */
+  width: 100%;
+  min-width: 0; 
 }
+
+.chat-preview {
+  flex: 1 1 auto;
+  min-width: 0;          /* ✅ critical in flexbox */
+  overflow: hidden;
+  margin-right: 40px;    /* space for delete button */
+}
+
+.chat-title,
+.chat-subtitle {
+  white-space: nowrap !important;    /* ✅ one long line */
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: block !important;
+  -webkit-line-clamp: unset !important;
+  -webkit-box-orient: unset !important;
+   }
+   
+}
+
