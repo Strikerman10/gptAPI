@@ -64,6 +64,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!chats.length) createNewChat();
   }
 
+  function formatTime(date = new Date()) {
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+
   // ==========================
   // WORKER INTEGRATION
   // ==========================
@@ -102,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const newChat = {
       id: Date.now().toString(),
       title: "New Chat",
-      messages: [{ role: "system", content: "You are a helpful assistant." }]
+      messages: [{ role: "system", content: "You are a helpful assistant.", time: formatTime() }]
     };
     chats.unshift(newChat);
     currentIndex = 0;
@@ -134,15 +138,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const chat = chats[currentIndex];
     chat.messages.forEach(msg => {
-      // ✅ FIX: add both "message" and role
       const div = document.createElement("div");
       div.className = `message ${msg.role}`;
       div.textContent = msg.content;
 
-      // Optional: timestamp
+      // timestamp
       const timeDiv = document.createElement("div");
       timeDiv.className = "msg-time";
-      timeDiv.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      timeDiv.textContent = msg.time || "";
       div.appendChild(timeDiv);
 
       messagesEl.appendChild(div);
@@ -161,10 +164,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (currentIndex === null) createNewChat();
     const chat = chats[currentIndex];
 
-    const userMessage = { role: "user", content: text };
+    const userMessage = { role: "user", content: text, time: formatTime() };
     chat.messages.push(userMessage);
 
-    const thinkingMessage = { role: "assistant", content: "Thinking..." };
+    const thinkingMessage = { role: "assistant", content: "Thinking...", time: formatTime() };
     chat.messages.push(thinkingMessage);
 
     renderMessages();
@@ -184,9 +187,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
 
       const answer = data?.choices?.[0]?.message?.content || "No response";
-      chat.messages[chat.messages.length - 1] = { role: "assistant", content: answer };
+      chat.messages[chat.messages.length - 1] = { role: "assistant", content: answer, time: formatTime() };
     } catch (e) {
-      chat.messages[chat.messages.length - 1] = { role: "assistant", content: "Error: " + e.message };
+      chat.messages[chat.messages.length - 1] = { role: "assistant", content: "Error: " + e.message, time: formatTime() };
     }
 
     saveChats();
