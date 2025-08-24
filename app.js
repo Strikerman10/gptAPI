@@ -49,12 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==========================
   // UTILITIES
   // ==========================
-  function escapeHtml(str) {
-    return str.replace(/[&<>'"]/g, c =>
-      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[c])
-    );
-  }
-
   function saveChats() {
     localStorage.setItem("secure_chat_chats", JSON.stringify(chats));
     localStorage.setItem("secure_chat_index", String(currentIndex));
@@ -131,14 +125,11 @@ document.addEventListener("DOMContentLoaded", () => {
       // preview text container
       const preview = document.createElement("div");
       preview.className = "chat-preview";
-
-      const lastMsg = (chat.messages && chat.messages.length > 0)
-        ? chat.messages[chat.messages.length - 1].content
-        : "";
-
       preview.innerHTML = `
-        <div class="chat-title">${escapeHtml(chat.title || "New Chat")}</div>
-        <div class="chat-subtitle">${escapeHtml(lastMsg)}</div>
+        <div class="chat-title">${chat.title || "New Chat"}</div>
+        <div class="chat-subtitle">
+          ${(chat.messages && chat.messages.length > 0) ? chat.messages[chat.messages.length - 1].content.slice(0, 30) : ""}
+        </div>
       `;
 
       // delete button
@@ -280,3 +271,5 @@ document.addEventListener("DOMContentLoaded", () => {
     renderChatList();
     renderMessages();
   })();
+
+});
