@@ -264,8 +264,8 @@ body {
   animation: fadeInUp 0.25s ease;
 }
 .message.user {
-  white-space: pre-wrap;
-  word-break: break-word;
+  white-space: pre-wrap;  /* preserves line breaks */
+  word-break: break-word; /* breaks long words if needed */
   background: var(--user-bubble-bg);
   color: var(--user-bubble-text);
   border-bottom-right-radius: 0.3rem;
@@ -356,7 +356,7 @@ body {
   margin-left: auto;
 }
 
-/* Header control buttons & select */
+/* UPDATED: Header control buttons & select */
 .header-controls button,
 .header-controls select {
   font-size: 14px;
@@ -364,18 +364,18 @@ body {
   cursor: pointer;
   border-radius: 8px;
   border: none;
-  background: var(--color-6);
+  background: var(--color-6);   /* maroon default */
   color: #fff;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 .header-controls button:hover,
 .header-controls select:hover {
-  background: var(--color-3);
+  background: var(--color-3);   /* green on hover */
   color: #fff;
 }
 .header-controls select:focus,
 .header-controls button:focus {
-  background: var(--color-6);
+  background: var(--color-6);   /* stay maroon when focused/selected */
   color: #fff;
 }
 .header-controls select {
@@ -397,70 +397,17 @@ body {
     width: 85%;
   }
 }
-
-/* ===========================
-   Mobile Icon-only Header Controls
-   =========================== */
 @media (max-width: 599.98px) {
-  /* Keep header in one line */
   .chat-header {
-    height: 52px;
-    padding: 0 8px;
+    flex-wrap: wrap;
   }
   .chat-header .chat-title {
-    font-size: 14px;
-    line-height: 52px;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    flex-basis: 100%;
+    margin-bottom: 4px;
   }
-
-  /* Hide text labels inside buttons */
-  .header-controls button span {
-    display: none;
-  }
-
-  /* Icon styles for buttons */
-  #toggleSidebarBtn::before {
-    content: "≡";
-    font-size: 18px;
-  }
-  #toggleThemeBtn::before {
-    content: attr(data-icon, "☀️"); /* will show ☀️ by default; update by JS to 🌑 */
-    font-size: 18px;
-  }
-
-  /* Hide the dropdown entirely on mobile */
-  #paletteSelector {
-    display: none;
-  }
-
-  /* Optional extra palette icon button */
-  #paletteIconBtn::before {
-    content: "🎨";
-    font-size: 18px;
-  }
-   /* ===== Palette icon visibility fixes ===== */
-#paletteIconBtn {
-  display: none; /* Default: hidden */
-}
-
-@media (max-width: 599.98px) {
-  /* Hide dropdown selector on mobile */
-  #paletteSelector {
-    display: none;
-  }
-  /* Show palette icon only on mobile */
-  #paletteIconBtn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--color-6);
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 16px;
-    cursor: pointer;
+  .header-controls button,
+  .header-controls select {
+    font-size: 12px;
+    padding: 4px 8px;
   }
 }
-
