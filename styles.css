@@ -152,6 +152,10 @@ body { background: var(--bg); color: var(--text); }
 
 .chat-item.selected { background: color-mix(in srgb, var(--accent) 15%, transparent); border: 1px solid var(--accent); border-radius: 8px; }
 
+.chat-title {
+  color: white;
+}
+
 @media (max-width: 768px) { .sidebar { width: 30%; min-width: unset; } .main-content { width: 85%; } }
 
 /* ===========================
@@ -221,4 +225,5 @@ body { background: var(--bg); color: var(--text); }
     padding: 4px 8px;
   }
 }
+
 
