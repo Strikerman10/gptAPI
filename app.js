@@ -171,10 +171,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (currentIndex === null || !chats[currentIndex]) return;
 
     const chat = chats[currentIndex];
-    chat.messages.forEach(msg => {
-      const div = document.createElement("div");
-      div.className = `message ${msg.role}`;
-      div.textContent = msg.content;
+chat.messages.forEach(msg => {
+  const div = document.createElement("div");
+  div.className = `message ${msg.role}`;
+  div.innerText = msg.content; // preserves line breaks
+  messagesEl.appendChild(div);
+});
 
       // timestamp
       const timeDiv = document.createElement("div");
@@ -273,3 +275,4 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
