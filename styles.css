@@ -1,19 +1,25 @@
 /* ===========================
    Reset & Base
    =========================== */
-*, *::before, *::after { box-sizing: border-box; }
-html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
 
 /* ===========================
    🎨 MASTER THEME COLORS
    =========================== */
 :root {
-  --color-1: #94e8b4;
-  --color-2: #72bda3;
-  --color-3: #5e8c61;
-  --color-4: #4e6151;
-  --color-5: #3b322c;
-  --color-6: #800000; /* maroon */
+  --color-1: #94e8b4; /* light accent */
+  --color-2: #72bda3; /* mid accent */
+  --color-3: #5e8c61; /* primary green */
+  --color-4: #4e6151; /* dark neutral */
+  --color-5: #3b322c; /* very dark base */
+  --color-6: #800000; /* deep maroon */
 }
 
 /* ===========================
@@ -65,14 +71,26 @@ body.dark-mode {
 /* ===========================
    Base Setup
    =========================== */
-html { color-scheme: light; }
-body.dark-mode { color-scheme: dark; }
-body { background: var(--bg); color: var(--text); }
+html {
+  color-scheme: light;
+}
+body.dark-mode {
+  color-scheme: dark;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+}
 
 /* ===========================
    App Layout
    =========================== */
-.app-container { display: flex; height: 100vh; width: 100%; overflow: hidden; }
+.app-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
 
 .sidebar {
   flex: 0 0 30%;
@@ -86,7 +104,10 @@ body { background: var(--bg); color: var(--text); }
   min-height: 0;
   color: var(--text);
 }
-.sidebar.hidden { width: 0; opacity: 0; }
+.sidebar.hidden {
+  width: 0;
+  opacity: 0;
+}
 
 .sidebar-header {
   height: 60px;
@@ -104,7 +125,10 @@ body { background: var(--bg); color: var(--text); }
   white-space: nowrap;
 }
 
-.main-content { width: 70%; transition: width 0.3s ease; }
+.main-content {
+  width: 70%;
+  transition: width 0.3s ease;
+}
 .new-chat {
   margin: 12px;
   padding: 10px 14px;
@@ -116,7 +140,13 @@ body { background: var(--bg); color: var(--text); }
   cursor: pointer;
 }
 
-.chat-list { overflow-y: auto; padding: 8px; flex: 1; min-height: 0; background: var(--surface-1); }
+.chat-list {
+  overflow-y: auto;
+  padding: 8px;
+  flex: 1;
+  min-height: 0;
+  background: var(--surface-1);
+}
 .chat-item {
   position: relative;
   display: flex;
@@ -130,30 +160,33 @@ body { background: var(--bg); color: var(--text); }
   margin-bottom: 8px;
   color: var(--text);
 }
-.chat-item:hover { background: var(--surface-hover); }
+.chat-item:hover {
+  background: var(--surface-hover);
+}
 
-/* ✅ FIXED PREVIEW STYLING */
 .chat-preview {
-  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
   min-width: 0;
+}
+.chat-title {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  padding-right: 20px;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 64px);
 }
-
-.chat-title,
-.chat-subtitle {
-  display: block !important;
-  white-space: nowrap !important;     /* force a single long line */
-  overflow: hidden !important;
-  text-overflow: ellipsis !important; /* show … if too long */
-  -webkit-line-clamp: unset !important;
-  -webkit-box-orient: unset !important;
-}
-
 .chat-subtitle {
   font-size: 12px;
   color: var(--text-muted);
-  margin-top: 4px;
+  margin-top: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ===========================
@@ -178,7 +211,11 @@ body { background: var(--bg); color: var(--text); }
   transition: background-color 0.12s ease, color 0.12s ease, transform 0.06s ease, box-shadow 0.08s ease;
   outline: none;
 }
-.delete-btn svg { width: 18px; height: 18px; display: block; }
+.delete-btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
 .chat-item:hover .delete-btn,
 .delete-btn:focus {
   background: var(--color-6);
@@ -186,12 +223,20 @@ body { background: var(--bg); color: var(--text); }
   transform: translateY(-50%) scale(1.03);
   box-shadow: 0 2px 6px rgba(0,0,0,0.12);
 }
-.delete-btn:focus { box-shadow: 0 0 0 3px var(--ring); }
+.delete-btn:focus {
+  box-shadow: 0 0 0 3px var(--ring);
+}
 
 /* ===========================
    Chat Window
    =========================== */
-.chat-window { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; background: var(--surface-2); }
+.chat-window {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-2);
+}
 .messages {
   padding: 16px;
   overflow-y: auto;
@@ -230,7 +275,12 @@ body { background: var(--bg); color: var(--text); }
   color: var(--assistant-bubble-text);
   border-bottom-left-radius: 0.3rem;
 }
-.msg-time { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.25rem; text-align: right; }
+.msg-time {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+  text-align: right;
+}
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
@@ -300,7 +350,7 @@ body { background: var(--bg); color: var(--text); }
   margin-left: auto;
 }
 
-/* ✅ Maroon/green header buttons */
+/* UPDATED: Header control buttons & select */
 .header-controls button,
 .header-controls select {
   font-size: 14px;
@@ -308,18 +358,18 @@ body { background: var(--bg); color: var(--text); }
   cursor: pointer;
   border-radius: 8px;
   border: none;
-  background: var(--color-6);
+  background: var(--color-6);   /* maroon default */
   color: #fff;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 .header-controls button:hover,
 .header-controls select:hover {
-  background: var(--color-3);
+  background: var(--color-3);   /* green on hover */
   color: #fff;
 }
 .header-controls select:focus,
 .header-controls button:focus {
-  background: var(--color-6);
+  background: var(--color-6);   /* stay maroon when focused/selected */
   color: #fff;
 }
 .header-controls select {
@@ -333,42 +383,25 @@ body { background: var(--bg); color: var(--text); }
    Responsive
    =========================== */
 @media (max-width: 768px) {
-  .sidebar { width: 30%; min-width: unset; }
-  .main-content { width: 85%; }
+  .sidebar {
+    width: 30%;
+    min-width: unset;
+  }
+  .main-content {
+    width: 85%;
+  }
 }
 @media (max-width: 599.98px) {
-  .chat-header { flex-wrap: wrap; }
-  .chat-header .chat-title { flex-basis: 100%; margin-bottom: 4px; }
+  .chat-header {
+    flex-wrap: wrap;
+  }
+  .chat-header .chat-title {
+    flex-basis: 100%;
+    margin-bottom: 4px;
+  }
   .header-controls button,
   .header-controls select {
     font-size: 12px;
     padding: 4px 8px;
   }
-/* --- Force chat preview text to take the full line --- */
-.chat-item {
-  display: flex;
-  align-items: center;
-  /* ensure item uses full sidebar width */
-  width: 100%;
-  min-width: 0; 
 }
-
-.chat-preview {
-  flex: 1 1 auto;
-  min-width: 0;          /* ✅ critical in flexbox */
-  overflow: hidden;
-  margin-right: 40px;    /* space for delete button */
-}
-
-.chat-title,
-.chat-subtitle {
-  white-space: nowrap !important;    /* ✅ one long line */
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  display: block !important;
-  -webkit-line-clamp: unset !important;
-  -webkit-box-orient: unset !important;
-   }
-   
-}
-
