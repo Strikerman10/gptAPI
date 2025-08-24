@@ -1,65 +1,75 @@
-const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
+// ==========================
+// CONFIG
+// ==========================
+const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev"; // replace with your Worker URL
 const MODEL = "gpt-5";
 
 let chats = [];
 let currentIndex = null;
 
-const chatListEl = document.getElementById('chatList');
-const messagesEl = document.getElementById('messages');
-const headerEl = document.getElementById('chatHeader').querySelector('span');
-const inputEl = document.getElementById('input');
-const sidebarEl = document.querySelector('.sidebar');
-const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
-const toggleThemeBtn = document.getElementById('toggleThemeBtn');
+// DOM elements
+const chatListEl = document.getElementById("chatList");
+const messagesEl = document.getElementById("messages");
+const headerEl = document.getElementById("chatHeader").querySelector("span");
+const inputEl = document.getElementById("input");
+const paletteSelector = document.getElementById("paletteSelector");
+const themeBtn = document.getElementById("toggleThemeBtn");
 
 // ==========================
-// Chat Storage
+// PALETTE & THEME
+// ==========================
+const palettes = {
+  Green: { "--color-1": "#94e8b4", "--color-2": "#72bda3", "--color-3": "#5e8c61", "--color-4": "#4e6151", "--color-5": "#3b322c", "--color-6": "#800000" },
+  Blue: { "--color-1": "#b3cfff", "--color-2": "#7a9eff", "--color-3": "#437f97", "--color-4": "#2c5c63", "--color-5": "#1a1c2c", "--color-6": "#F67c03" },
+  Orange: { "--color-1": "#ffd6a5", "--color-2": "#ffb347", "--color-3": "#ff7f50", "--color-4": "#cc5500", "--color-5": "#662200", "--color-6": "#0f4d92" }
+};
+
+const neutrals = {
+  light: { "--bg": "hsl(0 0% 99%)", "--surface-1": "hsl(0 0% 98%)", "--surface-2": "hsl(0 0% 96%)", "--surface-hover": "hsl(0 0% 94%)", "--border": "hsl(0 0% 85%)", "--text": "hsl(0 0% 10%)", "--text-muted": "hsl(0 0% 45%)" },
+  dark: { "--bg": "hsl(0 0% 8%)", "--surface-1": "hsl(0 0% 12%)", "--surface-2": "hsl(0 0% 16%)", "--surface-hover": "hsl(0 0% 20%)", "--border": "hsl(0 0% 30%)", "--text": "hsl(0 0% 92%)", "--text-muted": "hsl(0 0% 70%)" }
+};
+
+let currentPalette = localStorage.getItem("palette") || "Green";
+let currentMode = localStorage.getItem("mode") || "light";
+
+function applyTheme() {
+  const root = document.documentElement;
+  const palette = palettes[currentPalette];
+  const neutralSet = neutrals[currentMode];
+  for (const [key, value] of Object.entries(palette)) root.style.setProperty(key, value);
+  for (const [key, value] of Object.entries(neutralSet)) root.style.setProperty(key, value);
+  document.body.classList.toggle("dark-mode", currentMode === "dark");
+  localStorage.setItem("palette", currentPalette);
+  localStorage.setItem("mode", currentMode);
+}
+
+// ==========================
+// UTILITIES
 // ==========================
 function saveChats() {
-  try {
-    localStorage.setItem('secure_chat_chats', JSON.stringify(chats));
-    localStorage.setItem('secure_chat_index', String(currentIndex));
-  } catch(e){}
+  localStorage.setItem("secure_chat_chats", JSON.stringify(chats));
+  localStorage.setItem("secure_chat_index", String(currentIndex));
 }
 
 function loadChats() {
-  try {
-    const raw = localStorage.getItem('secure_chat_chats');
-    const idx = localStorage.getItem('secure_chat_index');
-    if (raw) {
-      chats = JSON.parse(raw);
-      currentIndex = idx !== null ? Number(idx) : (chats.length ? 0 : null);
-    }
-  } catch(e){ chats = []; currentIndex = null; }
-  if (chats.length === 0) {
-    createNewChat();
+  const raw = localStorage.getItem("secure_chat_chats");
+  const idx = localStorage.getItem("secure_chat_index");
+  if (raw) {
+    chats = JSON.parse(raw);
+    currentIndex = idx !== null ? Number(idx) : chats.length ? 0 : null;
   }
+  if (!chats.length) createNewChat();
 }
 
 // ==========================
-// Worker Integration
+// WORKER INTEGRATION
 // ==========================
 async function loadChatsFromWorker() {
-  if (!WORKER_URL) return;
   try {
-    const res = await fetch(`${WORKER_URL}/load`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" }
-    });
-
-    if (!res.ok) {
-      console.warn("Worker responded with status:", res.status, res.statusText);
-      return;
-    }
-
+    const res = await fetch(`${WORKER_URL}/load`);
+    if (!res.ok) return;
     const workerChats = await res.json();
-
-    if (!Array.isArray(workerChats)) {
-      console.warn("Unexpected response format from worker:", workerChats);
-      return;
-    }
-
-    if (workerChats.length > 0) {
+    if (Array.isArray(workerChats) && workerChats.length) {
       chats = workerChats;
       currentIndex = 0;
       renderChatList();
@@ -67,189 +77,134 @@ async function loadChatsFromWorker() {
     }
   } catch (e) {
     console.warn("Could not load chats from worker:", e);
-    alert("Unable to load chat history. Check your network or worker URL.");
+  }
+}
+
+async function saveChatsToWorker() {
+  try {
+    await fetch(`${WORKER_URL}/save`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chats }),
+    });
+  } catch (e) {
+    console.warn("Could not save chats to worker:", e);
   }
 }
 
 // ==========================
-// Chat Functions
+// CHAT FUNCTIONS
 // ==========================
 function createNewChat() {
   const newChat = {
     id: Date.now().toString(),
     title: "New Chat",
-    messages: [{ role: 'system', content: 'You are a helpful assistant.' }]
+    messages: [{ role: "system", content: "You are a helpful assistant." }]
   };
   chats.unshift(newChat);
   currentIndex = 0;
   saveChats();
   renderChatList();
   renderMessages();
-}
-
-function deleteChatAt(i) {
-  if (i < 0 || i >= chats.length) return;
-  chats.splice(i, 1);
-  if (chats.length === 0) { createNewChat(); return; }
-  if (currentIndex === i) currentIndex = Math.max(0, i - 1);
-  else if (currentIndex > i) currentIndex--;
-  saveChats();
-  renderChatList();
-  renderMessages();
+  saveChatsToWorker();
 }
 
 function renderChatList() {
-  chatListEl.innerHTML = '';
+  chatListEl.innerHTML = "";
   chats.forEach((chat, i) => {
-    const item = document.createElement('div');
-    item.className = 'chat-item';
-    if (i === currentIndex) item.classList.add('selected');
-
-    const preview = document.createElement('div');
-    preview.className = 'chat-preview';
-
-    const firstUser = chat.messages.find(m => m.role === 'user');
-    const userText = firstUser ? firstUser.content : chat.title || 'New Chat';
-    const titleDiv = document.createElement('div');
-    titleDiv.className = 'chat-title';
-    titleDiv.textContent = userText;
-
-    const lastAssistant = [...chat.messages].reverse().find(m => m.role === 'assistant');
-    const assistantText = lastAssistant ? lastAssistant.content : '';
-    const subDiv = document.createElement('div');
-    subDiv.className = 'chat-subtitle';
-    subDiv.textContent = assistantText;
-
-    preview.appendChild(titleDiv);
-    preview.appendChild(subDiv);
-    item.appendChild(preview);
-
-    if (chat.title !== 'New Chat') {
-      const delBtn = document.createElement('button');
-      delBtn.className = 'delete-btn';
-      delBtn.setAttribute('aria-label', 'Delete chat');
-      delBtn.textContent = '×';
-      delBtn.addEventListener('click', (ev) => {
-        ev.stopPropagation();
-        if (!confirm('Delete this chat?')) return;
-        deleteChatAt(i);
-      });
-      item.appendChild(delBtn);
-    }
-
-    item.addEventListener('click', () => {
+    const item = document.createElement("div");
+    item.className = "chat-item" + (i === currentIndex ? " selected" : "");
+    item.textContent = chat.title || "New Chat";
+    item.addEventListener("click", () => {
       currentIndex = i;
       renderChatList();
       renderMessages();
     });
-
     chatListEl.appendChild(item);
   });
 }
 
 function renderMessages() {
-  messagesEl.innerHTML = '';
+  messagesEl.innerHTML = "";
   if (currentIndex === null || !chats[currentIndex]) {
     headerEl.textContent = "Barney's ChatGPT";
     return;
   }
   const chat = chats[currentIndex];
-  headerEl.textContent = "Barney's ChatGPT";
-  chat.messages.slice(1).forEach(msg => {
-    const mdiv = document.createElement('div');
-    mdiv.className = 'message ' + (msg.role === 'user' ? 'user' : 'assistant');
-    mdiv.textContent = msg.content;
-
-    const time = document.createElement('div');
-    time.className = 'msg-time';
-    if (!msg.timestamp) {
-      msg.timestamp = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-    }
-    time.textContent = msg.timestamp;
-
-    const wrapper = document.createElement('div');
-    wrapper.appendChild(mdiv);
-    wrapper.appendChild(time);
-    messagesEl.appendChild(wrapper);
+  headerEl.textContent = chat.title;
+  chat.messages.forEach(msg => {
+    const div = document.createElement("div");
+    div.className = "message " + msg.role;
+    div.textContent = msg.content;
+    messagesEl.appendChild(div);
   });
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
+// ==========================
+// SEND MESSAGE
+// ==========================
 async function sendMessage() {
   const text = inputEl.value.trim();
   if (!text) return;
+
   if (currentIndex === null) createNewChat();
   const chat = chats[currentIndex];
 
-  chat.messages.push({ role: 'user', content: text, timestamp: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
+  const userMessage = { role: "user", content: text };
+  chat.messages.push(userMessage);
 
-  if (chat.title === 'New Chat') {
-    chat.title = text.length > 30 ? text.slice(0,30) + '…' : text;
-  }
-
-  const thinkingMessage = { role: 'assistant', content: 'Thinking...', timestamp: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) };
+  const thinkingMessage = { role: "assistant", content: "Thinking..." };
   chat.messages.push(thinkingMessage);
 
   renderMessages();
-  inputEl.value = '';
+  inputEl.value = "";
   saveChats();
+  saveChatsToWorker();
 
   try {
     const recentMessages = chat.messages.slice(-10);
     const res = await fetch(`${WORKER_URL}/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: MODEL, messages: recentMessages })
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model: MODEL, messages: recentMessages }),
     });
 
+    if (!res.ok) throw new Error(`Worker returned ${res.status}`);
     const data = await res.json();
-    if (data && data.choices && data.choices[0]) {
-      const answer = data.choices[0].message.content;
-      chat.messages[chat.messages.length - 1] = { role: 'assistant', content: answer, timestamp: thinkingMessage.timestamp };
-    } else {
-      chat.messages[chat.messages.length - 1] = { role: 'assistant', content: "Error: No response from AI.", timestamp: thinkingMessage.timestamp };
-    }
+
+    const answer = data?.choices?.[0]?.message?.content || "No response";
+    chat.messages[chat.messages.length - 1] = { role: "assistant", content: answer };
   } catch (e) {
-    chat.messages[chat.messages.length - 1] = { role: 'assistant', content: "Error: " + (e.message || e), timestamp: thinkingMessage.timestamp };
+    chat.messages[chat.messages.length - 1] = { role: "assistant", content: "Error: " + e.message };
   }
 
   saveChats();
+  saveChatsToWorker();
   renderMessages();
 }
 
 // ==========================
-// Event Listeners
+// EVENT LISTENERS
 // ==========================
-document.getElementById('newChatBtn').addEventListener('click', createNewChat);
-document.getElementById('sendBtn').addEventListener('click', sendMessage);
+document.getElementById("newChatBtn").addEventListener("click", createNewChat);
+document.getElementById("sendBtn").addEventListener("click", sendMessage);
+inputEl.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
 
-inputEl.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
-  }
-});
+// Palette & Theme
+paletteSelector.value = currentPalette;
+themeBtn.textContent = currentMode === "light" ? "Dark" : "Light";
 
-toggleSidebarBtn.addEventListener('click', () => {
-  const isHidden = sidebarEl.style.display === 'none';
-  sidebarEl.style.display = isHidden ? 'flex' : 'none';
-  toggleSidebarBtn.textContent = isHidden ? 'Hide' : 'Show';
-});
-
-toggleThemeBtn.addEventListener('click', () => {
-  document.body.classList.toggle('dark-mode');
-  toggleThemeBtn.textContent = document.body.classList.contains('dark-mode') ? 'Light' : 'Dark';
-});
+paletteSelector.addEventListener("change", e => { currentPalette = e.target.value; applyTheme(); });
+themeBtn.addEventListener("click", () => { currentMode = currentMode === "light" ? "dark" : "light"; themeBtn.textContent = currentMode === "light" ? "Dark" : "Light"; applyTheme(); });
 
 // ==========================
-// Startup
+// INITIAL LOAD
 // ==========================
 (async () => {
-  await loadChatsFromWorker(); // Try loading from worker first
-  loadChats(); // Fallback to local storage
+  applyTheme();
+  await loadChatsFromWorker();
+  loadChats();
   renderChatList();
   renderMessages();
 })();
-
-
-
