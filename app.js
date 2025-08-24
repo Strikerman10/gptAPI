@@ -129,17 +129,22 @@ function renderChatList() {
 **Always keep the header static ("Barney's ChatGPT")**  
    → Edit `renderMessages()` so it no longer switches to the chat title:
    ```js
-   function renderMessages() {
-     messagesEl.innerHTML = "";
-     headerEl.textContent = "Barney's ChatGPT"; // always fixed text
-     if (currentIndex === null || !chats[currentIndex]) return;
+  function renderMessages() {
+  messagesEl.innerHTML = "";
+  headerEl.textContent = "Barney's ChatGPT"; // always fixed text
+  if (currentIndex === null || !chats[currentIndex]) return;
 
-     const chat = chats[currentIndex];
-     chat.messages.forEach(msg => { ... });
-     messagesEl.scrollTop = messagesEl.scrollHeight;
-   });
+  const chat = chats[currentIndex];
+  chat.messages.forEach(msg => {
+    const div = document.createElement("div");
+    div.className = msg.role;
+    div.textContent = msg.content;
+    messagesEl.appendChild(div);
+  });
+
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
+
 
 // ==========================
 // SEND MESSAGE
@@ -215,5 +220,6 @@ toggleSidebarBtn.addEventListener("click", () => {
   renderChatList();
   renderMessages();
 })();
+
 
 
