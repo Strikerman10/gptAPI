@@ -130,7 +130,7 @@ body {
   transition: width 0.3s ease;
 }
 .new-chat {
-  margin: 10px;
+  margin: 8px;
   padding: 10px 14px;
   background-color: var(--color-6);
   color: var(--primary-contrast);
@@ -411,4 +411,5 @@ body {
     padding: 4px 8px;
   }
 }
+
 
