@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
       preview.innerHTML = `
         <div class="chat-title">${chat.title || "New Chat"}</div>
         <div class="chat-subtitle">
-          ${(chat.messages && chat.messages.length > 0) ? chat.messages[chat.messages.length - 1].content.slice(0, 50) : ""}
+          ${(chat.messages && chat.messages.length > 0) ? chat.messages[chat.messages.length - 1].content.slice(0, 60) : ""}
         </div>
       `;
 
@@ -278,6 +278,7 @@ function renderMessages() {
   })();
 
 });
+
 
 
 
