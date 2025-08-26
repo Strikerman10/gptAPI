@@ -185,6 +185,7 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: calc(100% - 64px);
+   max-width: 60ch; /* ~60 characters worth of space */
 }
 .chat-subtitle {
   font-size: 12px;
@@ -419,6 +420,7 @@ body {
     padding: 4px 8px;
   }
 }
+
 
 
 
