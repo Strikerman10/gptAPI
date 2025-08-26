@@ -262,13 +262,19 @@ document.addEventListener("DOMContentLoaded", () => {
     themeBtn.textContent = currentMode === "light" ? "Dark" : "Light"; 
     applyTheme(); 
   });
+  
+// Sidebar toggle
+toggleSidebarBtn.addEventListener("click", () => {
+  const isHidden = sidebarEl.style.display === "none";
+  sidebarEl.style.display = isHidden ? "flex" : "none";
 
-  // Sidebar toggle
-  toggleSidebarBtn.addEventListener("click", () => {
-    const isHidden = sidebarEl.style.display === "none";
-    sidebarEl.style.display = isHidden ? "flex" : "none";
-    toggleSidebarBtn.textContent = isHidden ? "Hide" : "Show";
-  });
+  // Instead of replacing the button text, just toggle the icons
+  const hideIcon = toggleSidebarBtn.querySelector(".hide-icon");
+  const showIcon = toggleSidebarBtn.querySelector(".show-icon");
+
+  hideIcon.classList.toggle("hidden", isHidden); // hidden when sidebar is shown again
+  showIcon.classList.toggle("hidden", !isHidden); // hidden when sidebar is visible
+});
 
   // ==========================
   // INITIAL LOAD
@@ -282,4 +288,5 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
 
