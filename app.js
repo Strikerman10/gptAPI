@@ -13,12 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const messagesEl = document.getElementById("messages");
   const headerEl = document.getElementById("chatHeader").querySelector("span");
   const inputEl = document.getElementById("input");
-
-  // ⬇️ NEW: icon button + dropdown
-  const themeBtn = document.getElementById("themeBtn");    // palette button 
-  const themeMenu = document.getElementById("themeMenu");  // dropdown menu
-
-  const toggleThemeBtn = document.getElementById("toggleThemeBtn"); // light/dark button
+  const paletteSelector = document.getElementById("paletteSelector");
+  const themeBtn = document.getElementById("toggleThemeBtn");
   const sidebarEl = document.querySelector(".sidebar");
   const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
 
@@ -26,26 +22,26 @@ document.addEventListener("DOMContentLoaded", () => {
   // PALETTE & THEME
   // ==========================
   const palettes = {
-    Green:  { "--color-1": "#94e8b4","--color-2": "#72bda3","--color-3": "#5e8c61","--color-4": "#4e6151","--color-5": "#3b322c","--color-6": "#800000" },
-    Blue:   { "--color-1": "#b3cfff","--color-2": "#7a9eff","--color-3": "#437f97","--color-4": "#2c5c63","--color-5": "#1a1c2c","--color-6": "#F67c03" },
-    Orange: { "--color-1": "#ffd6a5","--color-2": "#ffb347","--color-3": "#ff7f50","--color-4": "#cc5500","--color-5": "#662200","--color-6": "#0f4d92" },
-    Purple: { "--color-1": "#2e0219","--color-2": "#4a001f","--color-3": "#6a0f49","--color-4": "#6c9d9a","--color-5": "#95eee9","--color-6": "#800000" }
+    Green: { "--color-1": "#94e8b4", "--color-2": "#72bda3", "--color-3": "#5e8c61", "--color-4": "#4e6151", "--color-5": "#3b322c", "--color-6": "#800000" },
+    Blue: { "--color-1": "#b3cfff", "--color-2": "#7a9eff", "--color-3": "#437f97", "--color-4": "#2c5c63", "--color-5": "#1a1c2c", "--color-6": "#F67c03" },
+    Orange: { "--color-1": "#ffd6a5", "--color-2": "#ffb347", "--color-3": "#ff7f50", "--color-4": "#cc5500", "--color-5": "#662200", "--color-6": "#0f4d92" },
+    Purple: { "--color-1": "#2e0219", "--color-2": "#4a001f", "--color-3": "#6a0f49", "--color-4": "#6c9d9a", "--color-5": "#95eee9", "--color-6": "#800000" }
   };
 
   const neutrals = {
-    light: { "--bg":"hsl(0 0% 99%)","--surface-1":"hsl(0 0% 98%)","--surface-2":"hsl(0 0% 96%)","--surface-hover":"hsl(0 0% 94%)","--border":"hsl(0 0% 85%)","--text":"hsl(0 0% 10%)","--text-muted":"hsl(0 0% 45%)" },
-    dark:  { "--bg":"hsl(0 0% 8%)","--surface-1":"hsl(0 0% 12%)","--surface-2":"hsl(0 0% 16%)","--surface-hover":"hsl(0 0% 20%)","--border":"hsl(0 0% 30%)","--text":"hsl(0 0% 92%)","--text-muted":"hsl(0 0% 70%)" }
+    light: { "--bg": "hsl(0 0% 99%)", "--surface-1": "hsl(0 0% 98%)", "--surface-2": "hsl(0 0% 96%)", "--surface-hover": "hsl(0 0% 94%)", "--border": "hsl(0 0% 85%)", "--text": "hsl(0 0% 10%)", "--text-muted": "hsl(0 0% 45%)" },
+    dark: { "--bg": "hsl(0 0% 8%)", "--surface-1": "hsl(0 0% 12%)", "--surface-2": "hsl(0 0% 16%)", "--surface-hover": "hsl(0 0% 20%)", "--border": "hsl(0 0% 30%)", "--text": "hsl(0 0% 92%)", "--text-muted": "hsl(0 0% 70%)" }
   };
 
   let currentPalette = localStorage.getItem("palette") || "Green";
-  let currentMode    = localStorage.getItem("mode") || "light";
+  let currentMode = localStorage.getItem("mode") || "light";
 
   function applyTheme() {
     const root = document.documentElement;
-    const palette    = palettes[currentPalette];
+    const palette = palettes[currentPalette];
     const neutralSet = neutrals[currentMode];
-    for (const [k,v] of Object.entries(palette)) root.style.setProperty(k,v);
-    for (const [k,v] of Object.entries(neutralSet)) root.style.setProperty(k,v);
+    for (const [key, value] of Object.entries(palette)) root.style.setProperty(key, value);
+    for (const [key, value] of Object.entries(neutralSet)) root.style.setProperty(key, value);
     document.body.classList.toggle("dark-mode", currentMode === "dark");
     localStorage.setItem("palette", currentPalette);
     localStorage.setItem("mode", currentMode);
@@ -253,47 +249,29 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ==========================
-  // Palette & Theme (UPDATED)
+  // Palette & Theme (UPDATED FOR ICONS)
   // ==========================
-  // dark/light toggle (keeps your existing icon swap)
-  const darkIcon  = toggleThemeBtn.querySelector(".dark-icon");
-  const lightIcon = toggleThemeBtn.querySelector(".light-icon");
+  paletteSelector.value = currentPalette;
 
+  const darkIcon = themeBtn.querySelector(".dark-icon");
+  const lightIcon = themeBtn.querySelector(".light-icon");
+
+  // Set initial icon state
   darkIcon.classList.toggle("hidden", currentMode === "dark");
   lightIcon.classList.toggle("hidden", currentMode === "light");
 
-  toggleThemeBtn.addEventListener("click", () => {
-    currentMode = currentMode === "light" ? "dark" : "light";
+  paletteSelector.addEventListener("change", e => {
+    currentPalette = e.target.value; 
+    applyTheme(); 
+  });
+
+  themeBtn.addEventListener("click", () => { 
+    currentMode = currentMode === "light" ? "dark" : "light"; 
     darkIcon.classList.toggle("hidden", currentMode === "dark");
     lightIcon.classList.toggle("hidden", currentMode === "light");
-    applyTheme();
+    applyTheme(); 
   });
-
-  // palette dropdown toggle
-  themeBtn.addEventListener("click", () => {
-    const expanded = themeBtn.getAttribute("aria-expanded") === "true";
-    themeBtn.setAttribute("aria-expanded", !expanded);
-    themeMenu.style.display = expanded ? "none" : "block";
-  });
-
-  // handle palette selection
-  themeMenu.addEventListener("click", (e) => {
-    if (e.target.tagName.toLowerCase() === "li") {
-      currentPalette = e.target.dataset.theme;
-      applyTheme();
-      themeMenu.style.display = "none";
-      themeBtn.setAttribute("aria-expanded","false");
-    }
-  });
-
-  // click outside to close palette menu
-  document.addEventListener("click", (e) => {
-    if (!themeBtn.contains(e.target) && !themeMenu.contains(e.target)) {
-      themeMenu.style.display = "none";
-      themeBtn.setAttribute("aria-expanded","false");
-    }
-  });
-
+  
   // Sidebar toggle
   toggleSidebarBtn.addEventListener("click", () => {
     const isHidden = sidebarEl.style.display === "none";
