@@ -165,7 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderMessages() {
     messagesEl.innerHTML = "";
-    headerEl.textContent = "Barney's ChatGPT"; 
+    headerEl.textContent = "ChatGPT"; 
 
     if (currentIndex === null || !chats[currentIndex]) return;
 
@@ -296,3 +296,4 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
