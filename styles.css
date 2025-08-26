@@ -256,6 +256,10 @@ body {
 /* ===========================
    Chat Bubbles
    =========================== */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+}
 .message {
   max-width: 75%;
   padding: 0.75rem 1rem;
@@ -269,23 +273,21 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
   animation: fadeInUp 0.25s ease;
 }
+
+/* USER’s message bubble — right side */
 .message.user {
-  white-space: pre-wrap;  /* preserves line breaks */
-  word-break: break-word; /* breaks long words if needed */
   background: var(--user-bubble-bg);
   color: var(--user-bubble-text);
   border-bottom-right-radius: 0.3rem;
-  max-width: 75%;
-  padding: 0.75rem 1rem;
-  line-height: 1.4;
-  display: inline-block;
-  position: relative;
+  align-self: flex-end;   /* <— this puts it on the right */
 }
+
+/* ASSISTANT’s bubble — left side */
 .message.assistant {
-  align-self: flex-start;
   background: var(--assistant-bubble-bg);
   color: var(--assistant-bubble-text);
   border-bottom-left-radius: 0.3rem;
+  align-self: flex-start;  /* already left aligned */
 }
 .msg-time {
   font-size: 0.7rem;
@@ -417,6 +419,7 @@ body {
     padding: 4px 8px;
   }
 }
+
 
 
 
