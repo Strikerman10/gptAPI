@@ -260,10 +260,12 @@ document.addEventListener("DOMContentLoaded", () => {
   darkIcon.classList.toggle("hidden", currentMode === "dark");
   lightIcon.classList.toggle("hidden", currentMode === "light");
 
-  paletteSelector.addEventListener("change", e => {
-    currentPalette = e.target.value; 
-    applyTheme(); 
-  });
+  paletteSelector.addEventListener("click", () => {
+  // cycle through palettes on button click
+  const choices = ["Green", "Blue", "Orange", "Purple"];
+  let idx = choices.indexOf(currentPalette);
+  currentPalette = choices[(idx + 1) % choices.length];
+  applyTheme();
 
   themeBtn.addEventListener("click", () => { 
     currentMode = currentMode === "light" ? "dark" : "light"; 
@@ -296,3 +298,4 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
