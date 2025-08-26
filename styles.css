@@ -414,6 +414,31 @@ body {
     width: 85%;
   }
 }
+
+/* --- normalize header button icons --- */
+.header-controls button svg {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
+
+#toggleThemeBtn,
+#toggleSidebarBtn {
+  color: #fff;
+  background: maroon;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 4px; /* optional */
+}
+
+#toggleSidebarBtn svg,
+#toggleThemeBtn svg {
+  flex-shrink: 0;
+}
 @media (max-width: 599.98px) {
   .chat-header {
     flex-wrap: wrap;
@@ -428,6 +453,7 @@ body {
     padding: 4px 8px;
   }
 }
+
 
 
 
