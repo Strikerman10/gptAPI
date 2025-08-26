@@ -439,6 +439,22 @@ body {
 #toggleThemeBtn svg {
   flex-shrink: 0;
 }
+/* Chat header as a flex container */
+.chat-header {
+  display: flex;
+  align-items: center;       /* vertically align buttons and text */
+  justify-content: space-between; /* push title left, controls right */
+  padding: 0.5rem 1rem;      /* adjust as needed */
+  box-sizing: border-box;
+}
+
+/* Keep controls horizontally aligned, prevent wrapping */
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;   /* space between buttons */
+  flex-wrap: nowrap; /* don't allow to wrap to next row */
+}
 @media (max-width: 599.98px) {
   .chat-header {
     flex-wrap: wrap;
@@ -453,6 +469,7 @@ body {
     padding: 4px 8px;
   }
 }
+
 
 
 
