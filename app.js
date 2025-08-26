@@ -104,26 +104,25 @@ document.addEventListener("DOMContentLoaded", () => {
   // CHAT FUNCTIONS
   // ==========================
   function createNewChat() {
-  const newChat = {
-    id: Date.now().toString(),
-    title: "New Chat",
-    messages: [],  // <-- no bubble to render now
-  };
-  chats.unshift(newChat);
-  currentIndex = 0;
-  saveChats();
-  renderChatList();
-  renderMessages();
-  saveChatsToWorker();
-}
-  
+    const newChat = {
+      id: Date.now().toString(),
+      title: "New Chat",
+      messages: [],
+    };
+    chats.unshift(newChat);
+    currentIndex = 0;
+    saveChats();
+    renderChatList();
+    renderMessages();
+    saveChatsToWorker();
+  }
+
   function renderChatList() {
     chatListEl.innerHTML = "";
     chats.forEach((chat, i) => {
       const item = document.createElement("div");
       item.className = "chat-item" + (i === currentIndex ? " selected" : "");
 
-      // preview text container
       const preview = document.createElement("div");
       preview.className = "chat-preview";
       preview.innerHTML = `
@@ -133,7 +132,6 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       `;
 
-      // delete button
       const delBtn = document.createElement("button");
       delBtn.className = "delete-btn";
       delBtn.setAttribute("aria-label", "Delete chat");
@@ -153,7 +151,6 @@ document.addEventListener("DOMContentLoaded", () => {
         saveChatsToWorker();
       });
 
-      // click anywhere else selects
       item.addEventListener("click", () => {
         currentIndex = i;
         renderChatList();
@@ -168,7 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderMessages() {
     messagesEl.innerHTML = "";
-    headerEl.textContent = "Barney's ChatGPT"; // fixed header
+    headerEl.textContent = "Barney's ChatGPT"; 
 
     if (currentIndex === null || !chats[currentIndex]) return;
 
@@ -203,7 +200,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const userMessage = { role: "user", content: text, time: formatTime() };
     chat.messages.push(userMessage);
 
-    // UPDATE: if first user message -> make it the chat title
     if (chat.title === "New Chat" || !chat.title) {
       const firstLine = text.split(/\r?\n/)[0];
       chat.title = firstLine.length > 40 ? firstLine.slice(0, 40) + "…" : firstLine;
@@ -237,7 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
     saveChats();
     saveChatsToWorker();
     renderMessages();
-    renderChatList(); // UPDATE: refresh titles in sidebar immediately
+    renderChatList();
   }
 
   // ==========================
@@ -252,29 +248,41 @@ document.addEventListener("DOMContentLoaded", () => {
     } 
   });
 
-  // Palette & Theme
+  // ==========================
+  // Palette & Theme (UPDATED FOR ICONS)
+  // ==========================
   paletteSelector.value = currentPalette;
-  themeBtn.textContent = currentMode === "light" ? "Dark" : "Light";
 
-  paletteSelector.addEventListener("change", e => { currentPalette = e.target.value; applyTheme(); });
+  const darkIcon = themeBtn.querySelector(".dark-icon");
+  const lightIcon = themeBtn.querySelector(".light-icon");
+
+  // Set initial icon state
+  darkIcon.classList.toggle("hidden", currentMode === "dark");
+  lightIcon.classList.toggle("hidden", currentMode === "light");
+
+  paletteSelector.addEventListener("change", e => {
+    currentPalette = e.target.value; 
+    applyTheme(); 
+  });
+
   themeBtn.addEventListener("click", () => { 
     currentMode = currentMode === "light" ? "dark" : "light"; 
-    themeBtn.textContent = currentMode === "light" ? "Dark" : "Light"; 
+    darkIcon.classList.toggle("hidden", currentMode === "dark");
+    lightIcon.classList.toggle("hidden", currentMode === "light");
     applyTheme(); 
   });
   
-// Sidebar toggle
-toggleSidebarBtn.addEventListener("click", () => {
-  const isHidden = sidebarEl.style.display === "none";
-  sidebarEl.style.display = isHidden ? "flex" : "none";
+  // Sidebar toggle
+  toggleSidebarBtn.addEventListener("click", () => {
+    const isHidden = sidebarEl.style.display === "none";
+    sidebarEl.style.display = isHidden ? "flex" : "none";
 
-  const hideIcon = toggleSidebarBtn.querySelector(".hide-icon");
-  const showIcon = toggleSidebarBtn.querySelector(".show-icon");
+    const hideIcon = toggleSidebarBtn.querySelector(".hide-icon");
+    const showIcon = toggleSidebarBtn.querySelector(".show-icon");
 
-  // Flip the logic: when sidebar is hidden, show the "Show" icon.
-  hideIcon.classList.toggle("hidden", !isHidden); 
-  showIcon.classList.toggle("hidden", isHidden);
-});
+    hideIcon.classList.toggle("hidden", !isHidden); 
+    showIcon.classList.toggle("hidden", isHidden);
+  });
 
   // ==========================
   // INITIAL LOAD
@@ -288,7 +296,3 @@ toggleSidebarBtn.addEventListener("click", () => {
   })();
 
 });
-
-
-
-
