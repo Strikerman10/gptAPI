@@ -100,16 +100,25 @@
       <!-- Messages -->
       <div class="messages" id="messages" aria-live="polite"></div>
 
-      <!-- Input -->
-      <div class="input-area">
-        <textarea id="input" placeholder="Type your message..."></textarea>
-        <button class="send-btn" id="sendBtn">Send</button>
-      </div>
-    </div>
-  </div>
+    <!-- Input -->
+<div class="input-area">
+  <textarea id="input" placeholder="Type your message..."></textarea>
+
+  <!-- Send button with your custom SVG -->
+  <button class="send-btn" id="sendBtn" type="submit">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         viewBox="0 0 24 24"
+         width="20" height="20"
+         fill="currentColor">
+      <path d="M2.996 12.5l-1.157 8.821 20.95-8.821-20.95-8.821zm16.028-.5H3.939l-.882-6.724zM3.939 13h15.085L3.057 19.724z"/>
+      <path fill="none" d="M0 0h24v24H0z"/>
+    </svg>
+  </button>
+</div>
 
   <!-- JS app -->
   <script src="app.js" defer></script>
 </body>
 </html>
+
 
