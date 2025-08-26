@@ -13,67 +13,12 @@
     .hidden {
       display: none;
     }
-
-    /* Theme toggle button (sun/moon) */
+    /* Ensure icons follow button color */
     #toggleThemeBtn {
-      color: #fff;
-      background: maroon;
+      color: #fff;         /* both sun & moon become white */
+      background: maroon;  /* your button background */
       border: none;
       cursor: pointer;
-      padding: 4px;
-      border-radius: 4px;
-    }
-
-    /* Palette dropdown */
-    .theme-selector {
-      position: relative;
-      display: inline-block;
-    }
-    #themeBtn {
-      background: maroon;
-      border: none;
-      cursor: pointer;
-      color: #fff;
-      padding: 4px;
-      border-radius: 4px;
-    }
-
-    /* dropdown list */
-    #themeMenu {
-      position: absolute;
-      right: 0;
-      margin-top: 4px;
-      background: var(--surface-1, #fff);
-      border: 1px solid var(--border, #ccc);
-      border-radius: 4px;
-      list-style: none;
-      padding: 0;
-      min-width: 140px;
-      z-index: 10;
-
-      opacity: 0;
-      transform: translateY(-5px);
-      visibility: hidden;
-      pointer-events: none;
-      transition: opacity 0.2s ease, transform 0.2s ease;
-    }
-    #themeMenu.open {
-      opacity: 1;
-      transform: translateY(0);
-      visibility: visible;
-      pointer-events: auto;
-    }
-    #themeMenu li {
-      padding: 6px 12px;
-      cursor: pointer;
-    }
-    #themeMenu li:hover {
-      background: var(--surface-hover, #eee);
-    }
-    #themeMenu li.active {
-      background: var(--color-2, #ddd);
-      font-weight: bold;
-      color: var(--text, #000);
     }
   </style>
 </head>
@@ -83,6 +28,14 @@
     <!-- Sidebar -->
     <div class="sidebar" role="navigation" aria-label="Chat history">
       <div class="sidebar-header">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15">
+          <path
+            fill="currentColor"
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M12.5 3h-10A1.5 1.5 0 0 0 1 4.5v5A1.5 1.5 0 0 0 2.5 11h5a.5.5 0 0 1 .354.146L10 13.294V11.5a.5.5 0 0 1 .5-.5h2A1.5 1.5 0 0 0 14 9.5v-5A1.5 1.5 0 0 0 12.5 3m-10-1h10A2.5 2.5 0 0 1 15 4.5v5a2.5 2.5 0 0 1-2.5 2.5H11v2.5a.5.5 0 0 1-.854.354L7.293 12H2.5A2.5 2.5 0 0 1 0 9.5v-5A2.5 2.5 0 0 1 2.5 2"
+          />
+        </svg>
         <span>Chats</span>
       </div>
       <button class="new-chat" id="newChatBtn">+ New Chat</button>
@@ -98,61 +51,77 @@
 
           <!-- Sidebar Toggle -->
           <button id="toggleSidebarBtn" aria-label="Toggle Sidebar">
-            <!-- Hide icon (shown initially) -->
+            <!-- Hide icon -->
             <svg class="icon hide-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15">
-              <path fill="currentColor" d="M1.5 3a.5.5..."/>
+              <path
+                fill="currentColor"
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M1.5 3a.5.5 0 0 0 0 1h12a.5.5 0 0 0 0-1zM1 7.5a.5.5 0 0 1 .5-.5h12a.5.5 0 0 1 0 1h-12a.5.5 0 0 1-.5-.5m0 4a.5.5 0 0 1 .5-.5h12a.5.5 0 0 1 0 1h-12a.5.5 0 0 1-.5-.5"
+              />
             </svg>
-            <!-- Show icon (starts hidden) -->
+            <!-- Show icon -->
             <svg class="icon show-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-              <path fill="none" stroke="currentColor" stroke-width="2" d="M12 8h15M5 16h22..."/>
+              <path
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8h15M5 16h22M5 24h22M5 11l3-3l-3-3"
+              />
             </svg>
           </button>
 
           <!-- Theme Toggle -->
           <button id="toggleThemeBtn" aria-label="Toggle Light/Dark Mode">
-            <!-- Moon (hidden initially in light mode) -->
-            <svg class="icon dark-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M21.46..." fill="none" stroke="currentColor" stroke-width="1.9"/>
+            <!-- Moon -->
+            <svg class="icon dark-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M21.46 16.54A10.51 10.51 0 1 1 12 1.49a10.34 10.34 0 0 1 2.8.38 8.12 8.12 0 0 0 2.45 15.86 8 8 0 0 0 4.21-1.19z"
+                    fill="none" stroke="currentColor" stroke-width="1.9"/>
             </svg>
-            <!-- Sun (shown initially) -->
-            <svg class="icon light-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 340">
-              <path d="M181.401 0h-22..." fill="currentColor"/>
+            <!-- Sun -->
+            <svg class="icon light-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340.127 340.127">
+              <path d="M181.401 0h-22.675v56.688h22.675V0zm-139.611 282.306l16.031 16.031 40.09-40.09-16.031-16.031-40.09 40.09zm14.898-123.58H0v22.675h56.688v-22.675zm241.649-100.904L282.306 41.79l-40.09 40.09 16.031 16.031 40.09-40.09zM237.749 265.39l40.747 40.747 16.303-16.303-40.747-40.747-16.303 16.303zm45.69-106.664v22.675h56.688v-22.675H283.439zM170.064 79.363c-50.089 0-90.701 40.611-90.701 90.701s40.611 90.701 90.701 90.701 90.701-40.611 90.701-90.701-40.612-90.701-90.701-90.701zm0 158.726c-37.573 0-68.025-30.453-68.025-68.025s30.452-68.025 68.025-68.025 68.025 30.453 68.025 68.025-30.452 68.025-68.025 68.025zm-11.338 102.038h22.675v-56.688h-22.675v56.688zM91.041 86.098l-40.747-40.77L33.99 61.631l40.747 40.747 16.304-16.28z"
+                    fill="currentColor"/>
             </svg>
           </button>
 
-          <!-- Palette Dropdown -->
-          <div class="theme-selector">
-            <button id="themeBtn" aria-haspopup="true" aria-expanded="false">
-              <!-- 🎨 Palette icon -->
-              <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C6.5 2 2 6 2 11c0 3.9 3 7 ..."/>
-              </svg>
-            </button>
-            <ul id="themeMenu">
-              <li data-theme="Green">Green</li>
-              <li data-theme="Blue">Blue</li>
-              <li data-theme="Orange">Orange</li>
-              <li data-theme="Purple">Purple</li>
-            </ul>
-          </div>
-
+          <!-- Palette Selector -->
+          <select id="paletteSelector" aria-label="Select color palette">
+            <option value="Green">Green</option>
+            <option value="Blue">Blue</option>
+            <option value="Orange">Orange</option>
+            <option value="Purple">Purple</option>
+          </select>
         </div>
       </div>
 
       <!-- Messages -->
       <div class="messages" id="messages" aria-live="polite"></div>
 
-      <!-- Input -->
-      <div class="input-area">
-        <textarea id="input" placeholder="Type your message..."></textarea>
-        <button class="send-btn" id="sendBtn" type="submit">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12L4 4L6 12M20 12L4 20L6 12M20 12H6"/></svg>
-        </button>
-      </div>
-    </div> <!-- end chat window -->
-  </div> <!-- end app-container -->
+    <!-- Input -->
+<div class="input-area">
+  <textarea id="input" placeholder="Type your message..."></textarea>
 
-  <!-- JS -->
+  <!-- Send button with your custom SVG -->
+  <button class="send-btn" id="sendBtn" type="submit">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         viewBox="0 0 24 24"
+         width="20" height="20"
+         fill="none"
+         stroke="currentColor"
+         stroke-width="2"
+         stroke-linecap="round"
+         stroke-linejoin="round">
+      <path d="M20 12L4 4L6 12M20 12L4 20L6 12M20 12H6"/>
+    </svg>
+  </button>
+</div>
+
+  <!-- JS app -->
   <script src="app.js" defer></script>
 </body>
 </html>
+
+
