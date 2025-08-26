@@ -109,20 +109,23 @@ body {
   opacity: 0;
 }
 
-.sidebar-header {
+/* Shared header style for sidebar and chat */
+.sidebar-header,
+.chat-header {
   height: 60px;
-  line-height: 60px;
-  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.sidebar-header {
   background: linear-gradient(180deg, color-mix(in srgb, var(--primary), black 6%) 0%, var(--primary) 100%);
   color: var(--primary-contrast);
   font-weight: 600;
-  display: flex;
-  align-items: center;
   gap: 8px;
-  flex-wrap: nowrap;
-  flex-shrink: 0;
-  overflow: hidden;
   white-space: nowrap;
+  overflow: hidden;
 }
 
 .sidebar-icon {
@@ -195,9 +198,7 @@ body {
   text-overflow: ellipsis;
 }
 
-/* ===========================
-   Delete Button
-   =========================== */
+/* Delete Button */
 .delete-btn {
   position: absolute;
   right: 8px;
@@ -233,9 +234,7 @@ body {
   box-shadow: 0 0 0 3px var(--ring);
 }
 
-/* ===========================
-   Chat Window
-   =========================== */
+/* Chat Window */
 .chat-window {
   flex: 1 1 auto;
   min-width: 0;
@@ -253,9 +252,7 @@ body {
   gap: 12px;
 }
 
-/* ===========================
-   Chat Bubbles
-   =========================== */
+/* Chat Bubbles */
 .chat-container {
   display: flex;
   flex-direction: column;
@@ -296,9 +293,7 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ===========================
-   Input Area
-   =========================== */
+/* Input Area */
 .input-area {
   display: flex;
   gap: 8px;
@@ -335,18 +330,13 @@ body {
 }
 
 /* ===========================
-   Header
+   Chat Header
    =========================== */
 .chat-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* title left, controls right */
-  padding: 0 16px;
-  height: 60px;
   background: linear-gradient(180deg, color-mix(in srgb, var(--primary), black 6%) 0%, var(--primary) 100%);
   color: var(--primary-contrast);
   font-weight: 600;
-  box-sizing: border-box;
+  justify-content: space-between;
   flex-wrap: nowrap;
 }
 .chat-header .chat-title {
@@ -392,19 +382,9 @@ body {
   -webkit-appearance: none;
   -moz-appearance: none;
   text-align-last: center;
-  max-width: 100px; /* 👈 prevent it pushing down on mobile */
+  max-width: 100px;
   flex-shrink: 1;
 }
-
-.icon {
-  width: 20px;
-  height: 20px;
-}
-.hidden {
-  display: none;
-}
-
-/* normalize icons inside buttons */
 .header-controls button svg {
   width: 20px;
   height: 20px;
@@ -427,6 +407,14 @@ body {
   flex-shrink: 0;
 }
 
+.icon {
+  width: 20px;
+  height: 20px;
+}
+.hidden {
+  display: none;
+}
+
 /* ===========================
    Responsive
    =========================== */
@@ -439,16 +427,25 @@ body {
     width: 85%;
   }
 }
+
+/* clean 2-line layout below 600px */
 @media (max-width: 599.98px) {
   .chat-header {
     flex-wrap: wrap;
+    height: auto;
+    padding: 8px 12px;
   }
   .chat-header .chat-title {
     flex-basis: 100%;
     margin-bottom: 4px;
+  }
+  .header-controls {
+    width: 100%;
+    justify-content: flex-end;
   }
   .header-controls button,
   .header-controls select {
     font-size: 12px;
     padding: 4px 8px;
   }
+}
