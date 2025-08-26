@@ -3,20 +3,31 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Barney's ChatGPT</title>
+  <title>ChatGPT</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Add these somewhere in your CSS file if not already there */
+    .icon {
+      width: 20px;
+      height: 20px;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
   <div class="app-container">
 
     <!-- Sidebar -->
     <div class="sidebar" role="navigation" aria-label="Chat history">
-      <div class="sidebar-header"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15">
-        <path fill="currentColor" fill-rule="evenodd" 
-          d="M12.5 3h-10A1.5 1.5 0 0 0 1 4.5v5A1.5 1.5 0 0 0 2.5 11h5a.5.5 0 0 1 .354.146L10 13.294V11.5a.5.5 0 0 1 .5-.5h2A1.5 1.5 0 0 0 14 9.5v-5A1.5 1.5 0 0 0 12.5 3m-10-1h10A2.5 2.5 0 0 1 15 4.5v5a2.5 2.5 0 0 1-2.5 2.5H11v2.5a.5.5 0 0 1-.854.354L7.293 12H2.5A2.5 2.5 0 0 1 0 9.5v-5A2.5 2.5 0 0 1 2.5 2" 
-          clip-rule="evenodd"/>
-      </svg>
-      <span>Chats</span>
+      <div class="sidebar-header">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15">
+          <path fill="currentColor" fill-rule="evenodd" 
+            d="M12.5 3h-10A1.5 1.5 0 0 0 1 4.5v5A1.5 1.5 0 0 0 2.5 11h5a.5.5 0 0 1 .354.146L10 13.294V11.5a.5.5 0 0 1 .5-.5h2A1.5 1.5 0 0 0 14 9.5v-5A1.5 1.5 0 0 0 12.5 3m-10-1h10A2.5 2.5 0 0 1 15 4.5v5a2.5 2.5 0 0 1-2.5 2.5H11v2.5a.5.5 0 0 1-.854.354L7.293 12H2.5A2.5 2.5 0 0 1 0 9.5v-5A2.5 2.5 0 0 1 2.5 2" 
+            clip-rule="evenodd"/>
+        </svg>
+        <span>Chats</span>
       </div>
       <button class="new-chat" id="newChatBtn">+ New Chat</button>
       <div class="chat-list" id="chatList" aria-live="polite"></div>
@@ -24,24 +35,25 @@
 
     <!-- Chat Window -->
     <div class="chat-window" role="main">
-      <!-- Single Header with title on left and controls on right -->
+      <!-- Header with title on left and controls on right -->
       <div class="chat-header" id="chatHeader">
         <span class="chat-title">Barney's ChatGPT</span>
         <div class="header-controls">
           <button id="toggleSidebarBtn" aria-label="Toggle Sidebar">
-  <!-- Hide icon (default visible) -->
-  <svg class="icon hide-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15">
-    <path fill="currentColor" fill-rule="evenodd"
-      d="M1.5 3a.5.5 0 0 0 0 1h12a.5.5 0 0 0 0-1zM1 7.5a.5.5 0 0 1 .5-.5h12a.5.5 0 0 1 0 1h-12a.5.5 0 0 1-.5-.5m0 4a.5.5 0 0 1 .5-.5h12a.5.5 0 0 1 0 1h-12a.5.5 0 0 1-.5-.5"
-      clip-rule="evenodd" />
-  </svg>
+            <!-- Hide icon (default visible) -->
+            <svg class="icon hide-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15">
+              <path fill="currentColor" fill-rule="evenodd"
+                d="M1.5 3a.5.5 0 0 0 0 1h12a.5.5 0 0 0 0-1zM1 7.5a.5.5 0 0 1 .5-.5h12a.5.5 0 0 1 0 1h-12a.5.5 0 0 1-.5-.5m0 4a.5.5 0 0 1 .5-.5h12a.5.5 0 0 1 0 1h-12a.5.5 0 0 1-.5-.5"
+                clip-rule="evenodd" />
+            </svg>
 
-  <!-- Show icon -->
-  <svg class="icon show-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-      d="M12 8h15M5 16h22M5 24h22M5 11l3-3l-3-3" />
-  </svg>
-</button>
+            <!-- Show icon (initially hidden) -->
+            <svg class="icon show-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+              <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8h15M5 16h22M5 24h22M5 11l3-3l-3-3" />
+            </svg>
+          </button>
+
           <button id="toggleThemeBtn" aria-label="Toggle Light/Dark Mode">Dark</button>
           <select id="paletteSelector" aria-label="Select color palette">
             <option value="Green">Green</option>
