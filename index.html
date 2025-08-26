@@ -83,7 +83,6 @@
     <!-- Sidebar -->
     <div class="sidebar" role="navigation" aria-label="Chat history">
       <div class="sidebar-header">
-        <!-- ... your sidebar icon and label ... -->
         <span>Chats</span>
       </div>
       <button class="new-chat" id="newChatBtn">+ New Chat</button>
@@ -99,18 +98,26 @@
 
           <!-- Sidebar Toggle -->
           <button id="toggleSidebarBtn" aria-label="Toggle Sidebar">
-            <!-- Hide icon -->
-            <svg class="icon hide-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15"><path fill="currentColor" d="M1.5 3a.5.5..."/></svg>
-            <!-- Show icon -->
-            <svg class="icon show-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="none" stroke="currentColor" stroke-width="2" d="M12 8h15M5 16h22..."/></svg>
+            <!-- Hide icon (shown initially) -->
+            <svg class="icon hide-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15">
+              <path fill="currentColor" d="M1.5 3a.5.5..."/>
+            </svg>
+            <!-- Show icon (starts hidden) -->
+            <svg class="icon show-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+              <path fill="none" stroke="currentColor" stroke-width="2" d="M12 8h15M5 16h22..."/>
+            </svg>
           </button>
 
-          <!-- Theme Toggle (sun/moon icons preserved) -->
+          <!-- Theme Toggle -->
           <button id="toggleThemeBtn" aria-label="Toggle Light/Dark Mode">
-            <!-- Moon -->
-            <svg class="icon dark-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.46..." fill="none" stroke="currentColor" stroke-width="1.9"/></svg>
-            <!-- Sun -->
-            <svg class="icon light-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 340"><path d="M181.401 0h-22..." fill="currentColor"/></svg>
+            <!-- Moon (hidden initially in light mode) -->
+            <svg class="icon dark-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M21.46..." fill="none" stroke="currentColor" stroke-width="1.9"/>
+            </svg>
+            <!-- Sun (shown initially) -->
+            <svg class="icon light-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 340">
+              <path d="M181.401 0h-22..." fill="currentColor"/>
+            </svg>
           </button>
 
           <!-- Palette Dropdown -->
@@ -142,7 +149,6 @@
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12L4 4L6 12M20 12L4 20L6 12M20 12H6"/></svg>
         </button>
       </div>
-
     </div> <!-- end chat window -->
   </div> <!-- end app-container -->
 
