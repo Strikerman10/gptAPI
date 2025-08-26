@@ -393,6 +393,14 @@ body {
   -moz-appearance: none;
   text-align-last: center;
 }
+.icon {
+  width: 20px;
+  height: 20px;
+}
+
+.hidden {
+  display: none;
+}
 
 /* ===========================
    Responsive
@@ -420,6 +428,7 @@ body {
     padding: 4px 8px;
   }
 }
+
 
 
 
