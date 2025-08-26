@@ -268,12 +268,12 @@ toggleSidebarBtn.addEventListener("click", () => {
   const isHidden = sidebarEl.style.display === "none";
   sidebarEl.style.display = isHidden ? "flex" : "none";
 
-  // Instead of replacing the button text, just toggle the icons
-  const hideIcon = toggleSidebarBtn.querySelector(".hide-ico");
+  const hideIcon = toggleSidebarBtn.querySelector(".hide-icon");
   const showIcon = toggleSidebarBtn.querySelector(".show-icon");
 
-  hideIcon.classList.toggle("hidden", isHidden); // hidden when sidebar is shown again
-  showIcon.classList.toggle("hidden", !isHidden); // hidden when sidebar is visible
+  // Flip the logic: when sidebar is hidden, show the "Show" icon.
+  hideIcon.classList.toggle("hidden", !isHidden); 
+  showIcon.classList.toggle("hidden", isHidden);
 });
 
   // ==========================
@@ -288,6 +288,7 @@ toggleSidebarBtn.addEventListener("click", () => {
   })();
 
 });
+
 
 
 
