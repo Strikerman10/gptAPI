@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function createNewChat() {
     const newChat = {
       id: Date.now().toString(),
-      title: "New Chat",
+      title: "New Chat", // will be replaced once user sends message
       messages: [{ role: "system", content: "How can I help, Barney?", time: formatTime() }]
     };
     chats.unshift(newChat);
@@ -166,32 +166,29 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-function renderMessages() {
-  messagesEl.innerHTML = "";
-  headerEl.textContent = "Barney's ChatGPT"; // fixed header
+  function renderMessages() {
+    messagesEl.innerHTML = "";
+    headerEl.textContent = "Barney's ChatGPT"; // fixed header
 
-  if (currentIndex === null || !chats[currentIndex]) return;
+    if (currentIndex === null || !chats[currentIndex]) return;
 
-  const chat = chats[currentIndex];
+    const chat = chats[currentIndex];
 
-  chat.messages.forEach(msg => {
-    // create message bubble
-    const div = document.createElement("div");
-    div.className = `message ${msg.role}`;
-    div.innerText = msg.content; // preserves line breaks
+    chat.messages.forEach(msg => {
+      const div = document.createElement("div");
+      div.className = `message ${msg.role}`;
+      div.innerText = msg.content;
 
-    // create timestamp
-    const timeDiv = document.createElement("div");
-    timeDiv.className = "msg-time";
-    timeDiv.textContent = msg.time || "";
+      const timeDiv = document.createElement("div");
+      timeDiv.className = "msg-time";
+      timeDiv.textContent = msg.time || "";
 
-    div.appendChild(timeDiv);
-    messagesEl.appendChild(div);
-  });
+      div.appendChild(timeDiv);
+      messagesEl.appendChild(div);
+    });
 
-  messagesEl.scrollTop = messagesEl.scrollHeight;
-}
-
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
 
   // ==========================
   // SEND MESSAGE
@@ -205,6 +202,12 @@ function renderMessages() {
 
     const userMessage = { role: "user", content: text, time: formatTime() };
     chat.messages.push(userMessage);
+
+    // UPDATE: if first user message -> make it the chat title
+    if (chat.title === "New Chat" || !chat.title) {
+      const firstLine = text.split(/\r?\n/)[0];
+      chat.title = firstLine.length > 40 ? firstLine.slice(0, 40) + "…" : firstLine;
+    }
 
     const thinkingMessage = { role: "assistant", content: "Thinking...", time: formatTime() };
     chat.messages.push(thinkingMessage);
@@ -234,6 +237,7 @@ function renderMessages() {
     saveChats();
     saveChatsToWorker();
     renderMessages();
+    renderChatList(); // UPDATE: refresh titles in sidebar immediately
   }
 
   // ==========================
@@ -278,8 +282,3 @@ function renderMessages() {
   })();
 
 });
-
-
-
-
-
