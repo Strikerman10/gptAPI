@@ -16,9 +16,39 @@
     /* Ensure icons follow button color */
     #toggleThemeBtn {
       color: #fff;         /* both sun & moon become white */
-      background: maroon;  /* your button background */
+      background: maroon;  /* button background */
       border: none;
       cursor: pointer;
+      padding: 4px;
+    }
+    .theme-selector {
+      position: relative;
+      display: inline-block;
+    }
+    .theme-btn {
+      background: maroon;
+      border: none;
+      cursor: pointer;
+      color: #fff;
+      padding: 4px;
+    }
+    .theme-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      background: var(--surface-1, #fff);
+      border: 1px solid var(--border, #ccc);
+      margin: 0;
+      padding: 4px 0;
+      list-style: none;
+      z-index: 10;
+    }
+    .theme-menu li {
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+    .theme-menu li:hover {
+      background: var(--surface-hover, #eee);
     }
   </style>
 </head>
@@ -87,41 +117,56 @@
             </svg>
           </button>
 
-          <!-- Palette Selector -->
-          <select id="paletteSelector" aria-label="Select color palette">
-            <option value="Green">Green</option>
-            <option value="Blue">Blue</option>
-            <option value="Orange">Orange</option>
-            <option value="Purple">Purple</option>
-          </select>
+          <!-- Palette Selector (NEW) -->
+          <div class="theme-selector">
+            <button class="theme-btn" id="themeBtn" aria-haspopup="true" aria-expanded="false">
+              <!-- Palette SVG Icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.5 2 2 6 2 11c0 3.9 3 7 6.2 7H9c.6 0 1 .4 1 1 0 .3-.1.5-.3.7-.5.5-.7 1.2-.6 2
+                         .1 1.1 1 2.1 2.1 2.2 5.6.6 9.8-2.2 9.8-6.9 0-5.5-4.5-10-10-10zm-4.5 8c-.8 0-1.5-.7-1.5-1.5S6.7 7 7.5 7
+                         9 7.7 9 8.5 8.3 10 7.5 10zm3-4c-.8 0-1.5-.7-1.5-1.5S9.7 3 10.5 3s1.5.7 1.5 1.5S11.3 6 10.5 6zm5 1c-.8 0-1.5-.7-1.5-1.5S14.7 4 15.5 4
+                         17 4.7 17 5.5 16.3 7 15.5 7zm1.5 6c-.8 0-1.5-.7-1.5-1.5S16.2 10 17 10s1.5.7 1.5 1.5S17.8 13 17 13z"/>
+              </svg>
+            </button>
+
+            <!-- Hidden dropdown list -->
+            <ul class="theme-menu" id="themeMenu">
+              <li data-theme="Green">Green</li>
+              <li data-theme="Blue">Blue</li>
+              <li data-theme="Orange">Orange</li>
+              <li data-theme="Purple">Purple</li>
+            </ul>
+          </div>
+
         </div>
       </div>
 
       <!-- Messages -->
       <div class="messages" id="messages" aria-live="polite"></div>
 
-    <!-- Input -->
-<div class="input-area">
-  <textarea id="input" placeholder="Type your message..."></textarea>
+      <!-- Input -->
+      <div class="input-area">
+        <textarea id="input" placeholder="Type your message..."></textarea>
 
-  <!-- Send button with your custom SVG -->
-  <button class="send-btn" id="sendBtn" type="submit">
-    <svg xmlns="http://www.w3.org/2000/svg"
-         viewBox="0 0 24 24"
-         width="20" height="20"
-         fill="none"
-         stroke="currentColor"
-         stroke-width="2"
-         stroke-linecap="round"
-         stroke-linejoin="round">
-      <path d="M20 12L4 4L6 12M20 12L4 20L6 12M20 12H6"/>
-    </svg>
-  </button>
-</div>
+        <!-- Send button with your custom SVG -->
+        <button class="send-btn" id="sendBtn" type="submit">
+          <svg xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="20" height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round">
+            <path d="M20 12L4 4L6 12M20 12L4 20L6 12M20 12H6"/>
+          </svg>
+        </button>
+      </div>
+
+    </div> <!-- end chat window -->
+  </div> <!-- end app-container -->
 
   <!-- JS app -->
   <script src="app.js" defer></script>
 </body>
 </html>
-
-
