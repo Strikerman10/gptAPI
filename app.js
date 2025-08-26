@@ -13,16 +13,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const messagesEl = document.getElementById("messages");
   const headerEl = document.getElementById("chatHeader").querySelector("span");
   const inputEl = document.getElementById("input");
+  const paletteSelector = document.getElementById("paletteSelector");
   const themeBtn = document.getElementById("toggleThemeBtn");
-  const paletteBtn = document.getElementById("togglePaletteBtn");
   const sidebarEl = document.querySelector(".sidebar");
   const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
 
   // ==========================
   // PALETTE & THEME
   // ==========================
-  const palettes = ["Green", "Blue", "Orange", "Purple"];
-  const paletteVars = {
+  const palettes = {
     Green: { "--color-1": "#94e8b4", "--color-2": "#72bda3", "--color-3": "#5e8c61", "--color-4": "#4e6151", "--color-5": "#3b322c", "--color-6": "#800000" },
     Blue: { "--color-1": "#b3cfff", "--color-2": "#7a9eff", "--color-3": "#437f97", "--color-4": "#2c5c63", "--color-5": "#1a1c2c", "--color-6": "#F67c03" },
     Orange: { "--color-1": "#ffd6a5", "--color-2": "#ffb347", "--color-3": "#ff7f50", "--color-4": "#cc5500", "--color-5": "#662200", "--color-6": "#0f4d92" },
@@ -39,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function applyTheme() {
     const root = document.documentElement;
-    const palette = paletteVars[currentPalette];
+    const palette = palettes[currentPalette];
     const neutralSet = neutrals[currentMode];
     for (const [key, value] of Object.entries(palette)) root.style.setProperty(key, value);
     for (const [key, value] of Object.entries(neutralSet)) root.style.setProperty(key, value);
@@ -166,9 +165,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderMessages() {
     messagesEl.innerHTML = "";
-    headerEl.textContent = "ChatGPT";
+    headerEl.textContent = "ChatGPT"; 
 
     if (currentIndex === null || !chats[currentIndex]) return;
+
     const chat = chats[currentIndex];
 
     chat.messages.forEach(msg => {
@@ -241,16 +241,18 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==========================
   document.getElementById("newChatBtn").addEventListener("click", createNewChat);
   document.getElementById("sendBtn").addEventListener("click", sendMessage);
-  inputEl.addEventListener("keydown", e => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
+  inputEl.addEventListener("keydown", e => { 
+    if (e.key === "Enter" && !e.shiftKey) { 
+      e.preventDefault(); 
+      sendMessage(); 
+    } 
   });
 
   // ==========================
-  // Theme & Palette Toggles
+  // Palette & Theme (UPDATED FOR ICONS)
   // ==========================
+  paletteSelector.value = currentPalette;
+
   const darkIcon = themeBtn.querySelector(".dark-icon");
   const lightIcon = themeBtn.querySelector(".light-icon");
 
@@ -258,27 +260,27 @@ document.addEventListener("DOMContentLoaded", () => {
   darkIcon.classList.toggle("hidden", currentMode === "dark");
   lightIcon.classList.toggle("hidden", currentMode === "light");
 
-  themeBtn.addEventListener("click", () => {
-    currentMode = currentMode === "light" ? "dark" : "light";
+  paletteSelector.addEventListener("change", e => {
+    currentPalette = e.target.value; 
+    applyTheme(); 
+  });
+
+  themeBtn.addEventListener("click", () => { 
+    currentMode = currentMode === "light" ? "dark" : "light"; 
     darkIcon.classList.toggle("hidden", currentMode === "dark");
     lightIcon.classList.toggle("hidden", currentMode === "light");
-    applyTheme();
+    applyTheme(); 
   });
-
-  // Palette cycle button
-  paletteBtn.addEventListener("click", () => {
-    let idx = palettes.indexOf(currentPalette);
-    currentPalette = palettes[(idx + 1) % palettes.length];
-    applyTheme();
-  });
-
+  
   // Sidebar toggle
   toggleSidebarBtn.addEventListener("click", () => {
     const isHidden = sidebarEl.style.display === "none";
     sidebarEl.style.display = isHidden ? "flex" : "none";
+
     const hideIcon = toggleSidebarBtn.querySelector(".hide-icon");
     const showIcon = toggleSidebarBtn.querySelector(".show-icon");
-    hideIcon.classList.toggle("hidden", !isHidden);
+
+    hideIcon.classList.toggle("hidden", !isHidden); 
     showIcon.classList.toggle("hidden", isHidden);
   });
 
@@ -292,3 +294,5 @@ document.addEventListener("DOMContentLoaded", () => {
     renderChatList();
     renderMessages();
   })();
+
+});
