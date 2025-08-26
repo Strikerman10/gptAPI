@@ -514,6 +514,105 @@ body {
   gap: 0.5rem;   /* space between buttons */
   flex-wrap: nowrap; /* don't allow to wrap to next row */
 }
+
+/* === Base Variables (default to light mode) === */
+:root {
+  --bg: #ffffff;
+  --text: #1a1a1a;
+  --surface: #f9f9f9;
+  --surface-hover: #e6e6e6;
+  --border: #cccccc;
+
+  --header-bg: maroon;
+  --header-text: #ffffff;
+
+  --chat-user-bg: #0084ff;
+  --chat-user-text: #ffffff;
+  --chat-bot-bg: #f1f1f1;
+  --chat-bot-text: #1a1a1a;
+}
+
+/* === Light Mode === */
+body[data-mode="light"] {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+body[data-mode="light"] .chat-header {
+  background: var(--header-bg);
+  color: var(--header-text);
+}
+
+body[data-mode="light"] .messages .message.user {
+  background: var(--chat-user-bg);
+  color: var(--chat-user-text);
+}
+
+body[data-mode="light"] .messages .message.bot {
+  background: var(--chat-bot-bg);
+  color: var(--chat-bot-text);
+}
+
+/* === Dark Mode Overrides === */
+body[data-mode="dark"] {
+  --bg: #121212;
+  --text: #f2f2f2;
+  --surface: #1e1e1e;
+  --surface-hover: #2a2a2a;
+  --border: #333333;
+
+  --header-bg: #222;
+  --header-text: #f2f2f2;
+
+  --chat-user-bg: #0a84ff;
+  --chat-user-text: #ffffff;
+  --chat-bot-bg: #2a2a2a;
+  --chat-bot-text: #f2f2f2;
+}
+
+/* Apply core surfaces */
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.chat-window {
+  background: var(--bg);
+}
+
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+}
+
+.chat-header {
+  background: var(--header-bg);
+  color: var(--header-text);
+}
+
+.messages {
+  background: var(--bg);
+}
+
+.input-area {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+.input-area textarea {
+  background: var(--surface);
+  color: var(--text);
+  border: none;
+}
+
+/* Buttons inherit theme vars */
+button {
+  background: var(--header-bg);
+  color: var(--header-text);
+}
+button:hover {
+  opacity: 0.85;
+}
 @media (max-width: 599.98px) {
   .chat-header {
     flex-wrap: wrap;
@@ -528,3 +627,4 @@ body {
     padding: 4px 8px;
   }
 }
+
