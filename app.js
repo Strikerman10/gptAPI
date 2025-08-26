@@ -21,12 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const themeMenu = document.getElementById("themeMenu");
   const modeBtn   = document.getElementById("toggleThemeBtn");
 
-  // Icons
-  const darkIcon = modeBtn.querySelector(".dark-icon");
-  const lightIcon = modeBtn.querySelector(".light-icon");
-  const hideIcon = toggleSidebarBtn.querySelector(".hide-icon");
-  const showIcon = toggleSidebarBtn.querySelector(".show-icon");
-
   // ==========================
   // PALETTE & THEME
   // ==========================
@@ -61,17 +55,6 @@ document.addEventListener("DOMContentLoaded", () => {
     themeMenu.querySelectorAll("li").forEach(li => {
       li.classList.toggle("active", li.dataset.theme === currentPalette);
     });
-  }
-
-  // 🔹 NEW: Keep icons in sync
-  function syncIcons() {
-    // Theme icons
-    darkIcon.classList.toggle("hidden", currentMode === "dark");
-    lightIcon.classList.toggle("hidden", currentMode === "light");
-    // Sidebar icons
-    const sidebarVisible = sidebarEl.style.display !== "none" && sidebarEl.style.display !== "";
-    hideIcon.classList.toggle("hidden", !sidebarVisible);
-    showIcon.classList.toggle("hidden", sidebarVisible);
   }
 
   // ==========================
@@ -299,19 +282,26 @@ document.addEventListener("DOMContentLoaded", () => {
   // --------------------------
   // Mode toggle (dark/light)
   // --------------------------
+  const darkIcon = modeBtn.querySelector(".dark-icon");
+  const lightIcon = modeBtn.querySelector(".light-icon");
+  darkIcon.classList.toggle("hidden", currentMode === "dark");
+  lightIcon.classList.toggle("hidden", currentMode === "light");
+
   modeBtn.addEventListener("click", () => { 
     currentMode = currentMode === "light" ? "dark" : "light"; 
+    darkIcon.classList.toggle("hidden", currentMode === "dark");
+    lightIcon.classList.toggle("hidden", currentMode === "light");
     applyTheme(); 
-    syncIcons();
   });
 
-  // --------------------------
   // Sidebar toggle
-  // --------------------------
   toggleSidebarBtn.addEventListener("click", () => {
     const isHidden = sidebarEl.style.display === "none";
     sidebarEl.style.display = isHidden ? "flex" : "none";
-    syncIcons();
+    const hideIcon = toggleSidebarBtn.querySelector(".hide-icon");
+    const showIcon = toggleSidebarBtn.querySelector(".show-icon");
+    hideIcon.classList.toggle("hidden", !isHidden); 
+    showIcon.classList.toggle("hidden", isHidden);
   });
 
   // ==========================
@@ -323,6 +313,5 @@ document.addEventListener("DOMContentLoaded", () => {
     loadChats();
     renderChatList();
     renderMessages();
-    syncIcons(); // 🔹 initialize icons properly
   })();
 });
