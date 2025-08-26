@@ -409,7 +409,58 @@ body {
 .hidden {
   display: none;
 }
+/* container */
+.theme-selector {
+  position: relative;
+  display: inline-block;
+}
 
+/* button (same as others) */
+.theme-btn {
+  width: 40px;
+  height: 40px;
+  background: var(--color-6);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+/* icon sizing */
+.theme-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* dropdown menu */
+.theme-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 45px; /* below button */
+  left: 0;
+  background: var(--color-6);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  display: none;
+  min-width: 100px;
+  z-index: 1000;
+}
+
+/* dropdown items */
+.theme-menu li {
+  padding: 8px 12px;
+  cursor: pointer;
+  color: var(--primary-contrast);
+}
+
+.theme-menu li:hover {
+  background: var(--color-5);
+}
 /* ===========================
    Responsive
    =========================== */
@@ -477,5 +528,6 @@ body {
     padding: 4px 8px;
   }
 }
+
 
 
