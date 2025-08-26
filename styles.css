@@ -325,13 +325,21 @@ body {
   font-size: 14px;
 }
 .send-btn {
-  padding: 8px 14px;
+  width: 40px;                     /* same width as show/hide button */
+  height: 40px;                    /* same height */
   background: var(--color-6);
-  color: var(--primary-contrast);
+  color: var(--primary-contrast);  /* controls the icon color */
   border: none;
-  border-radius: 8px;
+  border-radius: 8px;              /* keep same rounding */
   cursor: pointer;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.send-btn svg {
+  width: 20px;
+  height: 20px;
 }
 .chat-item.selected {
   background: color-mix(in srgb, var(--accent) 15%, transparent);
@@ -469,4 +477,5 @@ body {
     padding: 4px 8px;
   }
 }
+
 
