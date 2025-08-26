@@ -292,5 +292,3 @@ document.addEventListener("DOMContentLoaded", () => {
     renderChatList();
     renderMessages();
   })();
-
-});
