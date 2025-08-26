@@ -253,33 +253,15 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Palette & Theme
-paletteSelector.value = currentPalette;
+  paletteSelector.value = currentPalette;
+  themeBtn.textContent = currentMode === "light" ? "Dark" : "Light";
 
-// Grab your theme toggle button + icons
-const themeBtn = document.getElementById("toggleThemeBtn");
-const darkIcon = themeBtn.querySelector(".dark-icon");
-const lightIcon = themeBtn.querySelector(".light-icon");
-
-// Set initial state based on currentMode
-darkIcon.classList.toggle("hidden", currentMode === "dark"); 
-lightIcon.classList.toggle("hidden", currentMode === "light");
-
-paletteSelector.addEventListener("change", e => {
-  currentPalette = e.target.value;
-  applyTheme();
-});
-
-themeBtn.addEventListener("click", () => {
-  // flip the mode
-  currentMode = currentMode === "light" ? "dark" : "light";
-  
-  // swap icons
-  darkIcon.classList.toggle("hidden", currentMode === "dark");
-  lightIcon.classList.toggle("hidden", currentMode === "light");
-  
-  // re-apply theme
-  applyTheme();
-});
+  paletteSelector.addEventListener("change", e => { currentPalette = e.target.value; applyTheme(); });
+  themeBtn.addEventListener("click", () => { 
+    currentMode = currentMode === "light" ? "dark" : "light"; 
+    themeBtn.textContent = currentMode === "light" ? "Dark" : "Light"; 
+    applyTheme(); 
+  });
   
 // Sidebar toggle
 toggleSidebarBtn.addEventListener("click", () => {
@@ -306,8 +288,6 @@ toggleSidebarBtn.addEventListener("click", () => {
   })();
 
 });
-
-
 
 
 
