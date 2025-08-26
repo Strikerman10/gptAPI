@@ -128,7 +128,7 @@ body {
 .sidebar-icon {
   vertical-align: middle;
   margin-right: 0.5em;
-  fill: currentColor;
+  fill: currentColor; /* makes the icon match text color */
 }
 
 .main-content {
@@ -168,6 +168,32 @@ body {
 }
 .chat-item:hover {
   background: var(--surface-hover);
+}
+
+.chat-preview {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.chat-title {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 64px);
+   max-width: 60ch; /* ~60 characters worth of space */
+}
+.chat-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ===========================
@@ -231,6 +257,10 @@ body {
 /* ===========================
    Chat Bubbles
    =========================== */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+}
 .message {
   max-width: 85%;
   padding: 0.75rem 1rem;
@@ -244,17 +274,21 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
   animation: fadeInUp 0.25s ease;
 }
+
+/* USER’s message bubble — right side */
 .message.user {
   background: var(--user-bubble-bg);
   color: var(--user-bubble-text);
   border-bottom-right-radius: 0.3rem;
-  align-self: flex-end;
+  align-self: flex-end;   /* <— this puts it on the right */
 }
+
+/* ASSISTANT’s bubble — left side */
 .message.assistant {
   background: var(--assistant-bubble-bg);
   color: var(--assistant-bubble-text);
   border-bottom-left-radius: 0.3rem;
-  align-self: flex-start;
+  align-self: flex-start;  /* already left aligned */
 }
 .msg-time {
   font-size: 0.7rem;
@@ -291,17 +325,18 @@ body {
   font-size: 14px;
 }
 .send-btn {
-  width: 40px;
-  height: 40px;
+  width: 40px;                     /* same width as show/hide button */
+  height: 40px;                    /* same height */
   background: var(--color-6);
-  color: var(--primary-contrast);
+  color: var(--primary-contrast);  /* controls the icon color */
   border: none;
-  border-radius: 8px;
+  border-radius: 8px;              /* keep same rounding */
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 .send-btn svg {
   width: 20px;
   height: 20px;
@@ -323,11 +358,11 @@ body {
   background: linear-gradient(180deg, color-mix(in srgb, var(--primary), black 6%) 0%, var(--primary) 100%);
   color: var(--primary-contrast);
   font-weight: 600;
-  justify-content: space-between;
 }
 .chat-header .chat-title {
-  font-size: 16px;
   font-weight: 600;
+  font-size: 16px;
+  line-height: 60px;
   white-space: nowrap;
   color: white;
 }
@@ -335,38 +370,42 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: nowrap;
+  margin-left: auto;
 }
 
-/* ===========================
-   Unified Toggle Buttons
-   =========================== */
-.toggle-btn {
-  width: 40px;
-  height: 40px;
-  background: var(--color-6);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
+/* UPDATED: Header control buttons & select */
+.header-controls button,
+.header-controls select {
+  font-size: 14px;
+  padding: 6px 12px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
+  border-radius: 8px;
+  border: none;
+  background: var(--color-6);   /* maroon default */
+  color: #fff;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
-.toggle-btn:hover {
-  background: var(--color-3);
+.header-controls button:hover,
+.header-controls select:hover {
+  background: var(--color-3);   /* green on hover */
   color: #fff;
 }
-.toggle-btn:focus {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
+.header-controls select:focus,
+.header-controls button:focus {
+  background: var(--color-6);   /* stay maroon when focused/selected */
+  color: #fff;
+}
+.header-controls select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-align-last: center;
 }
 .icon {
   width: 20px;
   height: 20px;
 }
+
 .hidden {
   display: none;
 }
@@ -375,11 +414,66 @@ body {
    Responsive
    =========================== */
 @media (max-width: 768px) {
-  .sidebar { width: 30%; min-width: unset; }
-  .main-content { width: 85%; }
+  .sidebar {
+    width: 30%;
+    min-width: unset;
+  }
+  .main-content {
+    width: 85%;
+  }
+}
+
+/* --- normalize header button icons --- */
+.header-controls button svg {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
+
+#toggleThemeBtn,
+#toggleSidebarBtn {
+  color: #fff;
+  background: maroon;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 4px; /* optional */
+}
+
+#toggleSidebarBtn svg,
+#toggleThemeBtn svg {
+  flex-shrink: 0;
+}
+/* Chat header as a flex container */
+.chat-header {
+  display: flex;
+  align-items: center;       /* vertically align buttons and text */
+  justify-content: space-between; /* push title left, controls right */
+  padding: 0.5rem 1rem;      /* adjust as needed */
+  box-sizing: border-box;
+}
+
+/* Keep controls horizontally aligned, prevent wrapping */
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;   /* space between buttons */
+  flex-wrap: nowrap; /* don't allow to wrap to next row */
 }
 @media (max-width: 599.98px) {
-  .chat-header { flex-wrap: wrap; }
-  .chat-header .chat-title { flex-basis: 100%; margin-bottom: 4px; }
-  .toggle-btn { width: 32px; height: 32px; }
+  .chat-header {
+    flex-wrap: wrap;
+  }
+  .chat-header .chat-title {
+    flex-basis: 100%;
+    margin-bottom: 4px;
+  }
+  .header-controls button,
+  .header-controls select {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
 }
