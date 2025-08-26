@@ -456,26 +456,6 @@ body {
   box-sizing: border-box;
 }
 
-.toggle-btn {
-  width: 40px;
-  height: 40px;
-  background: var(--color-6);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.toggle-btn:hover {
-  background: var(--color-3);
-}
-.toggle-btn .icon {
-  width: 20px;
-  height: 20px;
-}
-
 /* Keep controls horizontally aligned, prevent wrapping */
 .header-controls {
   display: flex;
@@ -497,4 +477,3 @@ body {
     padding: 4px 8px;
   }
 }
-
