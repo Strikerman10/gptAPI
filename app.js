@@ -13,13 +13,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const messagesEl = document.getElementById("messages");
   const headerEl = document.getElementById("chatHeader").querySelector("span");
   const inputEl = document.getElementById("input");
+  const paletteSelector = document.getElementById("paletteSelector");
+  const themeBtn = document.getElementById("toggleThemeBtn");
   const sidebarEl = document.querySelector(".sidebar");
   const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
-
-  // Dropdown elements for palettes
-  const themeBtn  = document.getElementById("themeBtn");
-  const themeMenu = document.getElementById("themeMenu");
-  const modeBtn   = document.getElementById("toggleThemeBtn");
 
   // ==========================
   // PALETTE & THEME
@@ -48,13 +45,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.classList.toggle("dark-mode", currentMode === "dark");
     localStorage.setItem("palette", currentPalette);
     localStorage.setItem("mode", currentMode);
-    updateActivePaletteMenu();
-  }
-
-  function updateActivePaletteMenu() {
-    themeMenu.querySelectorAll("li").forEach(li => {
-      li.classList.toggle("active", li.dataset.theme === currentPalette);
-    });
   }
 
   // ==========================
@@ -176,18 +166,24 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderMessages() {
     messagesEl.innerHTML = "";
     headerEl.textContent = "ChatGPT"; 
+
     if (currentIndex === null || !chats[currentIndex]) return;
+
     const chat = chats[currentIndex];
+
     chat.messages.forEach(msg => {
       const div = document.createElement("div");
       div.className = `message ${msg.role}`;
       div.innerText = msg.content;
+
       const timeDiv = document.createElement("div");
       timeDiv.className = "msg-time";
       timeDiv.textContent = msg.time || "";
+
       div.appendChild(timeDiv);
       messagesEl.appendChild(div);
     });
+
     messagesEl.scrollTop = messagesEl.scrollHeight;
   }
 
@@ -197,16 +193,21 @@ document.addEventListener("DOMContentLoaded", () => {
   async function sendMessage() {
     const text = inputEl.value.trim();
     if (!text) return;
+
     if (currentIndex === null) createNewChat();
     const chat = chats[currentIndex];
+
     const userMessage = { role: "user", content: text, time: formatTime() };
     chat.messages.push(userMessage);
+
     if (chat.title === "New Chat" || !chat.title) {
       const firstLine = text.split(/\r?\n/)[0];
       chat.title = firstLine.length > 40 ? firstLine.slice(0, 40) + "…" : firstLine;
     }
+
     const thinkingMessage = { role: "assistant", content: "Thinking...", time: formatTime() };
     chat.messages.push(thinkingMessage);
+
     renderMessages();
     inputEl.value = "";
     saveChats();
@@ -219,13 +220,16 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ model: MODEL, messages: recentMessages }),
       });
+
       if (!res.ok) throw new Error(`Worker returned ${res.status}`);
       const data = await res.json();
+
       const answer = data?.choices?.[0]?.message?.content || "No response";
       chat.messages[chat.messages.length - 1] = { role: "assistant", content: answer, time: formatTime() };
     } catch (e) {
       chat.messages[chat.messages.length - 1] = { role: "assistant", content: "Error: " + e.message, time: formatTime() };
     }
+
     saveChats();
     saveChatsToWorker();
     renderMessages();
@@ -244,62 +248,38 @@ document.addEventListener("DOMContentLoaded", () => {
     } 
   });
 
-  // --------------------------
-  // Palette Dropdown Handlers
-  // --------------------------
-  function openThemeMenu() {
-    themeMenu.classList.add("open");
-    themeBtn.setAttribute("aria-expanded", "true");
-  }
-  function closeThemeMenu() {
-    themeMenu.classList.remove("open");
-    themeBtn.setAttribute("aria-expanded", "false");
-  }
-  function toggleThemeMenu() {
-    const expanded = themeBtn.getAttribute("aria-expanded") === "true";
-    expanded ? closeThemeMenu() : openThemeMenu();
-  }
+  // ==========================
+  // Palette & Theme (UPDATED FOR ICONS)
+  // ==========================
+  paletteSelector.value = currentPalette;
 
-  themeBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    toggleThemeMenu();
-  });
+  const darkIcon = themeBtn.querySelector(".dark-icon");
+  const lightIcon = themeBtn.querySelector(".light-icon");
 
-  themeMenu.querySelectorAll("li").forEach(li => {
-    li.addEventListener("click", () => {
-      currentPalette = li.dataset.theme;
-      applyTheme();
-      closeThemeMenu();
-    });
-  });
-
-  document.addEventListener("click", (e) => {
-    if (!themeMenu.contains(e.target) && e.target !== themeBtn) {
-      closeThemeMenu();
-    }
-  });
-
-  // --------------------------
-  // Mode toggle (dark/light)
-  // --------------------------
-  const darkIcon = modeBtn.querySelector(".dark-icon");
-  const lightIcon = modeBtn.querySelector(".light-icon");
+  // Set initial icon state
   darkIcon.classList.toggle("hidden", currentMode === "dark");
   lightIcon.classList.toggle("hidden", currentMode === "light");
 
-  modeBtn.addEventListener("click", () => { 
+  paletteSelector.addEventListener("change", e => {
+    currentPalette = e.target.value; 
+    applyTheme(); 
+  });
+
+  themeBtn.addEventListener("click", () => { 
     currentMode = currentMode === "light" ? "dark" : "light"; 
     darkIcon.classList.toggle("hidden", currentMode === "dark");
     lightIcon.classList.toggle("hidden", currentMode === "light");
     applyTheme(); 
   });
-
+  
   // Sidebar toggle
   toggleSidebarBtn.addEventListener("click", () => {
     const isHidden = sidebarEl.style.display === "none";
     sidebarEl.style.display = isHidden ? "flex" : "none";
+
     const hideIcon = toggleSidebarBtn.querySelector(".hide-icon");
     const showIcon = toggleSidebarBtn.querySelector(".show-icon");
+
     hideIcon.classList.toggle("hidden", !isHidden); 
     showIcon.classList.toggle("hidden", isHidden);
   });
@@ -314,4 +294,5 @@ document.addEventListener("DOMContentLoaded", () => {
     renderChatList();
     renderMessages();
   })();
+
 });
