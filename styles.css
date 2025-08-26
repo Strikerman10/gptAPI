@@ -11,60 +11,94 @@ html, body {
 }
 
 /* ===========================
-   🎨 MASTER THEME COLORS
+   Theme Variables
    =========================== */
 :root {
+  /* Base palette */
   --color-1: #94e8b4;
   --color-2: #72bda3;
   --color-3: #5e8c61;
   --color-4: #4e6151;
   --color-5: #3b322c;
   --color-6: #800000;
-}
 
-/* ===========================
-   Derived Palette (Light)
-   =========================== */
-:root {
+  /* Light mode (default) */
   --bg: #ffffff;
+
+  /* fallback first, color-mix second */
+  --surface-1: #f3faf6;
   --surface-1: color-mix(in srgb, var(--color-1) 10%, white 90%);
+
+  --surface-2: #eef8f2;
   --surface-2: color-mix(in srgb, var(--color-1) 15%, white 85%);
+
+  --surface-hover: #e5f5eb;
   --surface-hover: color-mix(in srgb, var(--color-1) 25%, white 75%);
+
+  --border: #d5d9d7;
   --border: color-mix(in srgb, var(--color-4) 25%, white 75%);
+
   --text: var(--color-5);
+
+  --text-muted: #7a7a75;
   --text-muted: color-mix(in srgb, var(--color-4) 50%, white 50%);
+
   --primary: var(--color-3);
   --primary-contrast: #fff;
   --accent: var(--color-2);
   --accent-contrast: var(--color-5);
+
   --user-bubble-bg: var(--color-4);
   --user-bubble-text: var(--primary-contrast);
   --assistant-bubble-bg: var(--color-1);
   --assistant-bubble-text: var(--color-5);
+
   --danger: hsl(0 72% 48%);
   --danger-contrast: #fff;
+
+  --ring: rgba(114, 189, 163, 0.6);
   --ring: color-mix(in srgb, var(--color-2) 60%, transparent);
 }
 
 /* ===========================
-   Derived Palette (Dark Mode)
+   Dark Mode
    =========================== */
 body.dark-mode {
   --bg: var(--color-5);
+
+  --surface-1: #3d453d;
   --surface-1: color-mix(in srgb, var(--color-4) 80%, black 20%);
+
+  --surface-2: #2f352f;
   --surface-2: color-mix(in srgb, var(--color-4) 65%, black 35%);
+
+  --surface-hover: #272d27;
   --surface-hover: color-mix(in srgb, var(--color-4) 50%, black 50%);
+
+  --border: #1f231f;
   --border: color-mix(in srgb, var(--color-4) 40%, black 60%);
+
   --text: #f2f2f2;
+
+  --text-muted: #a9b1ab;
   --text-muted: color-mix(in srgb, #f2f2f2 60%, var(--color-4) 40%);
+
+  --primary: #6fa080;
   --primary: color-mix(in srgb, var(--color-3) 80%, white 20%);
-  --primary-contrast: #fff;
+
+  --accent: #78c1ab;
   --accent: color-mix(in srgb, var(--color-2) 90%, white 10%);
+
   --accent-contrast: var(--color-5);
+
   --user-bubble-bg: var(--color-4);
   --user-bubble-text: var(--primary-contrast);
+
+  --assistant-bubble-bg: #6da486;
   --assistant-bubble-bg: color-mix(in srgb, var(--color-1) 30%, var(--color-4) 70%);
   --assistant-bubble-text: #fff;
+
+  --ring: rgba(114, 189, 163, 0.7);
   --ring: color-mix(in srgb, var(--color-2) 70%, transparent);
 }
 
@@ -88,10 +122,10 @@ body {
   overflow: hidden;
 }
 .sidebar {
-  flex: 0 0 30%;
+  flex: 0 0 250px; /* reasonable default */
   min-width: 150px;
   max-width: 400px;
-  transition: width 0.3s ease, opacity 0.3s ease;
+  transition: flex-basis 0.3s ease, opacity 0.3s ease;
   background: var(--surface-1);
   border-right: 1px solid var(--border);
   display: flex;
@@ -99,7 +133,14 @@ body {
   min-height: 0;
   color: var(--text);
 }
-.sidebar.hidden { width: 0; opacity: 0; }
+.sidebar.hidden {
+  flex-basis: 0;
+  opacity: 0;
+}
+.main-content {
+  flex: 1; /* always fill remaining space */
+  transition: flex 0.3s ease;
+}
 
 /* ===========================
    Unified Header Styles
@@ -113,14 +154,8 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
-  box-sizing: border-box;
   overflow: hidden;
-}
-.sidebar-header,
-.chat-header,
-.sidebar-header *,
-.chat-header * {
-  line-height: 1.2; /* Normalize line-height inside headers */
+  line-height: 1.2;
 }
 .sidebar-header {
   background: linear-gradient(180deg,
@@ -154,11 +189,10 @@ body {
   height: 20px;
   margin-right: 8px;
   flex-shrink: 0;
-  display: block; /* prevent inline baseline issues */
+  display: block;
   fill: currentColor;
 }
 
-.main-content { width: 70%; transition: width 0.3s ease; }
 .new-chat {
   margin: 8px;
   padding: 10px 14px;
@@ -170,14 +204,11 @@ body {
   cursor: pointer;
 }
 
-/* ... (rest of your chat list, window, input area styles unchanged) ... */
-
 /* ===========================
    Responsive
    =========================== */
 @media (max-width: 768px) {
-  .sidebar { width: 30%; }
-  .main-content { width: 85%; }
+  .sidebar { flex: 0 0 200px; }
 }
 @media (max-width: 599.98px) {
   .chat-header {
