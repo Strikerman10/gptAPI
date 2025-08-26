@@ -104,19 +104,19 @@ document.addEventListener("DOMContentLoaded", () => {
   // CHAT FUNCTIONS
   // ==========================
   function createNewChat() {
-    const newChat = {
-      id: Date.now().toString(),
-      title: "New Chat", // will be replaced once user sends message
-      messages: [{ role: "system", content: "How can I help, Barney?", time: formatTime() }]
-    };
-    chats.unshift(newChat);
-    currentIndex = 0;
-    saveChats();
-    renderChatList();
-    renderMessages();
-    saveChatsToWorker();
-  }
-
+  const newChat = {
+    id: Date.now().toString(),
+    title: "New Chat",
+    messages: [],  // <-- no bubble to render now
+  };
+  chats.unshift(newChat);
+  currentIndex = 0;
+  saveChats();
+  renderChatList();
+  renderMessages();
+  saveChatsToWorker();
+}
+  
   function renderChatList() {
     chatListEl.innerHTML = "";
     chats.forEach((chat, i) => {
@@ -282,3 +282,4 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
