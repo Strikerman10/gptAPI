@@ -14,12 +14,12 @@ html, body {
    🎨 MASTER THEME COLORS
    =========================== */
 :root {
-  --color-1: #94e8b4; /* light accent */
-  --color-2: #72bda3; /* mid accent */
-  --color-3: #5e8c61; /* primary green */
-  --color-4: #4e6151; /* dark neutral */
-  --color-5: #3b322c; /* very dark base */
-  --color-6: #800000; /* deep maroon */
+  --color-1: #94e8b4;
+  --color-2: #72bda3;
+  --color-3: #5e8c61;
+  --color-4: #4e6151;
+  --color-5: #3b322c;
+  --color-6: #800000;
 }
 
 /* ===========================
@@ -71,12 +71,8 @@ body.dark-mode {
 /* ===========================
    Base Setup
    =========================== */
-html {
-  color-scheme: light;
-}
-body.dark-mode {
-  color-scheme: dark;
-}
+html { color-scheme: light; }
+body.dark-mode { color-scheme: dark; }
 body {
   background: var(--bg);
   color: var(--text);
@@ -109,7 +105,9 @@ body {
   opacity: 0;
 }
 
-/* Shared header style for sidebar and chat */
+/* ===========================
+   Unified Header Styles
+   =========================== */
 .sidebar-header,
 .chat-header {
   height: 60px;
@@ -120,12 +118,32 @@ body {
 }
 
 .sidebar-header {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--primary), black 6%) 0%, var(--primary) 100%);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--primary), black 6%) 0%,
+    var(--primary) 100%);
   color: var(--primary-contrast);
   font-weight: 600;
   gap: 8px;
   white-space: nowrap;
   overflow: hidden;
+}
+
+.chat-header {
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--primary), black 6%) 0%,
+    var(--primary) 100%);
+  color: var(--primary-contrast);
+  font-weight: 600;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+}
+.chat-header .chat-title {
+  font-weight: 600;
+  font-size: 16px;
+  white-space: nowrap;
+  color: white;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sidebar-icon {
@@ -134,10 +152,7 @@ body {
   fill: currentColor;
 }
 
-.main-content {
-  width: 70%;
-  transition: width 0.3s ease;
-}
+.main-content { width: 70%; transition: width 0.3s ease; }
 .new-chat {
   margin: 8px;
   padding: 10px 14px;
@@ -149,6 +164,9 @@ body {
   cursor: pointer;
 }
 
+/* ===========================
+   Chat List
+   =========================== */
 .chat-list {
   overflow-y: auto;
   padding: 10px;
@@ -169,24 +187,17 @@ body {
   margin-bottom: 8px;
   color: var(--text);
 }
-.chat-item:hover {
-  background: var(--surface-hover);
-}
-
-.chat-preview {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
+.chat-item:hover { background: var(--surface-hover); }
+.chat-preview { display: flex; flex-direction: column; min-width: 0; }
 .chat-title {
   font-weight: 600;
   color: var(--text);
   font-size: 14px;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
   max-width: 60ch;
 }
 .chat-subtitle {
@@ -218,11 +229,7 @@ body {
   transition: background-color 0.12s ease, color 0.12s ease, transform 0.06s ease, box-shadow 0.08s ease;
   outline: none;
 }
-.delete-btn svg {
-  width: 18px;
-  height: 18px;
-  display: block;
-}
+.delete-btn svg { width: 18px; height: 18px; display: block; }
 .chat-item:hover .delete-btn,
 .delete-btn:focus {
   background: var(--color-6);
@@ -230,11 +237,11 @@ body {
   transform: translateY(-50%) scale(1.03);
   box-shadow: 0 2px 6px rgba(0,0,0,0.12);
 }
-.delete-btn:focus {
-  box-shadow: 0 0 0 3px var(--ring);
-}
+.delete-btn:focus { box-shadow: 0 0 0 3px var(--ring); }
 
-/* Chat Window */
+/* ===========================
+   Chat Window & Messages
+   =========================== */
 .chat-window {
   flex: 1 1 auto;
   min-width: 0;
@@ -251,12 +258,7 @@ body {
   flex-direction: column;
   gap: 12px;
 }
-
-/* Chat Bubbles */
-.chat-container {
-  display: flex;
-  flex-direction: column;
-}
+.chat-container { display: flex; flex-direction: column; }
 .message {
   max-width: 75%;
   padding: 0.75rem 1rem;
@@ -323,6 +325,7 @@ body {
   cursor: pointer;
   font-weight: 600;
 }
+
 .chat-item.selected {
   background: color-mix(in srgb, var(--accent) 15%, transparent);
   border: 1px solid var(--accent);
@@ -330,24 +333,8 @@ body {
 }
 
 /* ===========================
-   Chat Header
+   Header Controls
    =========================== */
-.chat-header {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--primary), black 6%) 0%, var(--primary) 100%);
-  color: var(--primary-contrast);
-  font-weight: 600;
-  justify-content: space-between;
-  flex-wrap: nowrap;
-}
-.chat-header .chat-title {
-  font-weight: 600;
-  font-size: 16px;
-  white-space: nowrap;
-  color: white;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .header-controls {
   display: flex;
   align-items: center;
@@ -371,24 +358,11 @@ body {
   background: var(--color-3);
   color: #fff;
 }
-.header-controls select:focus,
-.header-controls button:focus {
-  outline: none;
-  background: var(--color-6);
-  color: #fff;
-}
 .header-controls select {
   appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   text-align-last: center;
   max-width: 100px;
   flex-shrink: 1;
-}
-.header-controls button svg {
-  width: 20px;
-  height: 20px;
-  vertical-align: middle;
 }
 #toggleThemeBtn,
 #toggleSidebarBtn {
@@ -402,33 +376,17 @@ body {
   padding: 6px;
   border-radius: 4px;
 }
-#toggleSidebarBtn svg,
-#toggleThemeBtn svg {
-  flex-shrink: 0;
-}
-
-.icon {
-  width: 20px;
-  height: 20px;
-}
-.hidden {
-  display: none;
-}
+.hidden { display: none; }
 
 /* ===========================
    Responsive
    =========================== */
 @media (max-width: 768px) {
-  .sidebar {
-    width: 30%;
-    min-width: unset;
-  }
-  .main-content {
-    width: 85%;
-  }
+  .sidebar { width: 30%; }
+  .main-content { width: 85%; }
 }
 
-/* clean 2-line layout below 600px */
+/* ✅ Clean 2-line layout below 600px */
 @media (max-width: 599.98px) {
   .chat-header {
     flex-wrap: wrap;
