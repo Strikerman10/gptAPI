@@ -80,7 +80,6 @@ body.dark-mode {
 body {
   background: var(--bg);
   color: var(--text);
-  transition: background-color 0.3s ease, color 0.3s ease; /* smooth mode switch */
 }
 
 /* ===========================
@@ -125,10 +124,11 @@ body {
   overflow: hidden;
   white-space: nowrap;
 }
+
 .sidebar-icon {
   vertical-align: middle;
   margin-right: 0.5em;
-  fill: currentColor;
+  fill: currentColor; /* makes the icon match text color */
 }
 
 .main-content {
@@ -169,6 +169,7 @@ body {
 .chat-item:hover {
   background: var(--surface-hover);
 }
+
 .chat-preview {
   display: flex;
   flex-direction: column;
@@ -183,7 +184,8 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 60ch;
+  max-width: calc(100% - 64px);
+   max-width: 60ch; /* ~60 characters worth of space */
 }
 .chat-subtitle {
   font-size: 12px;
@@ -214,8 +216,13 @@ body {
   justify-content: center;
   cursor: pointer;
   transition: background-color 0.12s ease, color 0.12s ease, transform 0.06s ease, box-shadow 0.08s ease;
+  outline: none;
 }
-.delete-btn svg { width: 18px; height: 18px; display: block; }
+.delete-btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
 .chat-item:hover .delete-btn,
 .delete-btn:focus {
   background: var(--color-6);
@@ -223,7 +230,9 @@ body {
   transform: translateY(-50%) scale(1.03);
   box-shadow: 0 2px 6px rgba(0,0,0,0.12);
 }
-.delete-btn:focus { box-shadow: 0 0 0 3px var(--ring); }
+.delete-btn:focus {
+  box-shadow: 0 0 0 3px var(--ring);
+}
 
 /* ===========================
    Chat Window
@@ -248,6 +257,10 @@ body {
 /* ===========================
    Chat Bubbles
    =========================== */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+}
 .message {
   max-width: 85%;
   padding: 0.75rem 1rem;
@@ -261,20 +274,32 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
   animation: fadeInUp 0.25s ease;
 }
+
+/* USER’s message bubble — right side */
 .message.user {
   background: var(--user-bubble-bg);
   color: var(--user-bubble-text);
   border-bottom-right-radius: 0.3rem;
-  align-self: flex-end;
+  align-self: flex-end;   /* <— this puts it on the right */
 }
+
+/* ASSISTANT’s bubble — left side */
 .message.assistant {
   background: var(--assistant-bubble-bg);
   color: var(--assistant-bubble-text);
   border-bottom-left-radius: 0.3rem;
-  align-self: flex-start;
+  align-self: flex-start;  /* already left aligned */
 }
-.msg-time { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.25rem; text-align: right; }
-@keyframes fadeInUp { from {opacity:0; transform:translateY(6px);} to {opacity:1; transform:translateY(0);} }
+.msg-time {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+  text-align: right;
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 /* ===========================
    Input Area
@@ -300,18 +325,22 @@ body {
   font-size: 14px;
 }
 .send-btn {
-  width: 40px;
-  height: 40px;
+  width: 40px;                     /* same width as show/hide button */
+  height: 40px;                    /* same height */
   background: var(--color-6);
-  color: var(--primary-contrast);
+  color: var(--primary-contrast);  /* controls the icon color */
   border: none;
-  border-radius: 8px;
+  border-radius: 8px;              /* keep same rounding */
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.send-btn svg { width: 20px; height: 20px; }
+
+.send-btn svg {
+  width: 20px;
+  height: 20px;
+}
 .chat-item.selected {
   background: color-mix(in srgb, var(--accent) 15%, transparent);
   border: 1px solid var(--accent);
@@ -324,7 +353,6 @@ body {
 .chat-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 0 16px;
   height: 60px;
   background: linear-gradient(180deg, color-mix(in srgb, var(--primary), black 6%) 0%, var(--primary) 100%);
@@ -334,6 +362,8 @@ body {
 .chat-header .chat-title {
   font-weight: 600;
   font-size: 16px;
+  line-height: 60px;
+  white-space: nowrap;
   color: white;
 }
 .header-controls {
@@ -342,8 +372,117 @@ body {
   gap: 8px;
   margin-left: auto;
 }
-.header-controls button svg { width: 20px; height: 20px; vertical-align: middle; }
-#toggleThemeBtn, #toggleSidebarBtn {
+
+/* UPDATED: Header control buttons & select */
+.header-controls button,
+.header-controls select {
+  font-size: 14px;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 8px;
+  border: none;
+  background: var(--color-6);   /* maroon default */
+  color: #fff;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.header-controls button:hover,
+.header-controls select:hover {
+  background: var(--color-3);   /* green on hover */
+  color: #fff;
+}
+.header-controls select:focus,
+.header-controls button:focus {
+  background: var(--color-6);   /* stay maroon when focused/selected */
+  color: #fff;
+}
+.header-controls select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-align-last: center;
+}
+.icon {
+  width: 20px;
+  height: 20px;
+}
+
+.hidden {
+  display: none;
+}
+/* container */
+.theme-selector {
+  position: relative;
+  display: inline-block;
+}
+
+/* button (same as others) */
+.theme-btn {
+  width: 40px;
+  height: 40px;
+  background: var(--color-6);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+/* icon sizing */
+.theme-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* dropdown menu */
+.theme-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 45px; /* below button */
+  left: 0;
+  background: var(--color-6);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  display: none;
+  min-width: 100px;
+  z-index: 1000;
+}
+
+/* dropdown items */
+.theme-menu li {
+  padding: 8px 12px;
+  cursor: pointer;
+  color: var(--primary-contrast);
+}
+
+.theme-menu li:hover {
+  background: var(--color-5);
+}
+/* ===========================
+   Responsive
+   =========================== */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 30%;
+    min-width: unset;
+  }
+  .main-content {
+    width: 85%;
+  }
+}
+
+/* --- normalize header button icons --- */
+.header-controls button svg {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
+
+#toggleThemeBtn,
+#toggleSidebarBtn {
   color: #fff;
   background: maroon;
   border: none;
@@ -352,62 +491,40 @@ body {
   align-items: center;
   justify-content: center;
   padding: 6px;
-  border-radius: 4px;
+  border-radius: 4px; /* optional */
 }
 
-/* ===========================
-   Palette Dropdown (UPDATED)
-   =========================== */
-.theme-selector { position: relative; display: inline-block; }
-#themeBtn {
-  background: maroon;
-  border: none;
-  cursor: pointer;
-  color: #fff;
-  padding: 4px;
-  border-radius: 4px;
-  display: flex; align-items: center; justify-content: center;
+#toggleSidebarBtn svg,
+#toggleThemeBtn svg {
+  flex-shrink: 0;
 }
-#themeMenu {
-  position: absolute;
-  right: 0;
-  margin-top: 4px;
-  background: var(--surface-1, #fff);
-  border: 1px solid var(--border, #ccc);
-  border-radius: 4px;
-  list-style: none;
-  padding: 0;
-  min-width: 140px;
-  z-index: 1000;
-  opacity: 0;
-  transform: translateY(-5px);
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-#themeMenu.open {
-  opacity: 1;
-  transform: translateY(0);
-  visibility: visible;
-  pointer-events: auto;
-}
-#themeMenu li { padding: 6px 12px; cursor: pointer; }
-#themeMenu li:hover { background: var(--surface-hover, #eee); }
-#themeMenu li.active {
-  background: var(--color-2);
-  font-weight: bold;
-  color: var(--text);
+/* Chat header as a flex container */
+.chat-header {
+  display: flex;
+  align-items: center;       /* vertically align buttons and text */
+  justify-content: space-between; /* push title left, controls right */
+  padding: 0.5rem 1rem;      /* adjust as needed */
+  box-sizing: border-box;
 }
 
-/* ===========================
-   Responsive
-   =========================== */
-@media (max-width: 768px) {
-  .sidebar { width: 30%; min-width: unset; }
-  .main-content { width: 85%; }
+/* Keep controls horizontally aligned, prevent wrapping */
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;   /* space between buttons */
+  flex-wrap: nowrap; /* don't allow to wrap to next row */
 }
 @media (max-width: 599.98px) {
-  .chat-header { flex-wrap: wrap; }
-  .chat-header .chat-title { flex-basis: 100%; margin-bottom: 4px; }
-  .header-controls button { font-size: 12px; padding: 4px 8px; }
+  .chat-header {
+    flex-wrap: wrap;
+  }
+  .chat-header .chat-title {
+    flex-basis: 100%;
+    margin-bottom: 4px;
+  }
+  .header-controls button,
+  .header-controls select {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
 }
