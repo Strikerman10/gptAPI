@@ -128,7 +128,7 @@ body {
 .sidebar-icon {
   vertical-align: middle;
   margin-right: 0.5em;
-  fill: currentColor; /* makes the icon match text color */
+  fill: currentColor;
 }
 
 .main-content {
@@ -184,8 +184,7 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: calc(100% - 64px);
-   max-width: 60ch; /* ~60 characters worth of space */
+  max-width: 60ch;
 }
 .chat-subtitle {
   font-size: 12px;
@@ -274,21 +273,17 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
   animation: fadeInUp 0.25s ease;
 }
-
-/* USER’s message bubble — right side */
 .message.user {
   background: var(--user-bubble-bg);
   color: var(--user-bubble-text);
   border-bottom-right-radius: 0.3rem;
-  align-self: flex-end;   /* <— this puts it on the right */
+  align-self: flex-end;
 }
-
-/* ASSISTANT’s bubble — left side */
 .message.assistant {
   background: var(--assistant-bubble-bg);
   color: var(--assistant-bubble-text);
   border-bottom-left-radius: 0.3rem;
-  align-self: flex-start;  /* already left aligned */
+  align-self: flex-start;
 }
 .msg-time {
   font-size: 0.7rem;
@@ -345,27 +340,31 @@ body {
 .chat-header {
   display: flex;
   align-items: center;
+  justify-content: space-between; /* title left, controls right */
   padding: 0 16px;
   height: 60px;
   background: linear-gradient(180deg, color-mix(in srgb, var(--primary), black 6%) 0%, var(--primary) 100%);
   color: var(--primary-contrast);
   font-weight: 600;
+  box-sizing: border-box;
+  flex-wrap: nowrap;
 }
 .chat-header .chat-title {
   font-weight: 600;
   font-size: 16px;
-  line-height: 60px;
   white-space: nowrap;
   color: white;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
 .header-controls {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: nowrap;
   margin-left: auto;
 }
-
-/* UPDATED: Header control buttons & select */
 .header-controls button,
 .header-controls select {
   font-size: 14px;
@@ -373,18 +372,19 @@ body {
   cursor: pointer;
   border-radius: 8px;
   border: none;
-  background: var(--color-6);   /* maroon default */
+  background: var(--color-6);
   color: #fff;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 .header-controls button:hover,
 .header-controls select:hover {
-  background: var(--color-3);   /* green on hover */
+  background: var(--color-3);
   color: #fff;
 }
 .header-controls select:focus,
 .header-controls button:focus {
-  background: var(--color-6);   /* stay maroon when focused/selected */
+  outline: none;
+  background: var(--color-6);
   color: #fff;
 }
 .header-controls select {
@@ -392,14 +392,39 @@ body {
   -webkit-appearance: none;
   -moz-appearance: none;
   text-align-last: center;
+  max-width: 100px; /* 👈 prevent it pushing down on mobile */
+  flex-shrink: 1;
 }
+
 .icon {
   width: 20px;
   height: 20px;
 }
-
 .hidden {
   display: none;
+}
+
+/* normalize icons inside buttons */
+.header-controls button svg {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
+#toggleThemeBtn,
+#toggleSidebarBtn {
+  color: #fff;
+  background: maroon;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 4px;
+}
+#toggleSidebarBtn svg,
+#toggleThemeBtn svg {
+  flex-shrink: 0;
 }
 
 /* ===========================
@@ -414,47 +439,6 @@ body {
     width: 85%;
   }
 }
-
-/* --- normalize header button icons --- */
-.header-controls button svg {
-  width: 20px;
-  height: 20px;
-  vertical-align: middle;
-}
-
-#toggleThemeBtn,
-#toggleSidebarBtn {
-  color: #fff;
-  background: maroon;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px;
-  border-radius: 4px; /* optional */
-}
-
-#toggleSidebarBtn svg,
-#toggleThemeBtn svg {
-  flex-shrink: 0;
-}
-/* Chat header as a flex container */
-.chat-header {
-  display: flex;
-  align-items: center;       /* vertically align buttons and text */
-  justify-content: space-between; /* push title left, controls right */
-  padding: 0.5rem 1rem;      /* adjust as needed */
-  box-sizing: border-box;
-}
-
-/* Keep controls horizontally aligned, prevent wrapping */
-.header-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;   /* space between buttons */
-  flex-wrap: nowrap; /* don't allow to wrap to next row */
-}
 @media (max-width: 599.98px) {
   .chat-header {
     flex-wrap: wrap;
@@ -468,16 +452,3 @@ body {
     font-size: 12px;
     padding: 4px 8px;
   }
-}
-
-
-
-
-
-
-
-
-
-
-
-
