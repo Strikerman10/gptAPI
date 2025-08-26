@@ -125,6 +125,12 @@ body {
   white-space: nowrap;
 }
 
+.sidebar-icon {
+  vertical-align: middle;
+  margin-right: 0.5em;
+  fill: currentColor; /* makes the icon match text color */
+}
+
 .main-content {
   width: 70%;
   transition: width 0.3s ease;
@@ -411,6 +417,7 @@ body {
     padding: 4px 8px;
   }
 }
+
 
 
 
