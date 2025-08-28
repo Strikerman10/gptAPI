@@ -74,22 +74,20 @@
           </button>
 
           <!-- Palette Selector -->
-          <div class="theme-dropdown">
-            <button id="themeBtn" aria-label="Select color palette">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                <path fill="currentColor"
-                  d="M204.3 5C104.9 24.4 24.6 109.1 5.2 208.5c-24.7 126.7 62.8 243.6 189.5 268.3 118 23 236.6-47.3 259.6-165.3 21.5-110.2-43-219.4-148.8-259.5-29.5-11.2-62.2-15.3-95.2-12zm-37.3 78.6c23.4 0 42.5 19 42.5 42.5s-19 42.5-42.5 42.5-42.5-19-42.5-42.5 19-42.5 42.5-42.5zm-85 85c23.4 0 42.5 19 42.5 42.5s-19 42.5-42.5 42.5S39 234.5 39 211s19-42.5 42.5-42.5zm85 128c23.4 0 42.5 19 42.5 42.5s-19 42.5-42.5 42.5-42.5-19-42.5-42.5 19-42.5 42.5-42.5zm128-213c23.4 0 42.5 19 42.5 42.5s-19 42.5-42.5 42.5-42.5-19-42.5-42.5 19-42.5 42.5-42.5zm85 85c23.4 0 42.5 19 42.5 42.5s-19 42.5-42.5 42.5-42.5-19-42.5-42.5 19-42.5 42.5-42.5z"/>
-              </svg>
-            </button>
-            <select id="paletteSelector" aria-label="Select color palette">
-              <option value="Green">Green</option>
-              <option value="Blue">Blue</option>
-              <option value="Orange">Orange</option>
-              <option value="Purple">Purple</option>
-            </select>
-          </div>
-        </div> <!-- END header-controls -->
-      </div> <!-- END chat-header -->
+         <div class="theme-dropdown">
+  <button id="themeBtn" aria-label="Select color palette">
+    <!-- Palette SVG -->
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+      <path fill="currentColor" d="M204.3 5C104.9 24.4 24.6 109.1 ..."/>
+    </svg>
+  </button>
+  <select id="paletteSelector" aria-label="Select color palette" class="hidden">
+    <option value="Green">Green</option>
+    <option value="Blue">Blue</option>
+    <option value="Orange">Orange</option>
+    <option value="Purple">Purple</option>
+  </select>
+</div>
 
       <!-- Messages -->
       <div class="messages" id="messages" aria-live="polite"></div>
@@ -112,3 +110,4 @@
   <script src="app.js" defer></script>
 </body>
 </html>
+
