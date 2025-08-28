@@ -225,17 +225,16 @@ body {
 }
 #themeBtn:hover { background:var(--color-3); }
 
-/* Hide the select visually but keep it clickable by JS */
+/* Palette dropdown */
 #paletteSelector {
-  position: absolute;
-  left: -9999px;
-  opacity: 0;
-  width: 1px;
-  height: 1px;
-  pointer-events: none;
+  margin-left: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  color: var(--text);
+  font-size: 14px;
 }
-
-.hidden { display:none; }
 
 #paletteSelector.hidden {
   display: none;
@@ -251,3 +250,4 @@ body {
   .chat-header .chat-title{flex-basis:100%; margin-bottom:4px;}
   .header-controls button{width:32px;height:32px;}
 }
+
