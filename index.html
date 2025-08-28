@@ -1,139 +1,71 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ChatGPT</title>
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    .icon {
-      width: 20px;
-      height: 20px;
-    }
-    .hidden {
-      display: none;
-    }
-    /* Ensure icons follow button color */
-    #toggleThemeBtn {
-      color: #fff;         /* both sun & moon become white */
-      background: maroon;  /* your button background */
-      border: none;
-      cursor: pointer;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <title>ChatGPT App</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app-container">
-
-    <!-- Sidebar -->
-    <div class="sidebar" role="navigation" aria-label="Chat history">
+    
+    <!-- ========== Sidebar ========== -->
+    <aside class="sidebar">
       <div class="sidebar-header">
-        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15">
-          <path
-            fill="currentColor"
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M12.5 3h-10A1.5 1.5 0 0 0 1 4.5v5A1.5 1.5 0 0 0 2.5 11h5a.5.5 0 0 1 .354.146L10 13.294V11.5a.5.5 0 0 1 .5-.5h2A1.5 1.5 0 0 0 14 9.5v-5A1.5 1.5 0 0 0 12.5 3m-10-1h10A2.5 2.5 0 0 1 15 4.5v5a2.5 2.5 0 0 1-2.5 2.5H11v2.5a.5.5 0 0 1-.854.354L7.293 12H2.5A2.5 2.5 0 0 1 0 9.5v-5A2.5 2.5 0 0 1 2.5 2"
-          />
-        </svg>
-        <span>Chats</span>
+        <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Chats
       </div>
-      <button class="new-chat" id="newChatBtn">+ New Chat</button>
-      <div class="chat-list" id="chatList" aria-live="polite"></div>
-    </div>
-
-    <!-- Chat Window -->
-    <div class="chat-window" role="main">
+      <button id="newChatBtn" class="new-chat">+ New Chat</button>
+      <div id="chatList" class="chat-list"></div>
+    </aside>
+    
+    <!-- ========== Main Content ========== -->
+    <div class="main-content">
+      
       <!-- Header -->
-      <div class="chat-header" id="chatHeader">
-        <span class="chat-title">Barney's ChatGPT</span>
+      <div class="chat-header">
+        <span class="chat-title">ChatGPT</span>
         <div class="header-controls">
-
-          <!-- Sidebar Toggle -->
-          <button id="toggleSidebarBtn" aria-label="Toggle Sidebar">
-            <!-- Hide icon -->
-            <svg class="icon hide-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15">
-              <path
-                fill="currentColor"
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-                d="M1.5 3a.5.5 0 0 0 0 1h12a.5.5 0 0 0 0-1zM1 7.5a.5.5 0 0 1 .5-.5h12a.5.5 0 0 1 0 1h-12a.5.5 0 0 1-.5-.5m0 4a.5.5 0 0 1 .5-.5h12a.5.5 0 0 1 0 1h-12a.5.5 0 0 1-.5-.5"
-              />
-            </svg>
-            <!-- Show icon -->
-            <svg class="icon show-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-              <path
-                fill="none"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 8h15M5 16h22M5 24h22M5 11l3-3l-3-3"
-              />
-            </svg>
+          <!-- 🎨 Palette button -->
+          <button id="themeBtn" title="Change Palette">🎨</button>
+          <select id="paletteSelector">
+            <option>Green</option>
+            <option>Blue</option>
+            <option>Orange</option>
+            <option>Purple</option>
+          </select>
+          
+          <!-- 🌙/☀️ Light/Dark toggle -->
+          <button id="toggleThemeBtn" title="Light/Dark">
+            <span class="light-icon">☀️</span>
+            <span class="dark-icon hidden">🌙</span>
           </button>
-
-          <!-- Theme Toggle -->
-          <button id="toggleThemeBtn" aria-label="Toggle Light/Dark Mode">
-            <!-- Moon -->
-            <svg class="icon dark-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M21.46 16.54A10.51 10.51 0 1 1 12 1.49a10.34 10.34 0 0 1 2.8.38 8.12 8.12 0 0 0 2.45 15.86 8 8 0 0 0 4.21-1.19z"
-                    fill="none" stroke="currentColor" stroke-width="1.9"/>
-            </svg>
-            <!-- Sun -->
-            <svg class="icon light-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340.127 340.127">
-              <path d="M181.401 0h-22.675v56.688h22.675V0zm-139.611 282.306l16.031 16.031 40.09-40.09-16.031-16.031-40.09 40.09zm14.898-123.58H0v22.675h56.688v-22.675zm241.649-100.904L282.306 41.79l-40.09 40.09 16.031 16.031 40.09-40.09zM237.749 265.39l40.747 40.747 16.303-16.303-40.747-40.747-16.303 16.303zm45.69-106.664v22.675h56.688v-22.675H283.439zM170.064 79.363c-50.089 0-90.701 40.611-90.701 90.701s40.611 90.701 90.701 90.701 90.701-40.611 90.701-90.701-40.612-90.701-90.701-90.701zm0 158.726c-37.573 0-68.025-30.453-68.025-68.025s30.452-68.025 68.025-68.025 68.025 30.453 68.025 68.025-30.452 68.025-68.025 68.025zm-11.338 102.038h22.675v-56.688h-22.675v56.688zM91.041 86.098l-40.747-40.77L33.99 61.631l40.747 40.747 16.304-16.28z"
-                    fill="currentColor"/>
-            </svg>
+          
+          <!-- ⬅️/➡️ Sidebar toggle -->
+          <button id="toggleSidebarBtn" title="Toggle Sidebar">
+            <span class="show-icon">➡️</span>
+            <span class="hide-icon hidden">⬅️</span>
           </button>
-
-          <!-- Palette Selector -->
-          <div class="theme-dropdown">
-            <button id="themeBtn" aria-label="Select color palette">
-              <!-- 🎨 Palette icon -->
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                <path fill="currentColor"
-                      d="M204.3 5C104.9 24.4 24.6 109.1 5.2 208.5c-24.7 126.7 62.8 243.6 189.5 268.3 118 23 236.6-47.3 259.6-165.3 21.5-110.2-43-219.4-148.8-259.5-29.5-11.2-62.2-15.3-95.2-12zm-37.3 78.6c23.4 0 42.5 19 42.5 42.5s-19 42.5-42.5 42.5-42.5-19-42.5-42.5 19-42.5 42.5-42.5zm-85 85c23.4 0 42.5 19 42.5 42.5s-19 42.5-42.5 42.5S39 234.5 39 211s19-42.5 42.5-42.5zm85 128c23.4 0 42.5 19 42.5 42.5s-19 42.5-42.5 42.5-42.5-19-42.5-42.5 19-42.5 42.5-42.5zm128-213c23.4 0 42.5 19 42.5 42.5s-19 42.5-42.5 42.5-42.5-19-42.5-42.5 19-42.5 42.5-42.5zm85 85c23.4 0 42.5 19 42.5 42.5s-19 42.5-42.5 42.5-42.5-19-42.5-42.5 19-42.5 42.5-42.5z"/>
-              </svg>
-            </button>
-
-            <!-- original select, hidden -->
-            <select id="paletteSelector" aria-label="Select color palette">
-              <option value="Green">Green</option>
-              <option value="Blue">Blue</option>
-              <option value="Orange">Orange</option>
-              <option value="Purple">Purple</option>
-            </select>
-          </div>
-        </div> <!-- END header-controls -->
-      </div> <!-- END chat-header -->
-
-      <!-- Messages -->
-      <div class="messages" id="messages" aria-live="polite"></div>
-
-      <!-- Input -->
-      <div class="input-area">
-        <textarea id="input" placeholder="Type your message..."></textarea>
-
-        <!-- Send button -->
-        <button class="send-btn" id="sendBtn" type="submit">
-          <svg xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              width="20" height="20"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round">
-            <path d="M20 12L4 4L6 12M20 12L4 20L6 12M20 12H6"/>
-          </svg>
-        </button>
+        </div>
       </div>
-    </div> <!-- END chat-window -->
+      
+      <!-- Chat messages -->
+      <div class="chat-window">
+        <div id="messages" class="messages"></div>
+        <div class="input-area">
+          <textarea id="input" placeholder="Type your message..."></textarea>
+          <button id="sendBtn" class="send-btn">
+            <!-- Send Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
 
-  </div> <!-- END app-container -->
-
-  <!-- JS app -->
-  <script src="app.js" defer></script>
+  <!-- JS -->
+  <script src="app.js"></script>
 </body>
 </html>
