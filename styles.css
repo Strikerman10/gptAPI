@@ -208,7 +208,7 @@ body { background:var(--bg); color:var(--text); }
 #themeBtn,
 #toggleThemeBtn,
 #toggleSidebarBtn {
-  background: var(--primary) !important;
+  background: var(--color-6) !important;
   color: var(--primary-contrast) !important;
   border: none;
   border-radius: 8px;
@@ -252,4 +252,5 @@ body { background:var(--bg); color:var(--text); }
   .chat-header .chat-title{flex-basis:100%; margin-bottom:4px;}
   .header-controls button{width:32px;height:32px;}
 }
+
 
