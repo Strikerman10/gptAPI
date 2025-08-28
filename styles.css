@@ -218,14 +218,21 @@ body {
   display:flex; align-items:center; justify-content:center;
 }
 
-/* 🎨 Palette button (#themeBtn) looks like other header buttons */
+/* 🎨 Palette button (#themeBtn) */
 #themeBtn {
   background:var(--color-6);
   display:flex; align-items:center; justify-content:center;
 }
 #themeBtn:hover { background:var(--color-3); }
 
-/* Palette dropdown */
+/* ===========================
+   Palette Dropdown
+   =========================== */
+.theme-dropdown {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
 #paletteSelector {
   margin-left: 0.5rem;
   padding: 0.25rem 0.5rem;
@@ -234,13 +241,15 @@ body {
   background: var(--surface-1);
   color: var(--text);
   font-size: 14px;
+  z-index: 10;
 }
+#paletteSelector.hidden { display: none; }
 
-#paletteSelector.hidden {
-  display: none;
-}
+.hidden { display: none; }
 
-/* Responsive */
+/* ===========================
+   Responsive
+   =========================== */
 @media (max-width:768px){
   .sidebar{width:30%;min-width:unset;}
   .main-content{width:85%;}
@@ -250,4 +259,3 @@ body {
   .chat-header .chat-title{flex-basis:100%; margin-bottom:4px;}
   .header-controls button{width:32px;height:32px;}
 }
-
