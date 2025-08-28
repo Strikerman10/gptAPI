@@ -237,6 +237,10 @@ body {
 
 .hidden { display:none; }
 
+#paletteSelector.hidden {
+  display: none;
+}
+
 /* Responsive */
 @media (max-width:768px){
   .sidebar{width:30%;min-width:unset;}
@@ -247,39 +251,3 @@ body {
   .chat-header .chat-title{flex-basis:100%; margin-bottom:4px;}
   .header-controls button{width:32px;height:32px;}
 }
-```
-
----
-
-✅ Now your CSS:
-- Gives the **palette button (#themeBtn)** same look & hover style as the other header buttons.  
-- Hides the `#paletteSelector` safely, so `paletteSelector.click()` works.  
-- Keeps all previous layout + theme definitions intact.
-
----
-
-👉 Next step: Make sure your HTML has this structure in the header:
-
-```html
-<div class="chat-header">
-  <span class="chat-title">ChatGPT</span>
-  <div class="header-controls">
-    <button id="themeBtn" title="Change Palette">🎨</button>
-    <select id="paletteSelector">
-      <option>Green</option>
-      <option>Blue</option>
-      <option>Orange</option>
-      <option>Purple</option>
-    </select>
-
-    <button id="toggleThemeBtn" title="Light/Dark">
-      <span class="light-icon">☀️</span>
-      <span class="dark-icon hidden">🌙</span>
-    </button>
-
-    <button id="toggleSidebarBtn" title="Toggle Sidebar">
-      <span class="show-icon">➡️</span>
-      <span class="hide-icon hidden">⬅️</span>
-    </button>
-  </div>
-</div>
