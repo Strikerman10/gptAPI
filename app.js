@@ -248,22 +248,19 @@ document.addEventListener("DOMContentLoaded", () => {
     applyTheme(); 
   });
 
-  // Palette dropdown
+  // Palette dropdown toggle via 🎨 button
+  paletteBtn.addEventListener("click", () => {
+    paletteSelector.classList.toggle("hidden");
+    if (!paletteSelector.classList.contains("hidden")) {
+      paletteSelector.focus();
+    }
+  });
+
   paletteSelector.addEventListener("change", e => {
     currentPalette = e.target.value; 
     applyTheme();
+    paletteSelector.classList.add("hidden"); // hide after selection
   });
-
- paletteBtn.addEventListener("click", () => {
-  paletteSelector.classList.toggle("hidden");
-  if (!paletteSelector.classList.contains("hidden")) {
-    // Optional: immediately open native dropdown
-    paletteSelector.focus();
-    paletteSelector.size = paletteSelector.options.length; // expands to list
-  } else {
-    paletteSelector.size = 0; // collapse
-  }
-});
 
   // Sidebar toggle
   toggleSidebarBtn.addEventListener("click", () => {
@@ -287,4 +284,3 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
-
