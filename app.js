@@ -254,9 +254,16 @@ document.addEventListener("DOMContentLoaded", () => {
     applyTheme();
   });
 
-  paletteBtn.addEventListener("click", () => {
-    paletteSelector.click(); // opens native dropdown
-  });
+ paletteBtn.addEventListener("click", () => {
+  paletteSelector.classList.toggle("hidden");
+  if (!paletteSelector.classList.contains("hidden")) {
+    // Optional: immediately open native dropdown
+    paletteSelector.focus();
+    paletteSelector.size = paletteSelector.options.length; // expands to list
+  } else {
+    paletteSelector.size = 0; // collapse
+  }
+});
 
   // Sidebar toggle
   toggleSidebarBtn.addEventListener("click", () => {
@@ -280,3 +287,4 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
