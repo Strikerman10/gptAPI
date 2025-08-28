@@ -14,9 +14,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const headerEl = document.getElementById("chatHeader").querySelector("span");
   const inputEl = document.getElementById("input");
   const paletteSelector = document.getElementById("paletteSelector");
-  const themeBtn = document.getElementById("toggleThemeBtn");
+  const themeToggleBtn = document.getElementById("toggleThemeBtn"); // 🌙/☀️ toggle
   const sidebarEl = document.querySelector(".sidebar");
   const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
+  const paletteBtn = document.getElementById("themeBtn"); // 🎨 palette button
 
   // ==========================
   // PALETTE & THEME
@@ -104,11 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // CHAT FUNCTIONS
   // ==========================
   function createNewChat() {
-    const newChat = {
-      id: Date.now().toString(),
-      title: "New Chat",
-      messages: [],
-    };
+    const newChat = { id: Date.now().toString(), title: "New Chat", messages: [] };
     chats.unshift(newChat);
     currentIndex = 0;
     saveChats();
@@ -166,24 +163,18 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderMessages() {
     messagesEl.innerHTML = "";
     headerEl.textContent = "ChatGPT"; 
-
     if (currentIndex === null || !chats[currentIndex]) return;
-
     const chat = chats[currentIndex];
-
     chat.messages.forEach(msg => {
       const div = document.createElement("div");
       div.className = `message ${msg.role}`;
       div.innerText = msg.content;
-
       const timeDiv = document.createElement("div");
       timeDiv.className = "msg-time";
       timeDiv.textContent = msg.time || "";
-
       div.appendChild(timeDiv);
       messagesEl.appendChild(div);
     });
-
     messagesEl.scrollTop = messagesEl.scrollHeight;
   }
 
@@ -193,21 +184,16 @@ document.addEventListener("DOMContentLoaded", () => {
   async function sendMessage() {
     const text = inputEl.value.trim();
     if (!text) return;
-
     if (currentIndex === null) createNewChat();
     const chat = chats[currentIndex];
-
     const userMessage = { role: "user", content: text, time: formatTime() };
     chat.messages.push(userMessage);
-
     if (chat.title === "New Chat" || !chat.title) {
       const firstLine = text.split(/\r?\n/)[0];
       chat.title = firstLine.length > 40 ? firstLine.slice(0, 40) + "…" : firstLine;
     }
-
     const thinkingMessage = { role: "assistant", content: "Thinking...", time: formatTime() };
     chat.messages.push(thinkingMessage);
-
     renderMessages();
     inputEl.value = "";
     saveChats();
@@ -220,16 +206,13 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ model: MODEL, messages: recentMessages }),
       });
-
       if (!res.ok) throw new Error(`Worker returned ${res.status}`);
       const data = await res.json();
-
       const answer = data?.choices?.[0]?.message?.content || "No response";
       chat.messages[chat.messages.length - 1] = { role: "assistant", content: answer, time: formatTime() };
     } catch (e) {
       chat.messages[chat.messages.length - 1] = { role: "assistant", content: "Error: " + e.message, time: formatTime() };
     }
-
     saveChats();
     saveChatsToWorker();
     renderMessages();
@@ -248,48 +231,42 @@ document.addEventListener("DOMContentLoaded", () => {
     } 
   });
 
-  // ==========================
-  // Palette & Theme (UPDATED FOR ICONS)
-  // ==========================
+  // Palette selector init
   paletteSelector.value = currentPalette;
 
-  const darkIcon = themeBtn.querySelector(".dark-icon");
-  const lightIcon = themeBtn.querySelector(".light-icon");
-
-  // Set initial icon state
+  // Theme icon toggling
+  const darkIcon  = themeToggleBtn.querySelector(".dark-icon");
+  const lightIcon = themeToggleBtn.querySelector(".light-icon");
   darkIcon.classList.toggle("hidden", currentMode === "dark");
   lightIcon.classList.toggle("hidden", currentMode === "light");
 
-  paletteSelector.addEventListener("change", e => {
-    currentPalette = e.target.value; 
-    applyTheme(); 
-  });
-
-  themeBtn.addEventListener("click", () => { 
+  // Light/Dark button
+  themeToggleBtn.addEventListener("click", () => { 
     currentMode = currentMode === "light" ? "dark" : "light"; 
     darkIcon.classList.toggle("hidden", currentMode === "dark");
     lightIcon.classList.toggle("hidden", currentMode === "light");
     applyTheme(); 
   });
-  
+
+  // Palette dropdown
+  paletteSelector.addEventListener("change", e => {
+    currentPalette = e.target.value; 
+    applyTheme();
+  });
+
+  paletteBtn.addEventListener("click", () => {
+    paletteSelector.click(); // opens native dropdown
+  });
+
   // Sidebar toggle
   toggleSidebarBtn.addEventListener("click", () => {
     const isHidden = sidebarEl.style.display === "none";
     sidebarEl.style.display = isHidden ? "flex" : "none";
-
     const hideIcon = toggleSidebarBtn.querySelector(".hide-icon");
     const showIcon = toggleSidebarBtn.querySelector(".show-icon");
-
     hideIcon.classList.toggle("hidden", !isHidden); 
     showIcon.classList.toggle("hidden", isHidden);
   });
-
-    const themeBtn = document.getElementById("themeBtn");
-    const paletteSelect = document.getElementById("paletteSelector");
-
-    themeBtn.addEventListener("click", () => {
-    paletteSelect.click(); // opens native dropdown
-});
 
   // ==========================
   // INITIAL LOAD
@@ -303,4 +280,3 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
-
