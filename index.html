@@ -13,6 +13,7 @@
     .hidden {
       display: none;
     }
+
     /* Ensure icons follow button color */
     #toggleThemeBtn {
       color: #fff;
@@ -20,10 +21,36 @@
       border: none;
       cursor: pointer;
     }
-    /* palette dropdown styling */
+
+    /* 🎨 Palette dropdown positioning */
+    .theme-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    #themeBtn {
+      background: maroon;
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem;
+      cursor: pointer;
+    }
+    #themeBtn svg {
+      width: 22px;
+      height: 22px;
+      fill: #fff; /* force white so it doesn’t disappear */
+    }
     #paletteSelector {
-      margin-left: .5rem;
-      padding: .2rem;
+      position: absolute;
+      top: 110%;
+      right: 0;
+      z-index: 1000;
+      background: var(--surface-1, #fff);
+      color: var(--text, #000);
+      font-size: 14px;
+      border: 1px solid var(--border, #ccc);
+      border-radius: 6px;
+      padding: 0.25rem 0.5rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
     #paletteSelector.hidden {
       display: none;
@@ -80,12 +107,12 @@
           <!-- Palette Selector -->
           <div class="theme-dropdown">
             <button id="themeBtn" aria-label="Select color palette">
+              <!-- palette icon -->
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                <path fill="currentColor"
-                  d="M204.3 5C104.9 24.4 24.6 109.1 5.2 208.5c-24.7 126.7 62.8 243.6 189.5 268.3 118 23 236.6-47.3 259.6-165.3 21.5-110.2-43-219.4-148.8-259.5-29.5-11.2-62.2-15.3-95.2-12z"/>
+                <path d="M204.3 5C104.9 24.4 24.6 109.1 5.2 208.5c-24.7 126.7 62.8 243.6 189.5 268.3 118 23 236.6-47.3 259.6-165.3 21.5-110.2-43-219.4-148.8-259.5-29.5-11.2-62.2-15.3-95.2-12z"
+                      fill="currentColor" />
               </svg>
             </button>
-            <!-- now starts hidden -->
             <select id="paletteSelector" aria-label="Select color palette" class="hidden">
               <option value="Green">Green</option>
               <option value="Blue">Blue</option>
