@@ -463,6 +463,37 @@ body {
   gap: 0.5rem;   /* space between buttons */
   flex-wrap: nowrap; /* don't allow to wrap to next row */
 }
+/* Match all header buttons */
+.header-controls button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-6);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+.header-controls button:hover {
+  background: var(--color-3);
+}
+.header-controls button svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Hide the select visually but keep it accessible */
+.theme-dropdown select {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
 @media (max-width: 599.98px) {
   .chat-header {
     flex-wrap: wrap;
@@ -477,3 +508,4 @@ body {
     padding: 4px 8px;
   }
 }
+
