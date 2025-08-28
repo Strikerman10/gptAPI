@@ -284,6 +284,13 @@ document.addEventListener("DOMContentLoaded", () => {
     showIcon.classList.toggle("hidden", isHidden);
   });
 
+    const themeBtn = document.getElementById("themeBtn");
+    const paletteSelect = document.getElementById("paletteSelector");
+
+    themeBtn.addEventListener("click", () => {
+    paletteSelect.click(); // opens native dropdown
+});
+
   // ==========================
   // INITIAL LOAD
   // ==========================
@@ -296,3 +303,4 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
