@@ -203,7 +203,7 @@ body {
   display:flex; align-items:center; gap:0.5rem; flex-wrap:nowrap;
 }
 
-/* All header buttons (toggle theme, palette, sidebar) */
+/* All header buttons */
 .header-controls button {
   width:40px; height:40px;
   display:flex; align-items:center; justify-content:center;
@@ -218,30 +218,33 @@ body {
   display:flex; align-items:center; justify-content:center;
 }
 
-/* 🎨 Palette button (#themeBtn) */
+/* 🎨 Palette button */
 #themeBtn {
   background:var(--color-6);
   display:flex; align-items:center; justify-content:center;
 }
 #themeBtn:hover { background:var(--color-3); }
+#themeBtn svg { fill:#fff; } /* ensure icon always visible */
 
 /* ===========================
-   Palette Dropdown
+   Palette Dropdown (pop‑down)
    =========================== */
 .theme-dropdown {
-  display: flex;
-  align-items: center;
   position: relative;
+  display: inline-block;
 }
 #paletteSelector {
-  margin-left: 0.5rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 6px;
-  border: 1px solid var(--border);
+  position: absolute;
+  top: 110%;
+  right: 0;
+  z-index: 1000;
   background: var(--surface-1);
   color: var(--text);
   font-size: 14px;
-  z-index: 10;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 #paletteSelector.hidden { display: none; }
 
