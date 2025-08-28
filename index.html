@@ -88,36 +88,50 @@
           </button>
 
           <!-- Palette Selector -->
-          <select id="paletteSelector" aria-label="Select color palette">
-            <option value="Green">Green</option>
-            <option value="Blue">Blue</option>
-            <option value="Orange">Orange</option>
-            <option value="Purple">Purple</option>
-          </select>
-        </div>
-      </div>
+          <div class="theme-dropdown">
+            <button id="themeBtn" aria-label="Select color palette">
+              <!-- 🎨 Palette icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                <path fill="currentColor"
+                      d="M204.3 5C104.9 24.4 24.6 109.1 5.2 208.5c-24.7 126.7 62.8 243.6 189.5 268.3 118 23 236.6-47.3 259.6-165.3 21.5-110.2-43-219.4-148.8-259.5-29.5-11.2-62.2-15.3-95.2-12zm-37.3 78.6c23.4 0 42.5 19 42.5 42.5s-19 42.5-42.5 42.5-42.5-19-42.5-42.5 19-42.5 42.5-42.5zm-85 85c23.4 0 42.5 19 42.5 42.5s-19 42.5-42.5 42.5S39 234.5 39 211s19-42.5 42.5-42.5zm85 128c23.4 0 42.5 19 42.5 42.5s-19 42.5-42.5 42.5-42.5-19-42.5-42.5 19-42.5 42.5-42.5zm128-213c23.4 0 42.5 19 42.5 42.5s-19 42.5-42.5 42.5-42.5-19-42.5-42.5 19-42.5 42.5-42.5zm85 85c23.4 0 42.5 19 42.5 42.5s-19 42.5-42.5 42.5-42.5-19-42.5-42.5 19-42.5 42.5-42.5z"/>
+              </svg>
+            </button>
+
+            <!-- original select, hidden -->
+            <select id="paletteSelector" aria-label="Select color palette">
+              <option value="Green">Green</option>
+              <option value="Blue">Blue</option>
+              <option value="Orange">Orange</option>
+              <option value="Purple">Purple</option>
+            </select>
+          </div>
+        </div> <!-- END header-controls -->
+      </div> <!-- END chat-header -->
 
       <!-- Messages -->
       <div class="messages" id="messages" aria-live="polite"></div>
 
-    <!-- Input -->
-<div class="input-area">
-  <textarea id="input" placeholder="Type your message..."></textarea>
+      <!-- Input -->
+      <div class="input-area">
+        <textarea id="input" placeholder="Type your message..."></textarea>
 
-  <!-- Send button with your custom SVG -->
-  <button class="send-btn" id="sendBtn" type="submit">
-    <svg xmlns="http://www.w3.org/2000/svg"
-         viewBox="0 0 24 24"
-         width="20" height="20"
-         fill="none"
-         stroke="currentColor"
-         stroke-width="2"
-         stroke-linecap="round"
-         stroke-linejoin="round">
-      <path d="M20 12L4 4L6 12M20 12L4 20L6 12M20 12H6"/>
-    </svg>
-  </button>
-</div>
+        <!-- Send button -->
+        <button class="send-btn" id="sendBtn" type="submit">
+          <svg xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="20" height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round">
+            <path d="M20 12L4 4L6 12M20 12L4 20L6 12M20 12H6"/>
+          </svg>
+        </button>
+      </div>
+    </div> <!-- END chat-window -->
+
+  </div> <!-- END app-container -->
 
   <!-- JS app -->
   <script src="app.js" defer></script>
