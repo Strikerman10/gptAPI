@@ -202,6 +202,44 @@ body { background:var(--bg); color:var(--text); }
 }
 #paletteSelector.hidden { display:none; }
 
+/* Apply to ALL header buttons, regardless of container */
+.chat-header button,
+.header-controls button,
+#themeBtn,
+#toggleThemeBtn,
+#toggleSidebarBtn {
+  background: var(--primary) !important;
+  color: var(--primary-contrast) !important;
+  border: none;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color .2s, transform .1s;
+}
+
+/* Hover state */
+.chat-header button:hover,
+.header-controls button:hover,
+#themeBtn:hover,
+#toggleThemeBtn:hover,
+#toggleSidebarBtn:hover {
+  background: var(--accent) !important;
+}
+
+/* Force SVG inside them to obey currentColor */
+.chat-header button svg path,
+.header-controls button svg path,
+#themeBtn svg path,
+#toggleThemeBtn svg path,
+#toggleSidebarBtn svg path {
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
 /* ===========================
    Responsive
    =========================== */
@@ -214,3 +252,4 @@ body { background:var(--bg); color:var(--text); }
   .chat-header .chat-title{flex-basis:100%; margin-bottom:4px;}
   .header-controls button{width:32px;height:32px;}
 }
+
