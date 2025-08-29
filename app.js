@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
   "--color-3": "#9467bd",  /* medium purple */
   "--color-4": "#6a4c93",  /* deep muted violet */
   "--color-5": "#3e2c41",  /* near‑black purple */
-  "--color-6": "#ff7f50"   /* accent (contrasting coral) */
+  "--color-6": "#3acfcf";  /* teal accent (buttons, special actions) */
 }
   };
 
@@ -324,6 +324,7 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
 
 
 
