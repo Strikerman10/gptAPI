@@ -35,21 +35,22 @@
         <span class="chat-title">Barney's ChatGPT</span>
         <div class="header-controls">
 
-         <!-- Sidebar Toggle -->
-<!-- Sidebar Toggle -->
-      <button id="toggleSidebarBtn" aria-label="Toggle Sidebar">
-        <!-- Default icon (sidebar visible, click to hide) -->
-        <svg class="icon show-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15">
-          <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"
-            d="M1.5 3a.5.5 0 0 0 0 1h12a.5.5 0 0 0 0-1zM1 7.5a.5.5 0 0 1 .5-.5h12a.5.5 0 0 1 0 1h-12a.5.5 0 0 1-.5-.5m0 4a.5.5 0 0 1 .5-.5h12a.5.5 0 0 1 0 1h-12a.5.5 0 0 1-.5-.5"/>
-        </svg>
-      
-        <!-- Alternate icon (sidebar hidden, click to open) -->
-        <svg class="icon hide-icon hidden" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-          <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 8h15M5 16h22M5 24h22M5 11l3-3l-3-3"/>
-        </svg>
-      </button>
+          <!-- Sidebar Toggle -->
+          <button id="toggleSidebarBtn" aria-label="Toggle Sidebar">
+            <!-- Menu icon -->
+            <svg class="icon menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="4" y1="6" x2="20" y2="6"/>
+              <line x1="4" y1="12" x2="20" y2="12"/>
+              <line x1="4" y1="18" x2="20" y2="18"/>
+            </svg>
+            <!-- Close icon (hidden by default) -->
+            <svg class="icon close-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="6" y1="6" x2="18" y2="18"/>
+              <line x1="6" y1="18" x2="18" y2="6"/>
+            </svg>
+          </button>
 
           <!-- Theme Toggle (light/dark) -->
           <button id="toggleThemeBtn" aria-label="Toggle Light/Dark Mode">
@@ -107,6 +108,3 @@
   <script src="app.js" defer></script>
 </body>
 </html>
-
-
-
