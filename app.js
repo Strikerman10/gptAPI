@@ -23,10 +23,38 @@ document.addEventListener("DOMContentLoaded", () => {
   // PALETTE & THEME
   // ==========================
   const palettes = {
-    Green: { "--color-1": "#94e8b4", "--color-2": "#72bda3", "--color-3": "#5e8c61", "--color-4": "#4e6151", "--color-5": "#3b322c", "--color-6": "#800000" },
-    Blue: { "--color-1": "#b3cfff", "--color-2": "#7a9eff", "--color-3": "#437f97", "--color-4": "#2c5c63", "--color-5": "#1a1c2c", "--color-6": "#F67c03" },
-    Orange: { "--color-1": "#ffd6a5", "--color-2": "#ffb347", "--color-3": "#ff7f50", "--color-4": "#cc5500", "--color-5": "#662200", "--color-6": "#0f4d92" },
-    Purple: { "--color-1": "#2e0219", "--color-2": "#4a001f", "--color-3": "#6a0f49", "--color-4": "#6c9d9a", "--color-5": "#95eee9", "--color-6": "#800000" }
+    Green: {
+  "--color-1": "#94e8b4",  /* light mint green */
+  "--color-2": "#72bda3",  /* soft teal green */
+  "--color-3": "#5e8c61",  /* medium sage green */
+  "--color-4": "#4e6151",  /* muted deep green */
+  "--color-5": "#3b322c",  /* near‑black brown‑green */
+  "--color-6": "#800000"   /* accent (maroon/burgundy) */
+},
+    Blue: {
+  "--color-1": "#b3cfff",  /* light sky blue */
+  "--color-2": "#7a9eff",  /* medium periwinkle blue */
+  "--color-3": "#437f97",  /* teal‑blue accent */
+  "--color-4": "#2c5c63",  /* dark slate teal */
+  "--color-5": "#1a1c2c",  /* near‑black navy */
+  "--color-6": "#f67c03"   /* accent (vivid orange) */
+},
+    Orange: {
+  "--color-1": "#ffd6a5",  /* soft peach */
+  "--color-2": "#ffb347",  /* light orange */
+  "--color-3": "#ff7f50",  /* coral/orange midpoint */
+  "--color-4": "#cc5500",  /* deep burnt orange */
+  "--color-5": "#662200",  /* very dark brownish orange */
+  "--color-6": "#0f4d92"   /* accent (strong blue) */
+},
+    Purple: {
+  "--color-1": "#e3c6ff",  /* light lavender */
+  "--color-2": "#c19df0",  /* soft lilac */
+  "--color-3": "#9467bd",  /* medium purple */
+  "--color-4": "#6a4c93",  /* deep muted violet */
+  "--color-5": "#3e2c41",  /* near‑black purple */
+  "--color-6": "#ff7f50"   /* accent (contrasting coral) */
+}
   };
 
   const neutrals = {
@@ -296,4 +324,5 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
 
