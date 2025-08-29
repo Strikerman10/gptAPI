@@ -19,7 +19,7 @@ html, body {
   --color-3: #5e8c61; /* primary green */
   --color-4: #4e6151; /* dark neutral */
   --color-5: #3b322c; /* very dark base */
-  --color-6: #800000; /* deep maroon (available if you still want it elsewhere) */
+  --color-6: #800000; /* deep maroon (special actions) */
 }
 
 /* ===========================
@@ -86,17 +86,17 @@ body { background:var(--bg); color:var(--text); }
 .sidebar.hidden { width:0; opacity:0; }
 
 .sidebar-header {
-  height:60px; line-height:60px; padding:0 14px;
+  height:60px; padding:0 14px;
   background:linear-gradient(180deg, color-mix(in srgb, var(--primary), black 6%) 0%, var(--primary) 100%);
   color:var(--primary-contrast); font-weight:600;
-  display:flex; align-items:center; gap:8px; flex-wrap:nowrap;
+  display:flex; align-items:center; gap:8px;
 }
-.sidebar-icon { vertical-align:middle; margin-right:.5em; fill:currentColor; }
+.sidebar-icon { fill:currentColor; }
 
 .main-content { width:70%; transition:width .3s ease; }
 .new-chat {
   margin:8px; padding:10px 14px;
-  background-color: var(--color-6); /* leave maroon for "new chat" if desired */
+  background-color: var(--color-6);
   color:var(--primary-contrast); border:none; border-radius:8px;
   font-weight:600; cursor:pointer;
 }
@@ -132,8 +132,7 @@ body { background:var(--bg); color:var(--text); }
   max-width:85%; padding:.75rem 1rem;
   border-radius:1.25rem; line-height:1.4;
   white-space:pre-wrap; word-wrap:break-word;
-  font-size:.95rem; display:inline-block;
-  box-shadow:0 2px 6px rgba(0,0,0,0.08);
+  font-size:.95rem; box-shadow:0 2px 6px rgba(0,0,0,0.08);
 }
 .message.user { background:var(--user-bubble-bg); color:var(--user-bubble-text); border-bottom-right-radius:.3rem; align-self:flex-end;}
 .message.assistant { background:var(--assistant-bubble-bg); color:var(--assistant-bubble-text); border-bottom-left-radius:.3rem; align-self:flex-start; }
@@ -152,7 +151,7 @@ body { background:var(--bg); color:var(--text); }
 }
 .send-btn {
   width:40px; height:40px;
-  background: var(--color-6); /* keep maroon for send if desired */
+  background: var(--color-6);
   color:var(--primary-contrast); border:none; border-radius:8px;
   display:flex; align-items:center; justify-content:center;
   cursor:pointer;
@@ -172,21 +171,44 @@ body { background:var(--bg); color:var(--text); }
 
 .header-controls { display:flex; align-items:center; gap:0.5rem; }
 
-/* Header buttons — theme aware */
-.header-controls button {
-  width:40px; height:40px;
-  display:flex; align-items:center; justify-content:center;
-  background:var(--primary);
-  color:var(--primary-contrast);
-  border:none; border-radius:8px;
-  cursor:pointer; transition:background-color .2s, transform .1s;
+/* Apply to ALL header buttons */
+.chat-header button,
+.header-controls button,
+#themeBtn,
+#toggleThemeBtn,
+#toggleSidebarBtn {
+  background: var(--color-6);
+  color: var(--primary-contrast);
+  border: none;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color .2s, transform .1s;
 }
-.header-controls button:hover { background:var(--accent); }
-.header-controls button svg {
+.chat-header button:hover,
+.header-controls button:hover,
+#themeBtn:hover,
+#toggleThemeBtn:hover,
+#toggleSidebarBtn:hover {
+  background: var(--accent);
+}
+
+/* Force outline SVGs to use currentColor */
+.chat-header button svg,
+.header-controls button svg,
+#themeBtn svg,
+#toggleThemeBtn svg,
+#toggleSidebarBtn svg {
+  stroke: currentColor !important;
+  fill: none !important;
   width:22px; height:22px;
-}
-.header-controls button svg path {
-  fill: currentColor !important; /* force theme color */
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
 }
 
 /* ===========================
@@ -202,44 +224,6 @@ body { background:var(--bg); color:var(--text); }
 }
 #paletteSelector.hidden { display:none; }
 
-/* Apply to ALL header buttons, regardless of container */
-.chat-header button,
-.header-controls button,
-#themeBtn,
-#toggleThemeBtn,
-#toggleSidebarBtn {
-  background: var(--color-6) !important;
-  color: var(--primary-contrast) !important;
-  border: none;
-  border-radius: 8px;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color .2s, transform .1s;
-}
-
-/* Hover state */
-.chat-header button:hover,
-.header-controls button:hover,
-#themeBtn:hover,
-#toggleThemeBtn:hover,
-#toggleSidebarBtn:hover {
-  background: var(--accent) !important;
-}
-
-/* Force SVG inside them to obey currentColor */
-.chat-header button svg path,
-.header-controls button svg path,
-#themeBtn svg path,
-#toggleThemeBtn svg path,
-#toggleSidebarBtn svg path {
-  fill: currentColor !important;
-  stroke: currentColor !important;
-}
-
 /* ===========================
    Responsive
    =========================== */
@@ -252,5 +236,3 @@ body { background:var(--bg); color:var(--text); }
   .chat-header .chat-title{flex-basis:100%; margin-bottom:4px;}
   .header-controls button{width:32px;height:32px;}
 }
-
-
