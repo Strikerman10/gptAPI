@@ -227,13 +227,40 @@ body { background:var(--bg); color:var(--text); }
 /* ===========================
    Responsive
    =========================== */
-@media (max-width:768px){
-  .sidebar{width:20%;}
-  .main-content{width:80%;}
+
+/* Up to tablet size */
+@media (max-width: 768px) {
+  .app-wrapper {
+    display: flex;             /* make sure flex is applied */
+  }
+
+  .sidebar {
+    width: 30%;                /* sidebar gets 30% of screen */
+    flex-shrink: 0;            /* don’t let it shrink smaller */
+    box-sizing: border-box;
+  }
+
+  .main-content {
+    flex: 1;                   /* fill the rest automatically */
+    min-width: 0;              /* prevents overflow cutoff */
+    box-sizing: border-box;
+  }
 }
-@media (max-width:599.98px){
-  .chat-header{flex-wrap:wrap;}
-  .chat-header .chat-title{flex-basis:100%; margin-bottom:4px;}
-  .header-controls button{width:32px;height:32px;}
+
+/* Up to small/mobile size */
+@media (max-width: 599.98px) {
+  .chat-header {
+    flex-wrap: wrap;
+  }
+
+  .chat-header .chat-title {
+    flex-basis: 100%;          /* title goes full width */
+    margin-bottom: 4px;
+  }
+
+  .header-controls button {
+    width: 32px;
+    height: 32px;
+  }
 }
 
