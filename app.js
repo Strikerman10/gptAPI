@@ -161,22 +161,34 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderMessages() {
-    messagesEl.innerHTML = "";
-    headerEl.textContent = "ChatGPT"; 
-    if (currentIndex === null || !chats[currentIndex]) return;
-    const chat = chats[currentIndex];
-    chat.messages.forEach(msg => {
-      const div = document.createElement("div");
-      div.className = `message ${msg.role}`;
-      div.innerText = msg.content;
-      const timeDiv = document.createElement("div");
-      timeDiv.className = "msg-time";
-      timeDiv.textContent = msg.time || "";
-      div.appendChild(timeDiv);
-      messagesEl.appendChild(div);
-    });
-    messagesEl.scrollTop = messagesEl.scrollHeight;
-  }
+  messagesEl.innerHTML = "";
+  headerEl.textContent = "ChatGPT"; 
+  if (currentIndex === null || !chats[currentIndex]) return;
+  const chat = chats[currentIndex];
+
+  chat.messages.forEach(msg => {
+    const div = document.createElement("div");
+    div.className = `message ${msg.role}`;
+
+    // text bubble
+    const textDiv = document.createElement("div");
+    textDiv.className = "msg-text";
+    textDiv.textContent = msg.content;
+
+    // timestamp
+    const timeDiv = document.createElement("div");
+    timeDiv.className = "msg-time";
+    timeDiv.textContent = msg.time || "";
+
+    // put timestamp inside the text container
+    textDiv.appendChild(timeDiv);
+    div.appendChild(textDiv);
+
+    messagesEl.appendChild(div);
+  });
+
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
 
   // ==========================
   // SEND MESSAGE
@@ -284,3 +296,4 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
