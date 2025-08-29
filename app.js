@@ -40,12 +40,12 @@ document.addEventListener("DOMContentLoaded", () => {
   "--color-6": "#f67c03"   /* accent (vivid orange) */
 },
     Orange: {
-  "--color-1": "#ffd6a5",  /* soft peach */
-  "--color-2": "#ffb347",  /* light orange */
-  "--color-3": "#ff7f50",  /* coral/orange midpoint */
-  "--color-4": "#cc5500",  /* deep burnt orange */
-  "--color-5": "#662200",  /* very dark brownish orange */
-  "--color-6": "#0f4d92"   /* accent (strong blue) */
+  "--color-1": "#ffe5b4",  /* pale apricot (soft highlight) */
+  "--color-2": "#ffc178",  /* warm amber (light midtone) */
+  "--color-3": "#ff914d",  /* classic vibrant orange */
+  "--color-4": "#e06c00",  /* deep burnt orange */
+  "--color-5": "#4a1f00",  /* very dark reddish brown */
+  "--color-6": "#006494"   /* accent (teal‑blue for contrast) */
 },
     Purple: {
   "--color-1": "#e3c6ff",  /* light lavender */
@@ -324,5 +324,6 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
 
 
