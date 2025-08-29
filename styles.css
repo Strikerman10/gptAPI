@@ -228,11 +228,12 @@ body { background:var(--bg); color:var(--text); }
    Responsive
    =========================== */
 @media (max-width:768px){
-  .sidebar{width:30%;}
-  .main-content{width:85%;}
+  .sidebar{width:20%;}
+  .main-content{width:80%;}
 }
 @media (max-width:599.98px){
   .chat-header{flex-wrap:wrap;}
   .chat-header .chat-title{flex-basis:100%; margin-bottom:4px;}
   .header-controls button{width:32px;height:32px;}
 }
+
