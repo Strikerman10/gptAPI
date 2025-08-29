@@ -165,11 +165,9 @@ body { background:var(--bg); color:var(--text); }
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   height: 60px;
   padding: 0.5rem 1rem;
 
-  /* keep your gradient + colors */
   background: linear-gradient(
     180deg,
     color-mix(in srgb, var(--primary), black 6%) 0%,
@@ -178,10 +176,9 @@ body { background:var(--bg); color:var(--text); }
   color: var(--primary-contrast);
   font-weight: 600;
 
-  /* fixes */
-  position: sticky; /* keeps header visible while scrolling */
+  position: sticky;
   top: 0;
-  z-index: 10;      /* ensures header sits above scrolling messages */
+  z-index: 10;
 }
 
 .chat-header .chat-title {
@@ -189,13 +186,13 @@ body { background:var(--bg); color:var(--text); }
   font-size: 16px;
   color: #fff;
   white-space: nowrap;
-  flex-shrink: 0; /* stops text squashing if narrow */
+  flex-shrink: 0;
 }
 
 .header-controls {
   display: flex;
   align-items: center;
-  gap: 0.5rem; /* space between buttons */
+  gap: 0.5rem;
 }
 
 .header-controls button {
@@ -207,7 +204,7 @@ body { background:var(--bg); color:var(--text); }
   align-items: center;
 }
 
-/* Apply to ALL header buttons */
+/* Shared styles for all header buttons */
 .chat-header button,
 .header-controls button,
 #themeBtn,
@@ -233,7 +230,7 @@ body { background:var(--bg); color:var(--text); }
   background: var(--accent);
 }
 
-/* Force outline SVGs to use currentColor */
+/* Make sure SVG icons inherit text color */
 .chat-header button svg,
 .header-controls button svg,
 #themeBtn svg,
@@ -263,41 +260,28 @@ body { background:var(--bg); color:var(--text); }
 /* ===========================
    Responsive
    =========================== */
-
-/* Up to tablet size */
 @media (max-width: 768px) {
-  .app-wrapper {
-    display: flex;             /* make sure flex is applied */
-  }
-
+  .app-wrapper { display: flex; }
   .sidebar {
-    width: 30%;                /* sidebar gets 30% of screen */
-    flex-shrink: 0;            /* don’t let it shrink smaller */
+    width: 30%;
+    flex-shrink: 0;
     box-sizing: border-box;
   }
-
   .main-content {
-    flex: 1;                   /* fill the rest automatically */
-    min-width: 0;              /* prevents overflow cutoff */
+    flex: 1;
+    min-width: 0;
     box-sizing: border-box;
   }
 }
 
-/* Up to small/mobile size */
 @media (max-width: 599.98px) {
-  .chat-header {
-    flex-wrap: wrap;
-  }
-
+  .chat-header { flex-wrap: wrap; }
   .chat-header .chat-title {
-    flex-basis: 100%;          /* title goes full width */
+    flex-basis: 100%;
     margin-bottom: 4px;
   }
-
   .header-controls button {
     width: 32px;
     height: 32px;
   }
 }
-
-
