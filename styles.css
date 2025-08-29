@@ -162,14 +162,50 @@ body { background:var(--bg); color:var(--text); }
    Header Area
    =========================== */
 .chat-header {
-  display:flex; align-items:center; justify-content:space-between;
-  height:60px; padding:0.5rem 1rem;
-  background:linear-gradient(180deg, color-mix(in srgb, var(--primary), black 6%) 0%, var(--primary) 100%);
-  color:var(--primary-contrast); font-weight:600;
-}
-.chat-header .chat-title { font-weight:600; font-size:16px; color:#fff; white-space:nowrap; }
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-.header-controls { display:flex; align-items:center; gap:0.5rem; }
+  height: 60px;
+  padding: 0.5rem 1rem;
+
+  /* keep your gradient + colors */
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--primary), black 6%) 0%,
+    var(--primary) 100%
+  );
+  color: var(--primary-contrast);
+  font-weight: 600;
+
+  /* fixes */
+  position: sticky; /* keeps header visible while scrolling */
+  top: 0;
+  z-index: 10;      /* ensures header sits above scrolling messages */
+}
+
+.chat-header .chat-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #fff;
+  white-space: nowrap;
+  flex-shrink: 0; /* stops text squashing if narrow */
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* space between buttons */
+}
+
+.header-controls button {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 /* Apply to ALL header buttons */
 .chat-header button,
@@ -263,4 +299,5 @@ body { background:var(--bg); color:var(--text); }
     height: 32px;
   }
 }
+
 
