@@ -136,6 +136,23 @@ body { background:var(--bg); color:var(--text); }
 }
 .message.user { background:var(--user-bubble-bg); color:var(--user-bubble-text); border-bottom-right-radius:.3rem; align-self:flex-end;}
 .message.assistant { background:var(--assistant-bubble-bg); color:var(--assistant-bubble-text); border-bottom-left-radius:.3rem; align-self:flex-start; }
+.message .msg-text {
+  position: relative;         /* allows absolute positioning inside */
+  background: #f1f1f1;        /* example bubble background */
+  padding: 0.5rem 2rem 1rem 0.75rem; /* extra right/bottom padding for timestamp */
+  border-radius: 0.5rem;
+  display: inline-block;
+  max-width: 75%;             /* keep bubbles reasonable */
+  word-break: break-word;
+}
+
+.msg-time {
+  position: absolute;
+  bottom: 0.25rem;
+  right: 0.5rem;
+  font-size: 0.7rem;
+  color: #888;
+}
 
 /* ===========================
    Input Area
@@ -236,3 +253,4 @@ body { background:var(--bg); color:var(--text); }
   .chat-header .chat-title{flex-basis:100%; margin-bottom:4px;}
   .header-controls button{width:32px;height:32px;}
 }
+
