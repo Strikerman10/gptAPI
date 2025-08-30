@@ -31,13 +31,13 @@ document.addEventListener("DOMContentLoaded", () => {
   "--color-5": "#3b322c",  /* near‑black brown‑green */
   "--color-6": "#800000"   /* accent (maroon/burgundy) */
 },
-  DarkerBlue: {
-  "--color-1": "#5a7bbf",  /* muted steel blue (light accent, but not pale) */
-  "--color-2": "#3f5fa3",  /* medium navy‑blue */
-  "--color-3": "#2c4f80",  /* strong deep blue (primary) */
-  "--color-4": "#1e3759",  /* dark slate navy */
-  "--color-5": "#0d1628",  /* near‑black navy base */
-  "--color-6": "#f67c03"   /* vivid orange accent (kept for contrast) */
+    Blue: {
+  "--color-1": "#b3cfff",  /* light sky blue */
+  "--color-2": "#7a9eff",  /* medium periwinkle blue */
+  "--color-3": "#437f97",  /* teal‑blue accent */
+  "--color-4": "#2c5c63",  /* dark slate teal */
+  "--color-5": "#1a1c2c",  /* near‑black navy */
+  "--color-6": "#f67c03"   /* accent (vivid orange) */
 },
     Orange: {
   "--color-1": "#ffe5b4",  /* pale apricot (soft highlight) */
@@ -324,6 +324,3 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
-
-
-
