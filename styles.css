@@ -219,6 +219,7 @@ body { background:var(--bg); color:var(--text); }
   display: flex;
   align-items: center;
   gap: 0.5rem; /* space between buttons */
+  flex-shrink: 0;  
 }
 
 .header-controls button {
@@ -322,6 +323,7 @@ body { background:var(--bg); color:var(--text); }
     height: 32px;
   }
 }
+
 
 
 
