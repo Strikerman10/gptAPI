@@ -310,19 +310,10 @@ body { background:var(--bg); color:var(--text); }
 /* Up to small/mobile size */
 @media (max-width: 599.98px) {
   .chat-header {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
 
-  .chat-header .chat-title {
-    flex-basis: 100%;          /* title goes full width */
-    margin-bottom: 4px;
-  }
 
-  .header-controls button {
-    width: 32px;
-    height: 32px;
-  }
-}
 
 
 
