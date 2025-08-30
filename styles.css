@@ -209,7 +209,10 @@ body { background:var(--bg); color:var(--text); }
   font-size: 16px;
   color: #fff;
   white-space: nowrap;
-  flex-shrink: 0; /* stops text squashing if narrow */
+  flex-shrink: 1;      /* allow shrinking when space is tight */
+  min-width: 0;        /* lets flexbox actually shrink it */
+  overflow: hidden;    /* optional: avoid overflow */
+  text-overflow: ellipsis; /* optional: show … if it’s too tight */
 }
 
 .header-controls {
@@ -319,6 +322,7 @@ body { background:var(--bg); color:var(--text); }
     height: 32px;
   }
 }
+
 
 
 
