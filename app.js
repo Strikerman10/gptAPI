@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
   "--color-3": "#8b0000",  /* deep dark red (primary) */
   "--color-4": "#5a0000",  /* very dark wine red */
   "--color-5": "#1a0a0a",  /* near‑black with red undertones */
-  "--color-6": "#f2c3c3"   /* very pale red/pink highlight */
+  "--color-6": "#008080"   /* teal highlight */
 },
     Teal: {
   "--color-1": "#7fd7d0",  /* light aqua highlight */
@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
   "--color-3": "#006d65",  /* deep teal (primary) */
   "--color-4": "#004944",  /* dark teal/greenish slate */
   "--color-5": "#0a1c1b",  /* near‑black teal base */
-  "--color-6": "#ffd27f"   /* warm gold accent */
+  "--color-6": "#666699"   /* mauve accent */
 },
     Gray: {
   "--color-1": "#e0e0e0",  /* light gray */
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
   "--color-3": "#4a4a4a",  /* charcoal gray (primary) */
   "--color-4": "#2c2c2c",  /* almost black */
   "--color-5": "#121212",  /* true dark base */
-  "--color-6": "#ff6666"   /* accent contrast (soft red) */
+  "--color-6": "#5c5c3d"   /* accent contrast (military greenish) */
 }
   };
 
@@ -348,6 +348,7 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
 
 
 
