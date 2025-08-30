@@ -425,23 +425,50 @@ body {
 }
 
 /* ===========================
-   Responsive
+   Responsive Layout Fix
    =========================== */
+
+/* Base (desktop/tablet) layout */
+.sidebar {
+  flex: 0 0 250px;    /* fixed sidebar width */
+  max-width: 400px;
+  min-width: 150px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.main-content {
+  flex: 1;            /* auto-fill remaining space */
+  min-width: 0;       /* prevents overflow */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Mobile / small screens */
 @media (max-width: 768px) {
-  .app-wrapper {
-    display: flex;
+  .app-container {
+    position: relative;  /* so sidebar absolute positioning is relative here */
+    overflow-x: hidden;  /* prevent horizontal scrolling */
   }
 
   .sidebar {
-    width: 30%;
-    flex-shrink: 0;
-    box-sizing: border-box;
+    position: absolute;
+    top: 0;
+    left: -250px;      /* hidden offscreen */
+    width: 250px;      /* fixed width drawer */
+    height: 100%;
+    max-width: 80%;    /* don’t let it be wider than 80% of viewport */
+    box-shadow: 2px 0 6px rgba(0,0,0,0.25);
+    z-index: 100;
+  }
+
+  .sidebar.open {
+    left: 0;           /* slide in when toggled */
   }
 
   .main-content {
     flex: 1;
-    min-width: 0;
-    box-sizing: border-box;
+    width: 100%;       /* always fill screen */
+    min-width: 0;      /* allow content to shrink properly */
   }
 }
 
@@ -450,3 +477,4 @@ body {
     flex-wrap: nowrap;
   }
 }
+
