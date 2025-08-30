@@ -397,6 +397,14 @@ body {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+.message .msg-time {
+  display: block;        /* line break under the text */
+  text-align: right;     /* push it to the right edge of the bubble */
+  font-size: 0.75rem;    /* smaller font */
+  margin-top: 4px;       /* space between text and time */
+  color: inherit;        /* follow the bubble text color */
+  opacity: 0.8;          /* a touch lighter so it feels like metadata */
+}
 
 /* ===========================
    Palette Dropdown
@@ -450,6 +458,7 @@ body {
     flex-wrap: nowrap;
   }
 }
+
 
 
 
