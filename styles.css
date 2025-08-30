@@ -114,7 +114,7 @@ body { background:var(--bg); color:var(--text); }
   color: var(--text);
 
   /* 🔹 new/changed bits */
-  border-bottom: 1px solid var(--border);
+  border-bottom: 2px solid #333;
   margin-bottom: 6px;   /* less than original 8px */
   border-radius: 6px;   /* matches hover shape */
 }
@@ -177,12 +177,6 @@ body { background:var(--bg); color:var(--text); }
   cursor:pointer;
 }
 .send-btn svg { width:20px; height:20px; }
-
-.divider {
-  border: none;
-  border-top: 2px solid #111; /* darker gray/black */
-  margin: 2em 0;
-}
 
 /* ===========================
    Header Area
@@ -325,6 +319,7 @@ body { background:var(--bg); color:var(--text); }
     height: 32px;
   }
 }
+
 
 
 
