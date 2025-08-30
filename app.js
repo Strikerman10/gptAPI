@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
   "--color-4": "#1e3759",  /* dark slate navy */
   "--color-5": "#0d1628",  /* near‑black navy base */
   "--color-6": "#f67c03"   /* vivid orange accent (kept for contrast) */
-}
+},
     Orange: {
   "--color-1": "#ffe5b4",  /* pale apricot (soft highlight) */
   "--color-2": "#ffc178",  /* warm amber (light midtone) */
@@ -324,5 +324,6 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
 
 
