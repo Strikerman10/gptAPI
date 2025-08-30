@@ -244,7 +244,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch(`${WORKER_URL}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model: MODEL, messages: recentMessages }),
+        const cleanMessages = recentMessages.map(m => ({ role: m.role, content: m.content }));
+body: JSON.stringify({ model: MODEL, messages: cleanMessages }),
       });
       if (!res.ok) throw new Error(`Worker returned ${res.status}`);
       const data = await res.json();
@@ -324,6 +325,7 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
 
 
 
