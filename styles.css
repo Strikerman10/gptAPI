@@ -398,13 +398,6 @@ body {
   stroke-linejoin: round;
 }
 
-.message .timestamp {
-  display: block;        /* put it on its own line */
-  text-align: right;     /* push it to the right edge */
-  font-size: 0.75em;     /* smaller than message text */
-  margin-top: 4px;       /* optional spacing above */
-  color: inherit;        /* keeps the same text colour as parent */
-}
 /* ===========================
    Palette Dropdown
    =========================== */
@@ -457,5 +450,6 @@ body {
     flex-wrap: nowrap;
   }
 }
+
 
 
