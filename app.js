@@ -40,20 +40,44 @@ document.addEventListener("DOMContentLoaded", () => {
   "--color-6": "#4e1818"   /* dark red accent (kept for contrast) */
 },
     Orange: {
-  "--color-1": "#ffe5b4",  /* pale apricot (soft highlight) */
-  "--color-2": "#ffc178",  /* warm amber (light midtone) */
-  "--color-3": "#ff914d",  /* classic vibrant orange */
-  "--color-4": "#e06c00",  /* deep burnt orange */
-  "--color-5": "#4a1f00",  /* very dark reddish brown */
-  "--color-6": "#006494"   /* accent (teal‑blue for contrast) */
+  "--color-1": "#ffd48a",  /* pale amber */
+  "--color-2": "#ffb74d",  /* brighter amber */
+  "--color-3": "#996515",  /* bronze amber (primary) */
+  "--color-4": "#5a3b0f",  /* very dark brown/amber */
+  "--color-5": "#1a0e05",  /* near‑black brown */
+  "--color-6": "#7fd7d0"   /* teal accent for contrast */
 },
-   Purple: {
+    Purple: {
   "--color-1": "#e3c6ff",  /* light lavender */
   "--color-2": "#c19df0",  /* soft lilac */
   "--color-3": "#9467bd",  /* medium purple */
   "--color-4": "#6a4c93",  /* deep muted violet */
   "--color-5": "#3e2c41",  /* near‑black purple */
   "--color-6": "#007373"   /* teal accent (buttons, special actions) */
+},
+    Red: {
+  "--color-1": "#e07b7b",  /* lightened red accent */
+  "--color-2": "#b94c4c",  /* medium muted red */
+  "--color-3": "#8b0000",  /* deep dark red (primary) */
+  "--color-4": "#5a0000",  /* very dark wine red */
+  "--color-5": "#1a0a0a",  /* near‑black with red undertones */
+  "--color-6": "#f2c3c3"   /* very pale red/pink highlight */
+},
+    Teal: {
+  "--color-1": "#7fd7d0",  /* light aqua highlight */
+  "--color-2": "#40a8a0",  /* medium teal */
+  "--color-3": "#006d65",  /* deep teal (primary) */
+  "--color-4": "#004944",  /* dark teal/greenish slate */
+  "--color-5": "#0a1c1b",  /* near‑black teal base */
+  "--color-6": "#ffd27f"   /* warm gold accent */
+},
+    Gray: {
+  "--color-1": "#e0e0e0",  /* light gray */
+  "--color-2": "#b0b0b0",  /* medium gray */
+  "--color-3": "#4a4a4a",  /* charcoal gray (primary) */
+  "--color-4": "#2c2c2c",  /* almost black */
+  "--color-5": "#121212",  /* true dark base */
+  "--color-6": "#ff6666"   /* accent contrast (soft red) */
 }
   };
 
@@ -324,6 +348,7 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
 
 
 
