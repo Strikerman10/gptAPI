@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
   "--color-5": "#0d1628",  /* near‑black navy base */
   "--color-6": "#4e1818"   /* dark red accent (kept for contrast) */
 },
-    Orange: {
+    Amber: {
   "--color-1": "#ffd48a",  /* pale amber */
   "--color-2": "#ffb74d",  /* brighter amber */
   "--color-3": "#996515",  /* bronze amber (primary) */
@@ -348,6 +348,7 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
 
 
 
