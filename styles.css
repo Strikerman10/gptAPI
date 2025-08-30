@@ -128,12 +128,6 @@ body { background:var(--bg); color:var(--text); }
   background: var(--surface-hover);
 }
 
-.divider {
-  border: none;
-  border-top: 2px solid #111; /* darker gray/black */
-  margin: 2em 0;
-}
-
 .chat-title { font-weight:600; font-size:14px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:60ch; }
 .chat-subtitle { font-size:12px; color:var(--text-muted); margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
@@ -183,6 +177,12 @@ body { background:var(--bg); color:var(--text); }
   cursor:pointer;
 }
 .send-btn svg { width:20px; height:20px; }
+
+.divider {
+  border: none;
+  border-top: 2px solid #111; /* darker gray/black */
+  margin: 2em 0;
+}
 
 /* ===========================
    Header Area
@@ -325,6 +325,7 @@ body { background:var(--bg); color:var(--text); }
     height: 32px;
   }
 }
+
 
 
 
