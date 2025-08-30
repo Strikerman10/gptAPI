@@ -165,9 +165,17 @@ body { background:var(--bg); color:var(--text); }
   border-top:1px solid var(--border); background:var(--surface-1);
 }
 .input-area textarea {
-  flex:1; min-height:42px; max-height:200px;
-  padding:10px; border-radius:8px; border:1px solid var(--border);
-  background:var(--bg); color:var(--text); resize:vertical; font-size:14px;
+  flex: 1;
+  min-width: 0;          /* 🔹 ADD THIS */
+  min-height: 42px;
+  max-height: 200px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  resize: vertical;
+  font-size: 14px;
 }
 .send-btn {
   width:40px; height:40px;
@@ -312,6 +320,7 @@ body { background:var(--bg); color:var(--text); }
   .chat-header {
     flex-wrap: nowrap;
   }
+
 
 
 
