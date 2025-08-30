@@ -2,7 +2,7 @@
 // CONFIG
 // ==========================
 const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
-const MODEL = "gpt-5";
+const MODEL = "gpt-5-chat-latest";
 
 let chats = [];
 let currentIndex = null;
@@ -324,3 +324,4 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
