@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
   "--color-6": "#800000"   /* accent (maroon/burgundy) */
 },
     Blue: {
-  "--color-1": "#5a7bbf",  /* muted steel blue (light accent, but not pale) */
+  "--color-1": "#6da5f8",  /* muted steel blue (light accent, but not pale) */
   "--color-2": "#3f5fa3",  /* medium navy‑blue */
   "--color-3": "#2c4f80",  /* strong deep blue (primary) */
   "--color-4": "#1e3759",  /* dark slate navy */
@@ -324,5 +324,6 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
 
 
