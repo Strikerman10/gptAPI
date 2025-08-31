@@ -30,7 +30,7 @@ html, body {
   --bg: #fff;
   --surface-1: color-mix(in srgb, var(--color-1) 10%, white 90%);
   --surface-2: color-mix(in srgb, var(--color-1) 15%, white 85%);
-  --surface-2: color-mix(in srgb, var(--color-6) 95%, white 5%);
+  --surface-2: color-mix(in srgb, var(--color-6) 100%, white 0%);
   --surface-hover: color-mix(in srgb, var(--color-1) 25%, white 75%);
   --border: color-mix(in srgb, var(--color-4) 25%, white 75%);
   --text: var(--color-5);
@@ -460,6 +460,7 @@ body {
     flex-wrap: nowrap;
   }
 }
+
 
 
 
