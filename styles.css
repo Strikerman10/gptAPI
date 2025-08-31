@@ -55,7 +55,7 @@ body.dark-mode {
   --bg: var(--color-5);
   --surface-1: color-mix(in srgb, var(--color-4) 80%, black 20%);
   --surface-2: color-mix(in srgb, var(--color-4) 65%, black 35%);
-  --surface-3: color-mix(in srgb, var(--color-6) 55%, black 45%); 
+  --surface-3: color-mix(in srgb, var(--color-6) 35%, white 65%); 
   --surface-hover: color-mix(in srgb, var(--color-4) 50%, black 50%);
   --border: color-mix(in srgb, var(--color-4) 40%, black 60%);
   --text: #f2f2f2;
@@ -211,7 +211,7 @@ body {
   border-radius: 6px;
   border: none;
   background: transparent;
-  color: var(--color-6);
+  color: var(--surface-3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -221,7 +221,7 @@ body {
 
 .chat-item:hover .delete-btn,
 .delete-btn:focus {
-  background: var(--color-6);
+  background: var(--surface-3);
   color: #fff;
   transform: translateY(-50%) scale(1.03);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
@@ -460,6 +460,7 @@ body {
     flex-wrap: nowrap;
   }
 }
+
 
 
 
