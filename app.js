@@ -78,6 +78,14 @@ document.addEventListener("DOMContentLoaded", () => {
   "--color-4": "#2c2c2c",  /* almost black */
   "--color-5": "#121212",  /* true dark base */
   "--color-6": "#5c5c3d"   /* accent contrast (military greenish) */
+},
+    Amoled: {
+  "--color-1": "#00bcd4",  /* Accent (bright cyan/teal for highlights) */
+  "--color-2": "#00838f",  /* Medium cyan for secondary buttons */
+  "--color-3": "#004d40",  /* Deep teal for hover/active elements */
+  "--color-4": "#1c1c1c",  /* Very dark gray for subtle separators */
+  "--color-5": "#000000",  /* True black background (AMOLED safe) */
+  "--color-6": "#00acc1"   /* Accent variant (slightly softer cyan) */
 }
   };
 
@@ -348,6 +356,7 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
 
 
 
