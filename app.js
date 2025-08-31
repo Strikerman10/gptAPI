@@ -80,12 +80,12 @@ document.addEventListener("DOMContentLoaded", () => {
   "--color-6": "#5c5c3d"   /* accent contrast (military greenish) */
 },
     Amoled: {
-  "--color-1": "#ffd54f",  /* Bright golden yellow for main accent */
-  "--color-2": "#ffb300",  /* Rich amber for buttons/active states */
-  "--color-3": "#ff8f00",  /* Deeper orange-yellow for hover/strong accents */
+  "--color-1": "#fada5e",  /* muted golden yellow for main accent */
+  "--color-2": "#e8f48c",  /* Lime for buttons/active states */
+  "--color-3": "#ffdf00",  /* golden ellow for hover/strong accents */
   "--color-4": "#1c1c1c",  /* Very dark gray for separators/cards */
   "--color-5": "#000000",  /* True AMOLED black background */
-  "--color-6": "#fbc02d"   /* Softer golden yellow (subtle highlights / subtitles) */
+  "--color-6": "#fffacd"   /* Softer golden yellow (subtle highlights / subtitles) */
 }
   };
 
@@ -356,6 +356,7 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
 
 
 
