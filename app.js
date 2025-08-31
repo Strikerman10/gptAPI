@@ -81,11 +81,11 @@ document.addEventListener("DOMContentLoaded", () => {
 },
     Amoled: {
   "--color-1": "#ffdf00",  /* golden yellow for main accent */
-  "--color-2": "#fbec5d",  /* Lime for buttons/active states */
-  "--color-3": "#e8f48c",  /* Lime for hover/strong accents */
+  "--color-2": "#edc001",  /* british yellow for header */
+  "--color-3": "#978942",  /* camoflage yellow for hover/strong accents */
   "--color-4": "#1c1c1c",  /* Very dark gray for separators/cards */
   "--color-5": "#000000",  /* True AMOLED black background */
-  "--color-6": "#f5c71a"   /* Softer golden yellow (subtle highlights / subtitles) */
+  "--color-6": "#ffbf00"   /* Amber for button */
 }
   };
 
@@ -356,6 +356,7 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
 
 
 
