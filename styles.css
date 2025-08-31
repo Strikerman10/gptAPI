@@ -30,7 +30,7 @@ html, body {
   --bg: #fff;
   --surface-1: color-mix(in srgb, var(--color-1) 10%, white 90%);
   --surface-2: color-mix(in srgb, var(--color-1) 15%, white 85%);
-  --surface-2: color-mix(in srgb, var(--color-6) 100%, white 0%);
+  --surface-3: color-mix(in srgb, var(--color-6) 100%, white 0%);
   --surface-hover: color-mix(in srgb, var(--color-1) 25%, white 75%);
   --border: color-mix(in srgb, var(--color-4) 25%, white 75%);
   --text: var(--color-5);
@@ -55,7 +55,7 @@ body.dark-mode {
   --bg: var(--color-5);
   --surface-1: color-mix(in srgb, var(--color-4) 80%, black 20%);
   --surface-2: color-mix(in srgb, var(--color-4) 65%, black 35%);
-  --surface-2: color-mix(in srgb, var(--color-6) 85%, black 15%); 
+  --surface-3: color-mix(in srgb, var(--color-6) 85%, black 15%); 
   --surface-hover: color-mix(in srgb, var(--color-4) 50%, black 50%);
   --border: color-mix(in srgb, var(--color-4) 40%, black 60%);
   --text: #f2f2f2;
@@ -460,6 +460,7 @@ body {
     flex-wrap: nowrap;
   }
 }
+
 
 
 
