@@ -100,7 +100,7 @@ body {
   min-width: 150px;
   max-width: 400px;
   transition: width 0.3s ease, opacity 0.3s ease;
-  background: var(--surface-1);
+  background: var(--ring);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
@@ -458,6 +458,7 @@ body {
     flex-wrap: nowrap;
   }
 }
+
 
 
 
