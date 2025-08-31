@@ -402,7 +402,7 @@ body {
   text-align: right;     /* push it to the right edge of the bubble */
   font-size: 0.75rem;    /* smaller font */
   margin-top: 4px;       /* space between text and time */
-  color: inherit;        /* follow the bubble text color */
+  color: var(--color-6); /* use accent color */
   opacity: 0.8;          /* a touch lighter so it feels like metadata */
 }
 
@@ -458,6 +458,7 @@ body {
     flex-wrap: nowrap;
   }
 }
+
 
 
 
