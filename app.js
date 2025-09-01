@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
   "--color-6": "#5c5c3d"   /* accent contrast (military greenish) */
 },
     Amoled: {
-  "--color-1": "#ffdf00",  /* golden yellow for hover */
+  "--color-1": "#007fff",  /* golden yellow for hover */
   "--color-2": "#d30000",  /* Bee yellow for hover over content */
   "--color-3": "#9DFF00",  /* light chrome yellow for Header */
   "--color-4": "#1c1c1c",  /* Very dark gray for separators/cards */
@@ -356,6 +356,7 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
 
 
 
