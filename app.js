@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
 },
     Amoled: {
   "--color-1": "#ffdf00",  /* golden yellow for hover */
-  "--color-2": "#6503047",  /* Bee yellow for message assistant */
+  "--color-2": "#d30000",  /* Bee yellow for message assistant */
   "--color-3": "#ffca37",  /* light chrome yellow for Header */
   "--color-4": "#1c1c1c",  /* Very dark gray for separators/cards */
   "--color-5": "#000000",  /* True AMOLED black background */
@@ -356,6 +356,7 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
 
 
 
