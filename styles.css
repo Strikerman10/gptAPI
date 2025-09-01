@@ -434,6 +434,20 @@ body {
   display: none;
 }
 
+/* Default AMOLED theme text is white */
+body.theme-amoled {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+/* If background is either yellow, force black text */
+body.theme-amoled [style*="background-color: #FFD700"],
+body.theme-amoled [style*="background-color: #FFEB3B"],
+body.theme-amoled .bg-yellow,
+body.theme-amoled .bg-yellow-light {
+  color: #000000;
+}
+
 /* ===========================
    Responsive
    =========================== */
@@ -460,6 +474,7 @@ body {
     flex-wrap: nowrap;
   }
 }
+
 
 
 
