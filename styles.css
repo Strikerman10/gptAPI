@@ -434,18 +434,22 @@ body {
   display: none;
 }
 
-/* Default AMOLED theme text is white */
+/* Default AMOLED theme (white-on-black) */
 body.theme-amoled {
-  background-color: #000000;
+  background-color: var(--color-5);
   color: #ffffff;
 }
 
-/* If background is either yellow, force black text */
-body.theme-amoled [style*="background-color: #FFD700"],
-body.theme-amoled [style*="background-color: #FFEB3B"],
-body.theme-amoled .bg-yellow,
-body.theme-amoled .bg-yellow-light {
-  color: #000000;
+/* Header area, background = var(--color-3) */
+body.theme-amoled header {
+  background-color: var(--color-3);
+  color: #000000; /* black text */
+}
+
+/* Buttons, background = var(--color-6) */
+body.theme-amoled .btn {
+  background-color: var(--color-6);
+  color: #000000; /* black text */
 }
 
 /* ===========================
@@ -474,6 +478,7 @@ body.theme-amoled .bg-yellow-light {
     flex-wrap: nowrap;
   }
 }
+
 
 
 
