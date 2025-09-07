@@ -236,11 +236,19 @@ body {
 
 .messages {
   flex: 1;
+  min-height: 0;          /* added: prevents flex child from blowing up */
   padding: 16px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.placeholder {
+  color: #888;
+  font-style: italic;
+  text-align: center;
+  margin-top: 2em;
 }
 
 .message {
@@ -478,6 +486,7 @@ body.theme-amoled .btn {
     flex-wrap: nowrap;
   }
 }
+
 
 
 
