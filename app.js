@@ -399,40 +399,46 @@ scrollTopBtn.addEventListener("click", () => {
     paletteSelector.classList.add("hidden"); // hide after selection
   });
 
-  // Sidebar toggle
- toggleSidebarBtn.addEventListener("click", () => {
+// ==========================
+// Sidebar toggle & swipe (mobile only)
+// ==========================
+function isMobile() {
+  return window.innerWidth <= 768;
+}
+
+toggleSidebarBtn.addEventListener("click", () => {
+  if (!isMobile()) return; // on desktop, always visible so button does nothing
   const isOpen = sidebarEl.classList.toggle("open");
   backdropEl.classList.toggle("visible", isOpen);
 });
 
 // Close when clicking backdrop
 backdropEl.addEventListener("click", () => {
+  if (!isMobile()) return;
   sidebarEl.classList.remove("open");
   backdropEl.classList.remove("visible");
 });
-  
+
+// Only enable swipe gestures on mobile
+if (isMobile()) {
   let touchStartX = 0;
+  document.addEventListener("touchstart", e => {
+    touchStartX = e.changedTouches[0].screenX;
+  });
+  document.addEventListener("touchend", e => {
+    const touchEndX = e.changedTouches[0].screenX;
+    const deltaX = touchEndX - touchStartX;
 
-document.addEventListener("touchstart", e => {
-  touchStartX = e.changedTouches[0].screenX;
-});
-
-document.addEventListener("touchend", e => {
-  const touchEndX = e.changedTouches[0].screenX;
-  const deltaX = touchEndX - touchStartX;
-
-  // swipe right to open (from left edge only)
-  if (touchStartX < 50 && deltaX > 60 && !sidebarEl.classList.contains("open")) {
-    sidebarEl.classList.add("open");
-    backdropEl.classList.add("visible");
-  }
-
-  // swipe left to close
-  if (deltaX < -60 && sidebarEl.classList.contains("open")) {
-    sidebarEl.classList.remove("open");
-    backdropEl.classList.remove("visible");
-  }
-});
+    if (touchStartX < 50 && deltaX > 60 && !sidebarEl.classList.contains("open")) {
+      sidebarEl.classList.add("open");
+      backdropEl.classList.add("visible");
+    }
+    if (deltaX < -60 && sidebarEl.classList.contains("open")) {
+      sidebarEl.classList.remove("open");
+      backdropEl.classList.remove("visible");
+    }
+  });
+}
 
   // ==========================
   // INITIAL LOAD
@@ -446,6 +452,7 @@ document.addEventListener("touchend", e => {
   })();
 
 });
+
 
 
 
