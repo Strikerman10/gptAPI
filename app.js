@@ -26,6 +26,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
   const paletteBtn = document.getElementById("themeBtn"); // 🎨 palette button
 
+const scrollTopBtn = document.getElementById("scrollTopBtn");
+messagesEl.addEventListener("scroll", () => {
+  if (messagesEl.scrollTop > 200) {
+    scrollTopBtn.style.display = "flex";
+  } else {
+    scrollTopBtn.style.display = "none";
+  }
+});
+
+scrollTopBtn.addEventListener("click", () => {
+  messagesEl.scrollTo({ top: 0, behavior: "smooth" });
+});
+  
   // ==========================
   // PALETTE & THEME
   // ==========================
@@ -392,3 +405,4 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
