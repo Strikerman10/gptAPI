@@ -7,7 +7,7 @@ const MODEL = "gpt-5-chat-latest";
 // Temporary user ID: will be asked once then stored in localStorage
 let userId = localStorage.getItem("chat_user_id");
 if (!userId) {
-  userId = prompt("Enter a username to identify your chats:", "guest1");
+  userId = prompt("Enter a username to identify your chats:", "");
   localStorage.setItem("chat_user_id", userId);
 }
 
@@ -468,6 +468,7 @@ if (isMobile()) {
   })();
 
 });
+
 
 
 
