@@ -244,56 +244,106 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function renderMessages() {
-    messagesEl.innerHTML = "";
-    headerEl.textContent = "ChatGPT"; 
+function renderMessages() {
+  messagesEl.innerHTML = "";
+  headerEl.textContent = "ChatGPT"; 
 
-    if (currentIndex === null || !chats[currentIndex]) {
-      messagesEl.innerHTML = `<p class="placeholder">No chats yet. Start a new one!</p>`;
-      return;
-    }
-    const chat = chats[currentIndex];
-    if (!chat.messages || !chat.messages.length) {
-      messagesEl.innerHTML = `<p class="placeholder">This chat is empty.</p>`;
-      return;
-    }
-
-    chat.messages.forEach(msg => {
-      const div = document.createElement("div");
-      div.className = `message ${msg.role}`;
-      const textDiv = document.createElement("div");
-      textDiv.className = "msg-text";
-      textDiv.textContent = msg.content;
-      const timeDiv = document.createElement("div");
-      timeDiv.className = "msg-time";
-      timeDiv.textContent = msg.time || "";
-      textDiv.appendChild(timeDiv);
-      div.appendChild(textDiv);
-      messagesEl.appendChild(div);
-    });
-
-    messagesEl.scrollTop = messagesEl.scrollHeight;
+  if (currentIndex === null || !chats[currentIndex]) {
+    messagesEl.innerHTML = `<p class="placeholder">No chats yet. Start a new one!</p>`;
+    return;
   }
+  const chat = chats[currentIndex];
+  if (!chat.messages || !chat.messages.length) {
+    messagesEl.innerHTML = `<p class="placeholder">This chat is empty.</p>`;
+    return;
+  }
+
+  chat.messages.forEach(msg => {
+    const div = document.createElement("div");
+    div.className = `message ${msg.role}`;
+    const textDiv = document.createElement("div");
+    textDiv.className = "msg-text";
+
+    // ⬇️ Here's the new bit
+    if (msg.content === "__TYPING__") {
+      textDiv.innerHTML = `
+        <div class="typing-indicator">
+          <span></span><span></span><span></span>
+        </div>
+      `;
+    } else {
+      textDiv.textContent = msg.content;
+    }
+
+    const timeDiv = document.createElement("div");
+    timeDiv.className = "msg-time";
+    timeDiv.textContent = msg.time || "";
+    textDiv.appendChild(timeDiv);
+
+    div.appendChild(textDiv);
+    messagesEl.appendChild(div);
+  });
+
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
 
   // ==========================
   // SEND MESSAGE
   // ==========================
   async function sendMessage() {
-    const text = inputEl.value.trim();
-    if (!text) return;
-    if (currentIndex === null) createNewChat();
-    const chat = chats[currentIndex];
-    const userMessage = { role: "user", content: text, time: formatTime() };
-    chat.messages.push(userMessage);
-    if (chat.title === "New Chat" || !chat.title) {
-      const firstLine = text.split(/\r?\n/)[0];
-      chat.title = firstLine.length > 40 ? firstLine.slice(0, 40) + "…" : firstLine;
-    }
-    chat.messages.push({ role: "assistant", content: "Thinking...", time: formatTime() });
-    renderMessages();
-    inputEl.value = "";
-    saveChats();
-    saveChatsToWorker();
+  const text = inputEl.value.trim();
+  if (!text) return;
+  if (currentIndex === null) createNewChat();
+  const chat = chats[currentIndex];
+
+  // push the user message
+  const userMessage = { role: "user", content: text, time: formatTime() };
+  chat.messages.push(userMessage);
+
+  // update title if it's a new chat
+  if (chat.title === "New Chat" || !chat.title) {
+    const firstLine = text.split(/\r?\n/)[0];
+    chat.title = firstLine.length > 40 ? firstLine.slice(0, 40) + "…" : firstLine;
+  }
+
+  // push a temporary assistant placeholder
+  chat.messages.push({ 
+    role: "assistant", 
+    content: "__TYPING__", // shows animated dots
+    time: formatTime() 
+  });
+
+  renderMessages();
+  inputEl.value = "";
+  saveChats();
+  saveChatsToWorker();
+
+  try {
+    // 🔹 Call your backend / API here:
+    // e.g. const answer = await fetchAssistantResponse(text);
+    const answer = await fetchAssistantResponse(text); // <-- replace with your API logic
+
+    // 🔹 STEP 4: replace the last assistant message with the real answer
+    chat.messages[chat.messages.length - 1] = { 
+      role: "assistant", 
+      content: answer, 
+      time: formatTime() 
+    };
+
+  } catch (err) {
+    chat.messages[chat.messages.length - 1] = {
+      role: "assistant",
+      content: "⚠️ Sorry, something went wrong.",
+      time: formatTime()
+    };
+    console.error(err);
+  }
+
+  // refresh UI and persist after replacing
+  renderMessages();
+  saveChats();
+  saveChatsToWorker();
+}
 
     try {
       const res = await fetch(`${WORKER_URL}/chat`, {
@@ -379,3 +429,4 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
