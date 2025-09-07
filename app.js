@@ -261,7 +261,7 @@ function truncate(str, n) {
 const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
 // choose limits based on screen size
-const titleLimit    = isMobile ? 50 : 70;
+const titleLimit    = isMobile ? 45 : 70;
 const subtitleLimit = isMobile ? 40 : 60;
 
 const preview = document.createElement("div");
@@ -475,6 +475,7 @@ if (isMobile()) {
   })();
 
 });
+
 
 
 
