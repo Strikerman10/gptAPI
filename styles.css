@@ -559,6 +559,19 @@ body.theme-amoled .btn {
   .sidebar-backdrop.visible {
     display: block;
   }
+   /* 📌 Mobile-only delete button */
+  .delete-btn {
+    background: var(--color-6);
+    color: #fff;
+    transform: translateY(-50%);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    border-radius: 50%; /* or 6px for rounded square */
+  }
+
+  .delete-btn:active {
+    background: var(--color-6);
+    transform: translateY(-50%) scale(0.95);
+  }
 }
 
 @media (max-width: 599.98px) {
@@ -597,6 +610,7 @@ body.theme-amoled .btn {
   0%, 80%, 100% { transform: scale(0); }
   40% { transform: scale(1); }
 }
+
 
 
 
