@@ -9,6 +9,13 @@ let userId = localStorage.getItem("chat_user_id");
 if (!userId) {
   userId = prompt("Enter a username to identify your chats:", "");
   localStorage.setItem("chat_user_id", userId);
+   // 👇 Immediately try loading chats for this new user
+  (async () => {
+    await loadChatsFromWorker();
+    loadChats();
+    renderChatList();
+    renderMessages();
+  })();
 }
 
 let chats = [];
@@ -468,6 +475,7 @@ if (isMobile()) {
   })();
 
 });
+
 
 
 
