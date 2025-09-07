@@ -145,7 +145,7 @@ scrollTopBtn.addEventListener("click", () => {
     }
   };
 
-  let currentPalette = localStorage.getItem("palette") || "Green";
+  let currentPalette = localStorage.getItem("palette") || "Red";
   let currentMode = localStorage.getItem("mode") || "light";
 
   function applyTheme() {
@@ -468,6 +468,7 @@ if (isMobile()) {
   })();
 
 });
+
 
 
 
