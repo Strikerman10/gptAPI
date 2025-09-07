@@ -261,8 +261,8 @@ function truncate(str, n) {
 const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
 // choose limits based on screen size
-const titleLimit    = isMobile ? 60 : 70;
-const subtitleLimit = isMobile ? 50 : 60;
+const titleLimit    = isMobile ? 55 : 70;
+const subtitleLimit = isMobile ? 45 : 60;
 
 const preview = document.createElement("div");
 preview.className = "chat-preview";
@@ -475,6 +475,7 @@ if (isMobile()) {
   })();
 
 });
+
 
 
 
