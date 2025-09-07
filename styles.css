@@ -15,12 +15,12 @@ html, body {
    🎨 MASTER THEME COLORS
    =========================== */
 :root {
-  --color-1: #94e8b4; /* light accent */
-  --color-2: #72bda3; /* mid accent */
-  --color-3: #5e8c61; /* primary green */
-  --color-4: #4e6151; /* dark neutral */
-  --color-5: #3b322c; /* very dark base */
-  --color-6: #800000; /* deep maroon (special actions) */
+  --color-1: #e07b7b; /* light accent */
+  --color-2: #b94c4c; /* mid accent */
+  --color-3: #8b0000; /* primary green */
+  --color-4: #5a0000; /* dark neutral */
+  --color-5: #1a0a0a; /* very dark base */
+  --color-6: #008080; /* deep maroon (special actions) */
 }
 
 /* ===========================
@@ -597,4 +597,5 @@ body.theme-amoled .btn {
   0%, 80%, 100% { transform: scale(0); }
   40% { transform: scale(1); }
 }
+
 
