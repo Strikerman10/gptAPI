@@ -4,6 +4,13 @@
 const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
 const MODEL = "gpt-5-chat-latest";
 
+// Temporary user ID: will be asked once then stored in localStorage
+let userId = localStorage.getItem("chat_user_id");
+if (!userId) {
+  userId = prompt("Enter a username to identify your chats:", "guest1");
+  localStorage.setItem("chat_user_id", userId);
+}
+
 let chats = [];
 let currentIndex = null;
 
@@ -356,6 +363,7 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
 
 
 
