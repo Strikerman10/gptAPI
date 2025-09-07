@@ -469,7 +469,7 @@ body.theme-amoled .btn {
   }
 
   .sidebar {
-    width: 20%;
+    width: 30%;
     flex-shrink: 0;
     box-sizing: border-box;
   }
@@ -486,6 +486,7 @@ body.theme-amoled .btn {
     flex-wrap: nowrap;
   }
 }
+
 
 
 
