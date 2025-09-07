@@ -245,14 +245,30 @@ scrollTopBtn.addEventListener("click", () => {
       const item = document.createElement("div");
       item.className = "chat-item" + (i === currentIndex ? " selected" : "");
 
-      const preview = document.createElement("div");
-      preview.className = "chat-preview";
-      preview.innerHTML = `
-        <div class="chat-title">${chat.title || "New Chat"}</div>
-        <div class="chat-subtitle">
-          ${(chat.messages && chat.messages.length > 0) ? chat.messages[chat.messages.length - 1].content.slice(0, 60) : ""}
-        </div>
-      `;
+      // helper to truncate and add … if too long
+function truncate(str, n) {
+  return str.length > n ? str.slice(0, n) + "…" : str;
+}
+
+// check if we’re on mobile (≤768px wide)
+const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+// choose limits based on screen size
+const titleLimit    = isMobile ? 60 : 70;
+const subtitleLimit = isMobile ? 50 : 60;
+
+const preview = document.createElement("div");
+preview.className = "chat-preview";
+
+const title = truncate(chat.title || "New Chat", titleLimit);
+const subtitle = (chat.messages && chat.messages.length > 0)
+  ? truncate(chat.messages[chat.messages.length - 1].content, subtitleLimit)
+  : "";
+
+preview.innerHTML = `
+  <div class="chat-title">${title}</div>
+  <div class="chat-subtitle">${subtitle}</div>
+`;
 
       const delBtn = document.createElement("button");
       delBtn.className = "delete-btn";
@@ -452,6 +468,7 @@ if (isMobile()) {
   })();
 
 });
+
 
 
 
