@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
   "--color-3": "#E28D00",  /* Header */
   "--color-4": "#242424",  /* message user */
   "--color-5": "#000000",  /* True AMOLED black background */
-  "--color-6": "#483519"   /* Brown for button */
+  "--color-6": "#846C5B"   /* Brown for button */
 }
   };
 
@@ -356,6 +356,7 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
 
 
 
