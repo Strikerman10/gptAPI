@@ -467,7 +467,7 @@ body.theme-amoled .btn {
 /* Scroll-to-top button */
 .scroll-top-btn {
   position: absolute;
-  bottom: 80px;
+  bottom: 95px;
   right: 20px;
   z-index: 50;
   background: var(--color-2);
@@ -557,6 +557,7 @@ body.theme-amoled .btn {
   0%, 80%, 100% { transform: scale(0); }
   40% { transform: scale(1); }
 }
+
 
 
 
