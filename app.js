@@ -35,6 +35,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const themeToggleBtn = document.getElementById("toggleThemeBtn"); // 🌙/☀️ toggle
   const sidebarEl = document.querySelector(".sidebar");
   const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
+  // Create backdrop for sidebar
+const backdropEl = document.createElement("div");
+backdropEl.className = "sidebar-backdrop";
+document.body.appendChild(backdropEl);
   const paletteBtn = document.getElementById("themeBtn"); // 🎨 palette button
 
 const scrollTopBtn = document.getElementById("scrollTopBtn");
@@ -396,14 +400,39 @@ scrollTopBtn.addEventListener("click", () => {
   });
 
   // Sidebar toggle
-  toggleSidebarBtn.addEventListener("click", () => {
-    const isHidden = sidebarEl.style.display === "none";
-    sidebarEl.style.display = isHidden ? "flex" : "none";
-    const hideIcon = toggleSidebarBtn.querySelector(".hide-icon");
-    const showIcon = toggleSidebarBtn.querySelector(".show-icon");
-    hideIcon.classList.toggle("hidden", !isHidden); 
-    showIcon.classList.toggle("hidden", isHidden);
-  });
+ toggleSidebarBtn.addEventListener("click", () => {
+  const isOpen = sidebarEl.classList.toggle("open");
+  backdropEl.classList.toggle("visible", isOpen);
+});
+
+// Close when clicking backdrop
+backdropEl.addEventListener("click", () => {
+  sidebarEl.classList.remove("open");
+  backdropEl.classList.remove("visible");
+});
+  
+  let touchStartX = 0;
+
+document.addEventListener("touchstart", e => {
+  touchStartX = e.changedTouches[0].screenX;
+});
+
+document.addEventListener("touchend", e => {
+  const touchEndX = e.changedTouches[0].screenX;
+  const deltaX = touchEndX - touchStartX;
+
+  // swipe right to open (from left edge only)
+  if (touchStartX < 50 && deltaX > 60 && !sidebarEl.classList.contains("open")) {
+    sidebarEl.classList.add("open");
+    backdropEl.classList.add("visible");
+  }
+
+  // swipe left to close
+  if (deltaX < -60 && sidebarEl.classList.contains("open")) {
+    sidebarEl.classList.remove("open");
+    backdropEl.classList.remove("visible");
+  }
+});
 
   // ==========================
   // INITIAL LOAD
@@ -417,5 +446,6 @@ scrollTopBtn.addEventListener("click", () => {
   })();
 
 });
+
 
 
