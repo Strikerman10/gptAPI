@@ -38,13 +38,62 @@ document.addEventListener("DOMContentLoaded", () => {
       "--color-5": "#3b322c",
       "--color-6": "#800000"
     },
-    Blue: { … }, // unchanged palettes shortened for brevity
-    Amber: { … },
-    Purple: { … },
-    Red: { … },
-    Teal: { … },
-    Gray: { … },
-    Amoled: { … }
+    Blue: {
+      "--color-1": "#6da5f8",
+      "--color-2": "#3f5fa3",
+      "--color-3": "#2c4f80",
+      "--color-4": "#1e3759",
+      "--color-5": "#0d1628",
+      "--color-6": "#4e1818"
+    },
+    Amber: {
+      "--color-1": "#ffd48a",
+      "--color-2": "#ffb74d",
+      "--color-3": "#996515",
+      "--color-4": "#5a3b0f",
+      "--color-5": "#1a0e05",
+      "--color-6": "#7fd7d0"
+    },
+    Purple: {
+      "--color-1": "#e3c6ff",
+      "--color-2": "#c19df0",
+      "--color-3": "#9467bd",
+      "--color-4": "#6a4c93",
+      "--color-5": "#3e2c41",
+      "--color-6": "#007373"
+    },
+    Red: {
+      "--color-1": "#e07b7b",
+      "--color-2": "#b94c4c",
+      "--color-3": "#8b0000",
+      "--color-4": "#5a0000",
+      "--color-5": "#1a0a0a",
+      "--color-6": "#008080"
+    },
+    Teal: {
+      "--color-1": "#7fd7d0",
+      "--color-2": "#40a8a0",
+      "--color-3": "#006d65",
+      "--color-4": "#004944",
+      "--color-5": "#0a1c1b",
+      "--color-6": "#666699"
+    },
+    Gray: {
+      "--color-1": "#e0e0e0",
+      "--color-2": "#b0b0b0",
+      "--color-3": "#4a4a4a",
+      "--color-4": "#2c2c2c",
+      "--color-5": "#121212",
+      "--color-6": "#5c5c3d"
+    },
+    Amoled: {
+      "--color-1": "#FCE883",
+      "--color-2": "#08415C",
+      "--color-3": "#ffbf00",
+      "--color-4": "#242424",
+      "--color-5": "#000000",
+      "--color-6": "#846C5B"
+    }
   };
 
   const neutrals = {
@@ -71,13 +120,35 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentPalette = localStorage.getItem("palette") || "Green";
   let currentMode = localStorage.getItem("mode") || "light";
 
-  function applyTheme() { … } // unchanged
+  function applyTheme() {
+    const root = document.documentElement;
+    const palette = palettes[currentPalette];
+    const neutralSet = neutrals[currentMode];
+    for (const [key, value] of Object.entries(palette)) root.style.setProperty(key, value);
+    for (const [key, value] of Object.entries(neutralSet)) root.style.setProperty(key, value);
+    document.body.classList.toggle("dark-mode", currentMode === "dark");
+    localStorage.setItem("palette", currentPalette);
+    localStorage.setItem("mode", currentMode);
+  }
 
   // ==========================
   // UTILITIES
   // ==========================
-  function saveChats() { … }
-  function loadChats() { … }
+  function saveChats() {
+    localStorage.setItem("secure_chat_chats", JSON.stringify(chats));
+    localStorage.setItem("secure_chat_index", String(currentIndex));
+  }
+
+  function loadChats() {
+    const raw = localStorage.getItem("secure_chat_chats");
+    const idx = localStorage.getItem("secure_chat_index");
+    if (raw) {
+      chats = JSON.parse(raw);
+      currentIndex = idx !== null ? Number(idx) : chats.length ? 0 : null;
+    }
+    if (!chats.length) createNewChat();
+  }
+
   function formatTime(date = new Date()) {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   }
@@ -85,15 +156,93 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==========================
   // WORKER INTEGRATION
   // ==========================
-  async function loadChatsFromWorker() { … }
-  async function saveChatsToWorker() { … }
+  async function loadChatsFromWorker() {
+    try {
+      const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`);
+      if (!res.ok) return;
+      const workerChats = await res.json();
+      if (Array.isArray(workerChats) && workerChats.length) {
+        chats = workerChats;
+        currentIndex = 0;
+        renderChatList();
+        renderMessages();
+      }
+    } catch (e) {
+      console.warn("Could not load chats from worker:", e);
+    }
+  }
+
+  async function saveChatsToWorker() {
+    try {
+      await fetch(`${WORKER_URL}/save`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, chats }),
+      });
+    } catch (e) {
+      console.warn("Could not save chats to worker:", e);
+    }
+  }
 
   // ==========================
   // CHAT FUNCTIONS
   // ==========================
-  function createNewChat() { … }
-  function deleteChat(index) { … }
-  function renderChatList() { … }
+  function createNewChat() {
+    const newChat = { id: Date.now().toString(), title: "New Chat", messages: [] };
+    chats.unshift(newChat);
+    currentIndex = 0;
+    saveChats();
+    renderChatList();
+    renderMessages();
+    saveChatsToWorker();
+  }
+
+  function deleteChat(index) {
+    if (index < 0 || index >= chats.length) return;
+    chats.splice(index, 1);
+    if (chats.length === 0) {
+      currentIndex = null;
+    } else if (currentIndex >= chats.length) {
+      currentIndex = chats.length - 1;
+    }
+    saveChats();
+    saveChatsToWorker();
+    renderChatList();
+    renderMessages();
+  }
+
+  function renderChatList() {
+    chatListEl.innerHTML = "";
+    chats.forEach((chat, i) => {
+      const item = document.createElement("div");
+      item.className = "chat-item" + (i === currentIndex ? " selected" : "");
+
+      const preview = document.createElement("div");
+      preview.className = "chat-preview";
+      preview.innerHTML = `
+        <div class="chat-title">${chat.title || "New Chat"}</div>
+        <div class="chat-subtitle">
+          ${(chat.messages && chat.messages.length > 0) ? chat.messages[chat.messages.length - 1].content.slice(0, 60) : ""}
+        </div>
+      `;
+
+      const delBtn = document.createElement("button");
+      delBtn.className = "delete-btn";
+      delBtn.setAttribute("aria-label", "Delete chat");
+      delBtn.textContent = "×";
+      delBtn.addEventListener("click", (e) => { e.stopPropagation(); deleteChat(i); });
+
+      item.addEventListener("click", () => {
+        currentIndex = i;
+        renderChatList();
+        renderMessages();
+      });
+
+      item.appendChild(preview);
+      item.appendChild(delBtn);
+      chatListEl.appendChild(item);
+    });
+  }
 
   function renderMessages() {
     messagesEl.innerHTML = "";
@@ -115,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const textDiv = document.createElement("div");
       textDiv.className = "msg-text";
 
-      // 🔹 Typing indicator support
+      // Typing indicator support
       if (msg.content === "__TYPING__") {
         textDiv.innerHTML = `
           <div class="typing-indicator">
@@ -145,24 +294,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!text) return;
     if (currentIndex === null) createNewChat();
     const chat = chats[currentIndex];
-
-    // Push user msg
     const userMessage = { role: "user", content: text, time: formatTime() };
     chat.messages.push(userMessage);
-
-    // Set title
     if (chat.title === "New Chat" || !chat.title) {
       const firstLine = text.split(/\r?\n/)[0];
       chat.title = firstLine.length > 40 ? firstLine.slice(0, 40) + "…" : firstLine;
     }
-
-    // Add placeholder assistant "__TYPING__"
-    chat.messages.push({
-      role: "assistant",
-      content: "__TYPING__",
-      time: formatTime()
-    });
-
+    // Add typing placeholder
+    chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatTime() });
     renderMessages();
     inputEl.value = "";
     saveChats();
@@ -177,21 +316,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!res.ok) throw new Error(`Worker returned ${res.status}`);
       const data = await res.json();
       const answer = data?.choices?.[0]?.message?.content || "No response";
-
       // Replace typing placeholder
-      chat.messages[chat.messages.length - 1] = {
-        role: "assistant",
-        content: answer,
-        time: formatTime()
-      };
+      chat.messages[chat.messages.length - 1] = { role: "assistant", content: answer, time: formatTime() };
     } catch (e) {
-      chat.messages[chat.messages.length - 1] = {
-        role: "assistant",
-        content: "Error: " + e.message,
-        time: formatTime()
-      };
+      chat.messages[chat.messages.length - 1] = { role: "assistant", content: "Error: " + e.message, time: formatTime() };
     }
-
     saveChats();
     saveChatsToWorker();
     renderMessages();
@@ -210,8 +339,46 @@ document.addEventListener("DOMContentLoaded", () => {
     } 
   });
 
-  // Theme / palette / sidebar toggles ...
-  // (left intact, omitted here to keep it short)
+  // Palette selector init
+  paletteSelector.value = currentPalette;
+
+  // Theme icon toggling
+  const darkIcon  = themeToggleBtn.querySelector(".dark-icon");
+  const lightIcon = themeToggleBtn.querySelector(".light-icon");
+  darkIcon.classList.toggle("hidden", currentMode === "dark");
+  lightIcon.classList.toggle("hidden", currentMode === "light");
+
+  // Light/Dark button
+  themeToggleBtn.addEventListener("click", () => { 
+    currentMode = currentMode === "light" ? "dark" : "light"; 
+    darkIcon.classList.toggle("hidden", currentMode === "dark");
+    lightIcon.classList.toggle("hidden", currentMode === "light");
+    applyTheme(); 
+  });
+
+  // Palette dropdown toggle via 🎨 button
+  paletteBtn.addEventListener("click", () => {
+    paletteSelector.classList.toggle("hidden");
+    if (!paletteSelector.classList.contains("hidden")) {
+      paletteSelector.focus();
+    }
+  });
+
+  paletteSelector.addEventListener("change", e => {
+    currentPalette = e.target.value; 
+    applyTheme();
+    paletteSelector.classList.add("hidden"); // hide after selection
+  });
+
+  // Sidebar toggle
+  toggleSidebarBtn.addEventListener("click", () => {
+    const isHidden = sidebarEl.style.display === "none";
+    sidebarEl.style.display = isHidden ? "flex" : "none";
+    const hideIcon = toggleSidebarBtn.querySelector(".hide-icon");
+    const showIcon = toggleSidebarBtn.querySelector(".show-icon");
+    hideIcon.classList.toggle("hidden", !isHidden); 
+    showIcon.classList.toggle("hidden", isHidden);
+  });
 
   // ==========================
   // INITIAL LOAD
