@@ -500,6 +500,12 @@ body.theme-amoled .btn {
   }
 }
 
+.input-area textarea {
+  resize: none;           /* remove manual drag handle */
+  max-height: 200px;      /* cap max size */
+  overflow-y: auto;       /* scroll inside if content exceeds max-height */
+}
+
 /* ===========================
    Responsive
    =========================== */
@@ -557,6 +563,7 @@ body.theme-amoled .btn {
   0%, 80%, 100% { transform: scale(0); }
   40% { transform: scale(1); }
 }
+
 
 
 
