@@ -140,33 +140,33 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==========================
   // WORKER INTEGRATION
   // ==========================
-  async function loadChatsFromWorker() {
-    try {
-      const res = await fetch(`${WORKER_URL}/load`);
-      if (!res.ok) return;
-      const workerChats = await res.json();
-      if (Array.isArray(workerChats) && workerChats.length) {
-        chats = workerChats;
-        currentIndex = 0;
-        renderChatList();
-        renderMessages();
-      }
-    } catch (e) {
-      console.warn("Could not load chats from worker:", e);
+async function loadChatsFromWorker() {
+  try {
+    const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`);
+    if (!res.ok) return;
+    const workerChats = await res.json();
+    if (Array.isArray(workerChats) && workerChats.length) {
+      chats = workerChats;
+      currentIndex = 0;
+      renderChatList();
+      renderMessages();
     }
+  } catch (e) {
+    console.warn("Could not load chats from worker:", e);
   }
+}
 
-  async function saveChatsToWorker() {
-    try {
-      await fetch(`${WORKER_URL}/save`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chats }),
-      });
-    } catch (e) {
-      console.warn("Could not save chats to worker:", e);
-    }
+async function saveChatsToWorker() {
+  try {
+    await fetch(`${WORKER_URL}/save`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, chats }),
+    });
+  } catch (e) {
+    console.warn("Could not save chats to worker:", e);
   }
+}
 
   // ==========================
   // CHAT FUNCTIONS
@@ -363,6 +363,7 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
 });
+
 
 
 
