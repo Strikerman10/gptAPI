@@ -530,7 +530,7 @@ body.theme-amoled .btn {
   .sidebar {
     position: fixed;
     top: 0; left: 0; bottom: 0;
-    width: 85%;              /* bigger drawer */
+    width: 90%;              /* bigger drawer */
     max-width: none;
     background: var(--surface-1);
     transform: translateX(-100%);
@@ -597,5 +597,6 @@ body.theme-amoled .btn {
   0%, 80%, 100% { transform: scale(0); }
   40% { transform: scale(1); }
 }
+
 
 
