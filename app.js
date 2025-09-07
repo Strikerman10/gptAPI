@@ -20,6 +20,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const messagesEl = document.getElementById("messages");
   const headerEl = document.getElementById("chatHeader").querySelector("span");
   const inputEl = document.getElementById("input");
+  // ==========================
+  // AUTO-RESIZE TEXTAREA
+  // ==========================
+  function autoResize() {
+    inputEl.style.height = "auto"; // reset so it can shrink
+    inputEl.style.height = Math.min(inputEl.scrollHeight, 200) + "px";
+  }
+
+  inputEl.addEventListener("input", autoResize);
+  // run once on load
+  autoResize();
   const paletteSelector = document.getElementById("paletteSelector");
   const themeToggleBtn = document.getElementById("toggleThemeBtn"); // 🌙/☀️ toggle
   const sidebarEl = document.querySelector(".sidebar");
@@ -317,6 +328,7 @@ scrollTopBtn.addEventListener("click", () => {
     chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatTime() });
     renderMessages();
     inputEl.value = "";
+    autoResize();   // reset height after clearing
     saveChats();
     saveChatsToWorker();
 
@@ -405,4 +417,5 @@ scrollTopBtn.addEventListener("click", () => {
   })();
 
 });
+
 
