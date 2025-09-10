@@ -167,78 +167,26 @@ scrollTopBtn.addEventListener("click", () => {
   }
 
   // ==========================
-// UTILITIES
-// ==========================
-
-// Always prefer Worker (cloud) as master, fallback to local only if Worker empty
-async function loadChats() {
-  try {
-    const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`);
-    if (res.ok) {
-      const workerChats = await res.json();
-      if (Array.isArray(workerChats) && workerChats.length) {
-        // ✅ Cloud takes precedence
-        chats = workerChats;
-        currentIndex = 0;
-        // Keep local cache in sync
-        localStorage.setItem("secure_chat_chats", JSON.stringify(chats));
-        localStorage.setItem("secure_chat_index", String(currentIndex));
-        return;
-      }
-    }
-  } catch (err) {
-    console.warn("Worker load failed, falling back to local:", err);
+  // UTILITIES
+  // ==========================
+  function saveChats() {
+    localStorage.setItem("secure_chat_chats", JSON.stringify(chats));
+    localStorage.setItem("secure_chat_index", String(currentIndex));
   }
 
-  // ⚠️ Worker empty or unreachable → fallback on local
-  const raw = localStorage.getItem("secure_chat_chats");
-  const idx = localStorage.getItem("secure_chat_index");
-  if (raw) {
-    try {
+  function loadChats() {
+    const raw = localStorage.getItem("secure_chat_chats");
+    const idx = localStorage.getItem("secure_chat_index");
+    if (raw) {
       chats = JSON.parse(raw);
       currentIndex = idx !== null ? Number(idx) : chats.length ? 0 : null;
-      // Push local copy up so it’s available on cloud next time
-      await saveChatsToWorker();
-    } catch (e) {
-      console.warn("Error parsing local chats:", e);
-      chats = [];
-      createNewChat();
     }
-  } else {
-    chats = [];
-    createNewChat();
+    if (!chats.length) createNewChat();
   }
-}
 
-// Save locally and push to Worker
-function saveChats() {
-  // Local cache
-  localStorage.setItem("secure_chat_chats", JSON.stringify(chats));
-  localStorage.setItem("secure_chat_index", String(currentIndex));
-  // Sync cloud
-  saveChatsToWorker();
-}
-
-// Helper: actually send to Worker
-async function saveChatsToWorker() {
-  if (!userId) return;
-  try {
-    const res = await fetch(`${WORKER_URL}/save`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId, chats }),
-    });
-    if (!res.ok) {
-      console.warn("Worker save failed:", await res.text());
-    }
-  } catch (e) {
-    console.warn("Could not reach worker:", e);
+  function formatTime(date = new Date()) {
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   }
-}
-
-function formatTime(date = new Date()) {
-  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
 
   // ==========================
   // WORKER INTEGRATION
@@ -515,50 +463,15 @@ if (isMobile()) {
   });
 }
 
-// ==========================
+  // ==========================
   // INITIAL LOAD
   // ==========================
   (async () => {
     applyTheme();
-
-    // 1. Make sure we have a userId
-    if (!userId) {
-      userId = prompt("Enter a username to identify your chats:", "");
-      if (!userId) {
-        alert("You must enter a username to continue");
-        return; // stop if no username given
-      }
-      localStorage.setItem("chat_user_id", userId);
-    }
-
-    // 2. Try loading chats from the Worker
-    let gotFromWorker = false;
-    try {
-      const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`);
-      if (res.ok) {
-        const workerChats = await res.json();
-        if (Array.isArray(workerChats) && workerChats.length) {
-          chats = workerChats;
-          currentIndex = 0;
-          saveChats(); // sync Worker data back into local storage
-          gotFromWorker = true;
-        }
-      }
-    } catch (e) {
-      console.warn("Could not load from worker:", e);
-    }
-
-    // 3. Fallback to localStorage if Worker had nothing
-    if (!gotFromWorker) {
-      loadChats();
-    }
-
-    // 4. Render UI
+    await loadChatsFromWorker();
+    loadChats();
     renderChatList();
     renderMessages();
   })();
 
-}); 
-
-
-
+});
