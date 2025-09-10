@@ -2,7 +2,6 @@
 // CONFIG
 // ==========================
 const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
-const MODEL = "gpt-5-chat-latest";
 
 // Temporary user ID: will be asked once then stored in localStorage
 let userId = localStorage.getItem("chat_user_id");
@@ -20,6 +19,7 @@ if (!userId) {
 
 let chats = [];
 let currentIndex = null;
+let currentModel = localStorage.getItem("chat_model") || "gpt-5-chat-latest";
 
 document.addEventListener("DOMContentLoaded", () => {
   // DOM elements
@@ -27,6 +27,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const messagesEl = document.getElementById("messages");
   const headerEl = document.getElementById("chatHeader").querySelector("span");
   const inputEl = document.getElementById("input");
+  const modelSelector = document.getElementById("modelSelector");
+
+// Set dropdown to whichever model was last saved
+modelSelector.value = currentModel;
+
+// Update model when user changes it
+modelSelector.addEventListener("change", (e) => {
+  currentModel = e.target.value;
+  localStorage.setItem("chat_model", currentModel);
+  console.log("Switched to model:", currentModel);
+});
+  
   // ==========================
   // AUTO-RESIZE TEXTAREA
   // ==========================
@@ -390,46 +402,65 @@ preview.innerHTML = `
   }
 
   // ==========================
-  // SEND MESSAGE
-  // ==========================
-  async function sendMessage() {
-    const text = inputEl.value.trim();
-    if (!text) return;
-    if (currentIndex === null) createNewChat();
-    const chat = chats[currentIndex];
-    const userMessage = { role: "user", content: text, time: formatTime() };
-    chat.messages.push(userMessage);
-    if (chat.title === "New Chat" || !chat.title) {
-      const firstLine = text.split(/\r?\n/)[0];
-      chat.title = firstLine.length > 40 ? firstLine.slice(0, 40) + "…" : firstLine;
-    }
-    // Add typing placeholder
-    chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatTime() });
-    renderMessages();
-    inputEl.value = "";
-    autoResize();   // reset height after clearing
-    saveChats();
-    saveChatsToWorker();
+// SEND MESSAGE
+// ==========================
+async function sendMessage() {
+  const text = inputEl.value.trim();
+  if (!text) return;
+  if (currentIndex === null) createNewChat();
+  const chat = chats[currentIndex];
 
-    try {
-      const res = await fetch(`${WORKER_URL}/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model: MODEL, messages: chat.messages.slice(-10) }),
-      });
-      if (!res.ok) throw new Error(`Worker returned ${res.status}`);
-      const data = await res.json();
-      const answer = data?.choices?.[0]?.message?.content || "No response";
-      // Replace typing placeholder
-      chat.messages[chat.messages.length - 1] = { role: "assistant", content: answer, time: formatTime() };
-    } catch (e) {
-      chat.messages[chat.messages.length - 1] = { role: "assistant", content: "Error: " + e.message, time: formatTime() };
-    }
-    saveChats();
-    saveChatsToWorker();
-    renderMessages();
-    renderChatList();
+  const userMessage = { role: "user", content: text, time: formatTime() };
+  chat.messages.push(userMessage);
+
+  if (chat.title === "New Chat" || !chat.title) {
+    const firstLine = text.split(/\r?\n/)[0];
+    chat.title = firstLine.length > 40 ? firstLine.slice(0, 40) + "…" : firstLine;
   }
+
+  // Add typing placeholder
+  chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatTime() });
+  renderMessages();
+  inputEl.value = "";
+  autoResize();   // reset height after clearing
+  saveChats();
+  saveChatsToWorker();
+
+  try {
+    const res = await fetch(`${WORKER_URL}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: currentModel,                  // ✅ uses user‑selected/current model
+        messages: chat.messages.slice(-10)    // only send the last 10 messages
+      }),
+    });
+
+    if (!res.ok) throw new Error(`Worker returned ${res.status}`);
+
+    const data = await res.json();
+    const answer = data?.choices?.[0]?.message?.content || "No response";
+
+    // Replace typing placeholder with actual assistant reply
+    chat.messages[chat.messages.length - 1] = {
+      role: "assistant",
+      content: answer,
+      time: formatTime()
+    };
+  } catch (e) {
+    // Replace typing placeholder with error message
+    chat.messages[chat.messages.length - 1] = {
+      role: "assistant",
+      content: "Error: " + e.message,
+      time: formatTime()
+    };
+  }
+
+  saveChats();
+  saveChatsToWorker();
+  renderMessages();
+  renderChatList();
+}
 
   // ==========================
   // EVENT LISTENERS
@@ -559,3 +590,4 @@ if (isMobile()) {
   })();
 
 }); 
+
