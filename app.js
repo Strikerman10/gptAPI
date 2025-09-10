@@ -463,26 +463,49 @@ if (isMobile()) {
   });
 }
 
-// ---------------------------
-// INITIAL LOAD
-// ---------------------------
-(async () => {
-  applyTheme();
-  let loadedFromWorker = false;
-  try {
-    await loadChatsFromWorker();
-    loadedFromWorker = chats.length > 0;
-  } catch (e) {
-    console.warn("Worker load failed, falling back to local:", e);
-  }
+// ==========================
+  // INITIAL LOAD
+  // ==========================
+  (async () => {
+    applyTheme();
 
-  if (!loadedFromWorker) {
-    loadChats(); // only fallback when worker didn’t return anything
-  }
+    // 1. Make sure we have a userId
+    if (!userId) {
+      userId = prompt("Enter a username to identify your chats:", "");
+      if (!userId) {
+        alert("You must enter a username to continue");
+        return; // stop if no username given
+      }
+      localStorage.setItem("chat_user_id", userId);
+    }
 
-  renderChatList();
-  renderMessages();
-})();
-  
-});
+    // 2. Try loading chats from the Worker
+    let gotFromWorker = false;
+    try {
+      const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`);
+      if (res.ok) {
+        const workerChats = await res.json();
+        if (Array.isArray(workerChats) && workerChats.length) {
+          chats = workerChats;
+          currentIndex = 0;
+          saveChats(); // sync Worker data back into local storage
+          gotFromWorker = true;
+        }
+      }
+    } catch (e) {
+      console.warn("Could not load from worker:", e);
+    }
+
+    // 3. Fallback to localStorage if Worker had nothing
+    if (!gotFromWorker) {
+      loadChats();
+    }
+
+    // 4. Render UI
+    renderChatList();
+    renderMessages();
+  })();
+
+}); 
+
 
