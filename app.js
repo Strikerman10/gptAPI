@@ -463,34 +463,16 @@ if (isMobile()) {
   });
 }
 
-// ---------------------------
-// INITIAL LOAD
-// ---------------------------
-(async () => {
-  applyTheme();
-  let loadedFromWorker = false;
-  try {
+  // ==========================
+  // INITIAL LOAD
+  // ==========================
+  (async () => {
+    applyTheme();
     await loadChatsFromWorker();
-    loadedFromWorker = chats.length > 0;
-  } catch (e) {
-    console.warn("Worker load failed, falling back to local:", e);
-  }
+    loadChats();
+    renderChatList();
+    renderMessages();
+  })();
 
-  if (!loadedFromWorker) {
-    loadChats(); // only fallback when worker didn’t return anything
-  }
-
-  renderChatList();
-  renderMessages();
-})();
-
-
-
-
-
-
-
-
-
-
+});
 
