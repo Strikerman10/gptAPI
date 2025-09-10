@@ -167,26 +167,78 @@ scrollTopBtn.addEventListener("click", () => {
   }
 
   // ==========================
-  // UTILITIES
-  // ==========================
-  function saveChats() {
-    localStorage.setItem("secure_chat_chats", JSON.stringify(chats));
-    localStorage.setItem("secure_chat_index", String(currentIndex));
+// UTILITIES
+// ==========================
+
+// Always prefer Worker (cloud) as master, fallback to local only if Worker empty
+async function loadChats() {
+  try {
+    const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`);
+    if (res.ok) {
+      const workerChats = await res.json();
+      if (Array.isArray(workerChats) && workerChats.length) {
+        // ✅ Cloud takes precedence
+        chats = workerChats;
+        currentIndex = 0;
+        // Keep local cache in sync
+        localStorage.setItem("secure_chat_chats", JSON.stringify(chats));
+        localStorage.setItem("secure_chat_index", String(currentIndex));
+        return;
+      }
+    }
+  } catch (err) {
+    console.warn("Worker load failed, falling back to local:", err);
   }
 
-  function loadChats() {
-    const raw = localStorage.getItem("secure_chat_chats");
-    const idx = localStorage.getItem("secure_chat_index");
-    if (raw) {
+  // ⚠️ Worker empty or unreachable → fallback on local
+  const raw = localStorage.getItem("secure_chat_chats");
+  const idx = localStorage.getItem("secure_chat_index");
+  if (raw) {
+    try {
       chats = JSON.parse(raw);
       currentIndex = idx !== null ? Number(idx) : chats.length ? 0 : null;
+      // Push local copy up so it’s available on cloud next time
+      await saveChatsToWorker();
+    } catch (e) {
+      console.warn("Error parsing local chats:", e);
+      chats = [];
+      createNewChat();
     }
-    if (!chats.length) createNewChat();
+  } else {
+    chats = [];
+    createNewChat();
   }
+}
 
-  function formatTime(date = new Date()) {
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+// Save locally and push to Worker
+function saveChats() {
+  // Local cache
+  localStorage.setItem("secure_chat_chats", JSON.stringify(chats));
+  localStorage.setItem("secure_chat_index", String(currentIndex));
+  // Sync cloud
+  saveChatsToWorker();
+}
+
+// Helper: actually send to Worker
+async function saveChatsToWorker() {
+  if (!userId) return;
+  try {
+    const res = await fetch(`${WORKER_URL}/save`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, chats }),
+    });
+    if (!res.ok) {
+      console.warn("Worker save failed:", await res.text());
+    }
+  } catch (e) {
+    console.warn("Could not reach worker:", e);
   }
+}
+
+function formatTime(date = new Date()) {
+  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
 
   // ==========================
   // WORKER INTEGRATION
@@ -507,5 +559,6 @@ if (isMobile()) {
   })();
 
 }); 
+
 
 
