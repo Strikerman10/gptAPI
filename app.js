@@ -427,7 +427,7 @@ function renderMessages() {
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-  // ==========================
+// ==========================
 // SEND MESSAGE
 // ==========================
 async function sendMessage() {
@@ -479,6 +479,54 @@ async function sendMessage() {
       role: "assistant",
       content: "Error: " + e.message,
       time: formatTime()
+    };
+  }
+
+  saveChats();
+  saveChatsToWorker();
+  renderMessages();
+  renderChatList();
+}
+
+// ==========================
+// SEND MESSAGE (RETRY HELPER)
+// ==========================
+async function sendMessageRetry(promptText) {
+  if (!promptText) return;
+  if (currentIndex === null) createNewChat();
+  const chat = chats[currentIndex];
+
+  const userMessage = { role: "user", content: promptText, time: formatTime() };
+  chat.messages.push(userMessage);
+
+  chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatTime() });
+  renderMessages();
+  saveChats();
+  saveChatsToWorker();
+
+  try {
+    const res = await fetch(`${WORKER_URL}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: currentModel,
+        messages: chat.messages.slice(-10),
+      }),
+    });
+    if (!res.ok) throw new Error(`Worker returned ${res.status}`);
+    const data = await res.json();
+    const answer = data?.choices?.[0]?.message?.content || "No response";
+
+    chat.messages[chat.messages.length - 1] = {
+      role: "assistant",
+      content: answer,
+      time: formatTime(),
+    };
+  } catch (e) {
+    chat.messages[chat.messages.length - 1] = {
+      role: "assistant",
+      content: "Error: " + e.message,
+      time: formatTime(),
     };
   }
 
@@ -616,5 +664,6 @@ if (isMobile()) {
   })();
 
 }); 
+
 
 
