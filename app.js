@@ -578,11 +578,11 @@ const backdrop  = document.querySelector(".sidebar-backdrop");
 // Toggle handler
 toggleBtn.addEventListener("click", () => {
   if (window.innerWidth <= 768) {
-    // --- Mobile: slide-in drawer ---
-    sidebar.classList.toggle("open");
-    backdrop.classList.toggle("visible");
+    // Mobile: slide-in drawer
+    const isOpen = sidebar.classList.toggle("open");
+    backdrop.classList.toggle("visible", isOpen);
   } else {
-    // --- Desktop: collapse/expand ---
+    // Desktop: collapse/expand
     sidebar.classList.toggle("hidden");
   }
 });
@@ -591,6 +591,34 @@ toggleBtn.addEventListener("click", () => {
 backdrop.addEventListener("click", () => {
   sidebar.classList.remove("open");
   backdrop.classList.remove("visible");
+});
+
+// =======================
+// Swipe gestures (mobile)
+// =======================
+let touchStartX = 0;
+
+document.addEventListener("touchstart", e => {
+  if (window.innerWidth > 768) return; // only enable on mobile
+  touchStartX = e.changedTouches[0].screenX;
+});
+
+document.addEventListener("touchend", e => {
+  if (window.innerWidth > 768) return;
+  const touchEndX = e.changedTouches[0].screenX;
+  const deltaX = touchEndX - touchStartX;
+
+  // Swipe right from left edge → open
+  if (touchStartX < 50 && deltaX > 60 && !sidebar.classList.contains("open")) {
+    sidebar.classList.add("open");
+    backdrop.classList.add("visible");
+  }
+
+  // Swipe left → close
+  if (deltaX < -60 && sidebar.classList.contains("open")) {
+    sidebar.classList.remove("open");
+    backdrop.classList.remove("visible");
+  }
 });
 
 // ==========================
@@ -637,6 +665,7 @@ backdrop.addEventListener("click", () => {
   })();
 
 }); 
+
 
 
 
