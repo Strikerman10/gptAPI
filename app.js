@@ -27,16 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const messagesEl = document.getElementById("messages");
   const headerEl = document.getElementById("chatHeader").querySelector("span");
   const inputEl = document.getElementById("input");
-  const modelSelector = document.getElementById("modelSelector");
-
-// Set dropdown to whichever model was last saved
-modelSelector.value = currentModel;
-
-// Update model when user changes it
-modelSelector.addEventListener("change", (e) => {
-  currentModel = e.target.value;
-  localStorage.setItem("chat_model", currentModel);
-  console.log("Switched to model:", currentModel);
 });
   
   // ==========================
@@ -664,6 +654,7 @@ if (isMobile()) {
   })();
 
 }); 
+
 
 
 
