@@ -571,43 +571,27 @@ async function sendMessageRetry(promptText) {
 // ==========================
 // Sidebar toggle & swipe (mobile only)
 // ==========================
-function isMobile() {
-  return window.innerWidth <= 768;
-}
+const sidebar   = document.querySelector(".sidebar");
+const toggleBtn = document.getElementById("toggleSidebarBtn");
+const backdrop  = document.querySelector(".sidebar-backdrop");
 
-toggleSidebarBtn.addEventListener("click", () => {
-  if (!isMobile()) return; // on desktop, always visible so button does nothing
-  const isOpen = sidebarEl.classList.toggle("open");
-  backdropEl.classList.toggle("visible", isOpen);
+// Toggle handler
+toggleBtn.addEventListener("click", () => {
+  if (window.innerWidth <= 768) {
+    // --- Mobile: slide-in drawer ---
+    sidebar.classList.toggle("open");
+    backdrop.classList.toggle("visible");
+  } else {
+    // --- Desktop: collapse/expand ---
+    sidebar.classList.toggle("hidden");
+  }
 });
 
-// Close when clicking backdrop
-backdropEl.addEventListener("click", () => {
-  if (!isMobile()) return;
-  sidebarEl.classList.remove("open");
-  backdropEl.classList.remove("visible");
+// Backdrop click closes drawer on mobile
+backdrop.addEventListener("click", () => {
+  sidebar.classList.remove("open");
+  backdrop.classList.remove("visible");
 });
-
-// Only enable swipe gestures on mobile
-if (isMobile()) {
-  let touchStartX = 0;
-  document.addEventListener("touchstart", e => {
-    touchStartX = e.changedTouches[0].screenX;
-  });
-  document.addEventListener("touchend", e => {
-    const touchEndX = e.changedTouches[0].screenX;
-    const deltaX = touchEndX - touchStartX;
-
-    if (touchStartX < 50 && deltaX > 60 && !sidebarEl.classList.contains("open")) {
-      sidebarEl.classList.add("open");
-      backdropEl.classList.add("visible");
-    }
-    if (deltaX < -60 && sidebarEl.classList.contains("open")) {
-      sidebarEl.classList.remove("open");
-      backdropEl.classList.remove("visible");
-    }
-  });
-}
 
 // ==========================
   // INITIAL LOAD
@@ -653,5 +637,6 @@ if (isMobile()) {
   })();
 
 }); 
+
 
 
