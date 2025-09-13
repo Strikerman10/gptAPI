@@ -531,15 +531,43 @@ body.theme-amoled .btn {
 
 /* === Sidebar Responsive Drawer (final) === */
 
-/* Desktop: sidebar always visible, 30% width */
+/* --- Sidebar: desktop baseline --- */
 .sidebar {
-  flex: 0 0 30%;       /* take up 30% of container */
-  min-width: 200px;    /* don’t shrink too far */
-  max-width: 400px;    /* optional cap on very wide screens */
-  position: relative;  /* normal flex child */
-  transform: none;     /* no sliding */
-  transition: none;
-  z-index: 1;
+  flex: 0 0 30%;
+  min-width: 200px;
+  max-width: 400px;
+  transition: width 0.3s ease, opacity 0.3s ease;
+  background: var(--surface-2);
+  border-right: 1px solid var(--surface-1);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  color: var(--text);
+}
+
+.sidebar.hidden {
+  width: 0;
+  opacity: 0;
+}
+
+/* --- Mobile override --- */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 90%;
+    max-width: none;
+    background: var(--surface-1);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 999;
+    box-sizing: border-box;
+    flex: none;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
 }
 
 /* ===========================
@@ -633,4 +661,5 @@ body.theme-amoled .btn {
   0%, 80%, 100% { transform: scale(0); }
   40% { transform: scale(1); }
 }
+
 
