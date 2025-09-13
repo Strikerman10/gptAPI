@@ -359,47 +359,73 @@ preview.innerHTML = `
     });
   }
 
-  function renderMessages() {
-    messagesEl.innerHTML = "";
-    headerEl.textContent = "ChatGPT"; 
+function renderMessages() {
+  messagesEl.innerHTML = "";
+  headerEl.textContent = "ChatGPT"; 
 
-    if (currentIndex === null || !chats[currentIndex]) {
-      messagesEl.innerHTML = `<p class="placeholder">No chats yet. Start a new one!</p>`;
-      return;
-    }
-    const chat = chats[currentIndex];
-    if (!chat.messages || !chat.messages.length) {
-      messagesEl.innerHTML = `<p class="placeholder">This chat is empty.</p>`;
-      return;
-    }
-
-    chat.messages.forEach(msg => {
-      const div = document.createElement("div");
-      div.className = `message ${msg.role}`;
-      const textDiv = document.createElement("div");
-      textDiv.className = "msg-text";
-
-      // Typing indicator support
-      if (msg.content === "__TYPING__") {
-        textDiv.innerHTML = `
-          <div class="typing-indicator">
-            <span></span><span></span><span></span>
-          </div>
-        `;
-      } else {
-        textDiv.textContent = msg.content;
-      }
-
-      const timeDiv = document.createElement("div");
-      timeDiv.className = "msg-time";
-      timeDiv.textContent = msg.time || "";
-      textDiv.appendChild(timeDiv);
-      div.appendChild(textDiv);
-      messagesEl.appendChild(div);
-    });
-
-    messagesEl.scrollTop = messagesEl.scrollHeight;
+  if (currentIndex === null || !chats[currentIndex]) {
+    messagesEl.innerHTML = `<p class="placeholder">No chats yet. Start a new one!</p>`;
+    return;
   }
+  const chat = chats[currentIndex];
+  if (!chat.messages || !chat.messages.length) {
+    messagesEl.innerHTML = `<p class="placeholder">This chat is empty.</p>`;
+    return;
+  }
+
+  chat.messages.forEach((msg, idx) => {
+    const div = document.createElement("div");
+    div.className = `message ${msg.role}`;
+    const textDiv = document.createElement("div");
+    textDiv.className = "msg-text";
+
+    if (msg.content === "__TYPING__") {
+      textDiv.innerHTML = `
+        <div class="typing-indicator">
+          <span></span><span></span><span></span>
+        </div>
+      `;
+    } else {
+      textDiv.textContent = msg.content;
+    }
+
+    const timeDiv = document.createElement("div");
+    timeDiv.className = "msg-time";
+    timeDiv.textContent = msg.time || "";
+    textDiv.appendChild(timeDiv);
+    div.appendChild(textDiv);
+
+    // ⟳ Add refresh button only on assistant messages
+    if (msg.role === "assistant" && msg.content !== "__TYPING__") {
+      const refreshBtn = document.createElement("button");
+      refreshBtn.innerText = "⟳";
+      refreshBtn.title = "Retry this user prompt";
+      refreshBtn.className = "refresh-button";
+
+      // Associate assistant response with its preceding user prompt
+      // Find the nearest user message BEFORE this assistant
+      let originalPrompt = "";
+      for (let j = idx - 1; j >= 0; j--) {
+        if (chat.messages[j].role === "user") {
+          originalPrompt = chat.messages[j].content;
+          break;
+        }
+      }
+      refreshBtn.onclick = () => {
+        // Remove old assistant message then retry
+        chat.messages.splice(idx, 1);
+        renderMessages();
+        sendMessageRetry(originalPrompt);
+      };
+
+      div.appendChild(refreshBtn);
+    }
+
+    messagesEl.appendChild(div);
+  });
+
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
 
   // ==========================
 // SEND MESSAGE
@@ -590,4 +616,5 @@ if (isMobile()) {
   })();
 
 }); 
+
 
