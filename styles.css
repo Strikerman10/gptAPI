@@ -610,6 +610,15 @@ body.theme-amoled .btn {
 }
 
 /* ===========================
+   AMOLED Text Overrides Only
+   =========================== */
+body.amoled-mode {
+  --text: #000;               /* black for general text */
+  --text-muted: #333;         /* slightly lighter black/gray */
+  --primary-contrast: #000;   /* buttons / header text in black */
+}
+
+/* ===========================
    Responsive
    =========================== */
 @media (max-width: 768px) {
@@ -731,6 +740,7 @@ body.amoled-mode .input-area textarea::placeholder,
 body.amoled-mode input[type="text"]::placeholder {
   color: #888 !important;
 }
+
 
 
 
