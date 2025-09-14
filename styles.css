@@ -76,7 +76,7 @@ body.dark-mode {
    =========================== */
 body.amoled-mode {
   --bg: #ffff00;                 /* true black background */
-  --surface-1: #000;
+  --surface-1: #ffff00;
   --surface-2: #0a0a0a;
   --surface-3: #111;
   --surface-hover: #111;
@@ -734,6 +734,7 @@ body.amoled-mode .input-area textarea::placeholder,
 body.amoled-mode input[type="text"]::placeholder {
   color: #888 !important;
 }
+
 
 
 
