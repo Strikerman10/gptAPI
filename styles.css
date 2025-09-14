@@ -383,7 +383,7 @@ body {
 .chat-header .chat-title {
   font-weight: 600;
   font-size: 16px;
-  color: #fff;
+  color: var(--text);
   flex: 1;
   min-width: 0;
   white-space: nowrap;
@@ -713,6 +713,7 @@ body.amoled-mode .input-area textarea::placeholder,
 body.amoled-mode input[type="text"]::placeholder {
   color: #888 !important;
 }
+
 
 
 
