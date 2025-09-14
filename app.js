@@ -49,15 +49,28 @@ backdropEl.className = "sidebar-backdrop";
 document.body.appendChild(backdropEl);
   const paletteBtn = document.getElementById("themeBtn"); // 🎨 palette button
 
+// --- Scroll-to-top FAB behaviour ---
 const scrollTopBtn = document.getElementById("scrollTopBtn");
-messagesEl.addEventListener("scroll", () => {
-  if (messagesEl.scrollTop > 200) {
-    scrollTopBtn.style.display = "flex";
-  } else {
-    scrollTopBtn.style.display = "none";
-  }
-});
+const inputArea = document.querySelector(".input-area");
+const textarea  = inputArea.querySelector("textarea");
 
+// adjust button bottom depending on input area height
+function updateScrollBtnPosition() {
+  const inputHeight = inputArea.offsetHeight;
+  scrollTopBtn.style.bottom = (inputHeight + 20) + "px"; // 20px gap
+}
+
+// run once on load
+updateScrollBtnPosition();
+
+// update whenever textarea grows/shrinks
+textarea.addEventListener("input", updateScrollBtnPosition);
+window.addEventListener("resize", updateScrollBtnPosition);
+
+// existing scroll behaviour
+messagesEl.addEventListener("scroll", () => {
+  scrollTopBtn.style.display = messagesEl.scrollTop > 200 ? "flex" : "none";
+});
 scrollTopBtn.addEventListener("click", () => {
   messagesEl.scrollTo({ top: 0, behavior: "smooth" });
 });
@@ -665,6 +678,7 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
+
 
 
 
