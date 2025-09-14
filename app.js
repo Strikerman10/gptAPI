@@ -136,12 +136,12 @@ scrollTopBtn.addEventListener("click", () => {
       "--color-6": "#5c5c3d"
     },
     Amoled: {
-      "--color-1": "#FCE883",
-      "--color-2": "#08415C",
-      "--color-3": "#ffbf00",
-      "--color-4": "#242424",
-      "--color-5": "#000000",
-      "--color-6": "#846C5B"
+       "--color-1": "#00FFF7",  // neon cyan accent
+    "--color-2": "#FF007C",  // neon pink
+    "--color-3": "#39FF14",  // neon green
+    "--color-4": "#FCEE09",  // neon yellow
+    "--color-5": "#000000",  // pure black background
+    "--color-6": "#8419FF"   // neon purple
     }
   };
 
@@ -163,22 +163,46 @@ scrollTopBtn.addEventListener("click", () => {
       "--border": "hsl(0 0% 30%)",
       "--text": "hsl(0 0% 92%)",
       "--text-muted": "hsl(0 0% 70%)"
-    }
+    },
+     amoled: {
+    "--bg": "#000000",            // pure black
+    "--surface-1": "#000000",     // keep components flush
+    "--surface-2": "#0a0a0a",     // just a tiny lift
+    "--surface-hover": "#111111", // barely visible hover
+    "--border": "#222222",        // thin subtle border
+    "--text": "#FFFFFF",          // high contrast text
+    "--text-muted": "#888888"     // muted gray
+     }
   };
 
   let currentPalette = localStorage.getItem("palette") || "Red";
   let currentMode = localStorage.getItem("mode") || "light";
 
   function applyTheme() {
-    const root = document.documentElement;
-    const palette = palettes[currentPalette];
-    const neutralSet = neutrals[currentMode];
-    for (const [key, value] of Object.entries(palette)) root.style.setProperty(key, value);
-    for (const [key, value] of Object.entries(neutralSet)) root.style.setProperty(key, value);
-    document.body.classList.toggle("dark-mode", currentMode === "dark");
-    localStorage.setItem("palette", currentPalette);
-    localStorage.setItem("mode", currentMode);
+  const root = document.documentElement;
+  const palette = palettes[currentPalette];
+  
+  // use AMOLED neutrals if selected
+  const neutralSet = currentPalette === "Amoled"
+    ? neutrals.amoled
+    : neutrals[currentMode];
+
+  for (const [key, value] of Object.entries(palette)) {
+    root.style.setProperty(key, value);
   }
+  for (const [key, value] of Object.entries(neutralSet)) {
+    root.style.setProperty(key, value);
+  }
+
+  // treat AMOLED as dark mode too
+  document.body.classList.toggle(
+    "dark-mode",
+    currentMode === "dark" || currentPalette === "Amoled"
+  );
+
+  localStorage.setItem("palette", currentPalette);
+  localStorage.setItem("mode", currentMode);
+}
 
 // ==========================
 // UTILITIES
@@ -678,6 +702,7 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
+
 
 
 
