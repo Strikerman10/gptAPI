@@ -141,7 +141,7 @@ scrollTopBtn.addEventListener("click", () => {
       "--color-3": "#ffbf00",  // header
       "--color-4": "#ffff9d",  // background
       "--color-5": "#000000",  // pure black background
-      "--color-6": "#fff00"   // buttons
+      "--color-6": "#fffF00"   // buttons
     }
   };
 
@@ -171,7 +171,7 @@ scrollTopBtn.addEventListener("click", () => {
     "--surface-hover": "#111111", // barely visible hover
     "--border": "#222222",        // thin subtle border
     "--text": "#000000",          // high contrast text
-    "--text-muted": "#333333"     // muted gray
+    "--text-muted": "#333333",     // muted gray
     "--primary-contrast": "#000000"  // make button text black
      }
   };
@@ -705,6 +705,7 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
+
 
 
 
