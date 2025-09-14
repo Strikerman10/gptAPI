@@ -139,7 +139,7 @@ scrollTopBtn.addEventListener("click", () => {
       "--color-1": "#eaff00",  // assistant chat
       "--color-2": "#ffea00",  // user chat
       "--color-3": "#ffbf00",  // header
-      "--color-4": "#3b3b00",  // background
+      "--color-4": "#fff7dc",  // background
       "--color-5": "#000000",  // pure black background
       "--color-6": "#fff00"   // buttons
     }
@@ -704,6 +704,7 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
+
 
 
 
