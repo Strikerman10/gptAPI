@@ -320,7 +320,7 @@ body {
    =========================== */
 .input-area {
   display: flex;
-  align-items: center;
+  align-items: flex-end;   /* align at the bottom of the tallest element */
   gap: 8px;
   padding: 12px;
   border-top: 1px solid var(--border);
@@ -329,36 +329,36 @@ body {
 
 .input-area textarea {
   flex: 1;
-  min-width: 0;
   min-height: 42px;
   max-height: 200px;
   padding: 10px;
   border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--bg);
-  color: var(--text);
-  resize: vertical;
+  resize: none;
+  overflow-y: auto;
   font-size: 14px;
 }
 
 .send-btn {
+  flex-shrink: 0;         /* prevent squishing */
+  align-self: flex-end;   /* stay at bottom of textarea */
   width: 40px;
   height: 40px;
-  background: var(--color-6);
-  color: var(--primary-contrast);
-  border: none;
-  border-radius: 8px;
+  border-radius: 50%;     /* more like a floating button */
   display: flex;
   align-items: center;
   justify-content: center;
+  background: var(--color-6);
+  color: var(--primary-contrast);
   cursor: pointer;
+  transition: background 0.25s ease, transform 0.1s ease-in-out;
 }
 
-.send-btn svg {
-  width: 20px;
-  height: 20px;
+.send-btn:hover {
+  background: var(--accent);
+  transform: scale(1.05);
 }
-
 /* ===========================
    Header Area
    =========================== */
@@ -505,22 +505,31 @@ body.theme-amoled .btn {
   bottom: 95px;
   right: 20px;
   z-index: 50;
-  background: var(--color-2);
-  color: var(--bg);
-  border: none;
+  display: none; /* hidden by default */
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  font-size: 20px;
+  border: none;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-  display: none; /* hidden until scrolled */
+  background: var(--color-6);
+  color: var(--primary-contrast);
+
+  display: flex;
   align-items: center;
   justify-content: center;
+
+  /* Material FAB style */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+  transition: background 0.25s ease, transform 0.2s ease;
 }
 
 .scroll-top-btn:hover {
-  background: var(--color-3);
+  background: var(--accent);
+  transform: translateY(-2px);
+}
+
+.scroll-top-btn svg {
+  stroke: #fff;  /* force arrow to white */
 }
 
 /* --- Responsive rules for mobile etc --- */
@@ -673,6 +682,7 @@ body.theme-amoled .btn {
   0%, 80%, 100% { transform: scale(0); }
   40% { transform: scale(1); }
 }
+
 
 
 
