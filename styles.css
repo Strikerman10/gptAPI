@@ -71,6 +71,24 @@ body.dark-mode {
   --ring: color-mix(in srgb, var(--color-2) 70%, transparent);
 }
 
+body.amoled-mode {
+  --bg: #000;                 /* true black background */
+  --surface-1: #000;
+  --surface-2: #0a0a0a;
+  --surface-3: #111;
+  --surface-hover: #111;
+  --border: #222;
+
+  --text: #000;               /* ✅ black text */
+  --text-muted: #333;
+  --primary-contrast: #000;   /* ✅ black button/header text */
+
+  --user-bubble-bg: var(--color-4);
+  --user-bubble-text: #fff;   /* still keep user bubble readable */
+  --assistant-bubble-bg: var(--color-1);
+  --assistant-bubble-text: #000;  
+}
+
 /* ===========================
    Base Setup
    =========================== */
@@ -713,6 +731,7 @@ body.amoled-mode .input-area textarea::placeholder,
 body.amoled-mode input[type="text"]::placeholder {
   color: #888 !important;
 }
+
 
 
 
