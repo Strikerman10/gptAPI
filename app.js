@@ -162,7 +162,8 @@ scrollTopBtn.addEventListener("click", () => {
       "--surface-hover": "hsl(0 0% 20%)",
       "--border": "hsl(0 0% 30%)",
       "--text": "hsl(0 0% 92%)",
-      "--text-muted": "hsl(0 0% 70%)"
+      "--text-muted": "hsl(0 0% 70%)",
+       "--primary-contrast": "#ffffff"     // white text on dark mode buttons
     },
      amoled: {
     "--bg": "#000000",            // pure black
@@ -705,6 +706,7 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
+
 
 
 
