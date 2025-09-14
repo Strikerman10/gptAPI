@@ -170,8 +170,8 @@ scrollTopBtn.addEventListener("click", () => {
     "--surface-2": "#0a0a0a",     // just a tiny lift
     "--surface-hover": "#111111", // barely visible hover
     "--border": "#222222",        // thin subtle border
-    "--text": "#FFFFFF",          // high contrast text
-    "--text-muted": "#888888"     // muted gray
+    "--text": "#000000",          // high contrast text
+    "--text-muted": "#333333"     // muted gray
      }
   };
 
@@ -702,6 +702,7 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
+
 
 
 
