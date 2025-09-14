@@ -278,15 +278,15 @@ body {
 }
 
 .message.user {
-  background: var(--user-bubble-bg);
-  color: var(--user-bubble-text);
+  background: var(--color-1);
+  color: var(--text);
   border-bottom-right-radius: 0.3rem;
   align-self: flex-end;
 }
 
 .message.assistant {
-  background: var(--assistant-bubble-bg);
-  color: var(--assistant-bubble-text);
+  background: var(--color-2);
+  color: var(--text);
   border-bottom-left-radius: 0.3rem;
   align-self: flex-start;
 }
@@ -682,6 +682,7 @@ body.theme-amoled .btn {
   0%, 80%, 100% { transform: scale(0); }
   40% { transform: scale(1); }
 }
+
 
 
 
