@@ -200,6 +200,8 @@ scrollTopBtn.addEventListener("click", () => {
     currentMode === "dark" || currentPalette === "Amoled"
   );
 
+  document.body.classList.toggle("amoled-mode", currentPalette === "Amoled");
+
   localStorage.setItem("palette", currentPalette);
   localStorage.setItem("mode", currentMode);
 }
@@ -702,6 +704,7 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
+
 
 
 
