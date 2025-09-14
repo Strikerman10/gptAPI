@@ -139,7 +139,7 @@ scrollTopBtn.addEventListener("click", () => {
       "--color-1": "#eaff00",  // assistant chat
       "--color-2": "#ffea00",  // user chat
       "--color-3": "#ffbf00",  // header
-      "--color-4": "#fff7dc",  // background
+      "--color-4": "#ffff9d",  // background
       "--color-5": "#000000",  // pure black background
       "--color-6": "#fff00"   // buttons
     }
@@ -172,6 +172,7 @@ scrollTopBtn.addEventListener("click", () => {
     "--border": "#222222",        // thin subtle border
     "--text": "#000000",          // high contrast text
     "--text-muted": "#333333"     // muted gray
+    "--primary-contrast": "#000000"  // make button text black
      }
   };
 
@@ -704,6 +705,7 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
+
 
 
 
