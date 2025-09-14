@@ -166,7 +166,7 @@ scrollTopBtn.addEventListener("click", () => {
        "--primary-contrast": "#ffffff"     // white text on dark mode buttons
     },
      amoled: {
-    "--bg": "#000000",            // pure black
+    "--bg": "#ffff9d",            // pure black
     "--surface-1": "#000000",     // keep components flush
     "--surface-2": "#0a0a0a",     // just a tiny lift
     "--surface-hover": "#111111", // barely visible hover
@@ -706,6 +706,7 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
+
 
 
 
