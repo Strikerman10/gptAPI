@@ -136,12 +136,12 @@ scrollTopBtn.addEventListener("click", () => {
       "--color-6": "#5c5c3d"
     },
     Amoled: {
-      "--color-1": "#eaff00",  // neon cyan accent
-      "--color-2": "#ffea00",  // neon pink
-      "--color-3": "#ffbf00",  // neon green
-      "--color-4": "#FCEE09",  // neon yellow
+      "--color-1": "#eaff00",  // assistant chat
+      "--color-2": "#ffea00",  // user chat
+      "--color-3": "#ffbf00",  // header
+      "--color-4": "#3b3b00",  // background
       "--color-5": "#000000",  // pure black background
-      "--color-6": "#fff00"   // neon purple
+      "--color-6": "#fff00"   // buttons
     }
   };
 
@@ -704,6 +704,7 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
+
 
 
 
