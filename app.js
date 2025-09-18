@@ -139,9 +139,9 @@ scrollTopBtn.addEventListener("click", () => {
       "--color-1": "#eaff00",  // assistant chat
       "--color-2": "#ffea00",  // user chat
       "--color-3": "#ffbf00",  // header
-      "--color-4": "#ffff9d",  // background
+      "--color-4": "#fff7dc",  // background
       "--color-5": "#000000",  // pure black background
-      "--color-6": "#fffF00"   // buttons
+      "--color-6": "#fff00"   // buttons
     }
   };
 
@@ -162,18 +162,16 @@ scrollTopBtn.addEventListener("click", () => {
       "--surface-hover": "hsl(0 0% 20%)",
       "--border": "hsl(0 0% 30%)",
       "--text": "hsl(0 0% 92%)",
-      "--text-muted": "hsl(0 0% 70%)",
-       "--primary-contrast": "#ffffff"     // white text on dark mode buttons
+      "--text-muted": "hsl(0 0% 70%)"
     },
      amoled: {
-    "--bg": "#ffff9d",            // pure black
+    "--bg": "#000000",            // pure black
     "--surface-1": "#000000",     // keep components flush
     "--surface-2": "#0a0a0a",     // just a tiny lift
     "--surface-hover": "#111111", // barely visible hover
     "--border": "#222222",        // thin subtle border
     "--text": "#000000",          // high contrast text
-    "--text-muted": "#333333",     // muted gray
-    "--primary-contrast": "#000000"  // make button text black
+    "--text-muted": "#333333"     // muted gray
      }
   };
 
@@ -706,18 +704,4 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
