@@ -137,9 +137,17 @@ body {
   fill: currentColor;
 }
 
-.main-content {
-  width: 70%;
-  transition: width 0.3s ease;
+main-content {
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  transition: margin-left 0.3s ease;
+  margin-left: 260px;  /* matches expanded sidebar */
+}
+
+/* When sidebar is collapsed */
+.sidebar.collapsed ~ .main-content {
+  margin-left: 60px;
 }
 
 .new-chat {
@@ -661,9 +669,12 @@ body.theme-amoled .btn {
   color: var(--text);
 }
 
-.sidebar.hidden {
-  width: 0;
-  opacity: 0;
+/* === Desktop collapsed (mini) === */
+.sidebar.collapsed {
+  width: 60px;         /* narrow strip */
+  min-width: 60px;
+  max-width: 60px;
+  overflow: hidden;    /* hide any text overflow */
 }
 
 /* --- Mobile override --- */
@@ -714,6 +725,58 @@ body.theme-amoled .btn {
     flex: 1;
     min-width: 0;
     box-sizing: border-box;
+     @media (max-width: 768px) {
+  .app-wrapper {
+    display: flex;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 90%;              /* bigger drawer */
+    max-width: none;
+    background: var(--sidebar-bg);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 999;
+    box-sizing: border-box;  /* keep this from the other block */
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    flex: 1;
+    min-width: 0;
+    box-sizing: border-box;
+    margin-left: 0;
+  }
+
+  .sidebar-backdrop {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 998;
+    display: none;
+  }
+  .sidebar-backdrop.visible {
+    display: block;
+  }
+   /* 📌 Mobile-only delete button */
+  .delete-btn {
+    background: var(--color-6);
+    color: #fff;
+    transform: translateY(-50%);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    border-radius: 50%; /* or 6px for rounded square */
+  }
+
+  .delete-btn:active {
+    background: var(--color-6);
+    transform: translateY(-50%) scale(0.95);
+  }
+}
   }
 
   .sidebar-backdrop {
@@ -804,28 +867,16 @@ body.theme-amoled .btn {
   }
 }
 
+/* Hide text in collapsed mode */
+.sidebar.collapsed .sidebar-header span,
+.sidebar.collapsed .new-chat,
+.sidebar.collapsed .chat-title,
+.sidebar.collapsed .chat-subtitle {
+  display: none;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+.sidebar.collapsed .chat-item {
+  justify-content: center;
+  padding-right: 0;
+}
 
