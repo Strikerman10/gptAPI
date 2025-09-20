@@ -46,7 +46,7 @@ html, body {
   --danger: hsl(0 72% 48%);
   --danger-contrast: #fff;
   --ring: color-mix(in srgb, var(--color-2) 60%, transparent);
-  --sidebar-bg: var(--color-1);
+  --sidebar-bg: color-mix(in srgb, var(--color-1) 12%, white 88%);
 }
 
 /* ===========================
@@ -103,7 +103,7 @@ body {
   min-width: 150px;
   max-width: 400px;
   transition: width 0.3s ease, opacity 0.3s ease;
-  background-color: var(--sidebar--bg);
+  background-color: var(--sidebar-bg);
   border-right: 1px solid #aaa;
   display: flex;
   flex-direction: column;
@@ -633,7 +633,7 @@ body.theme-amoled .btn {
     top: 0; left: 0; bottom: 0;
     width: 90%;
     max-width: none;
-    background: var(--surface-1);
+    background: var(--sidebar-bg);
     transform: translateX(-100%);
     transition: transform 0.3s ease;
     z-index: 999;
@@ -659,7 +659,7 @@ body.theme-amoled .btn {
     top: 0; left: 0; bottom: 0;
     width: 90%;              /* bigger drawer */
     max-width: none;
-    background: var(--surface-1);
+    background: var(--sidebar-bg);
     transform: translateX(-100%);
     transition: transform 0.3s ease;
     z-index: 999;
@@ -763,6 +763,7 @@ body.theme-amoled .btn {
     opacity: 1;
   }
 }
+
 
 
 
