@@ -369,7 +369,7 @@ async function saveChatsToWorker() {
   }
 }
 
-function formatTime(date = new Date()) {
+function formatDateTime(date = new Date()) {
   return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
@@ -576,7 +576,7 @@ async function sendMessage() {
   if (currentIndex === null) createNewChat();
   const chat = chats[currentIndex];
 
-  const userMessage = { role: "user", content: text, time: formatTime() };
+  const userMessage = { role: "user", content: text, time: formatDateTime() };
   chat.messages.push(userMessage);
 
   if (chat.title === "New Chat" || !chat.title) {
@@ -611,14 +611,14 @@ async function sendMessage() {
     chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: answer,
-      time: formatTime()
+      time: formatDateTime()
     };
   } catch (e) {
     // Replace typing placeholder with error message
     chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: "Error: " + e.message,
-      time: formatTime()
+      time: formatDateTime()
     };
   }
 
@@ -636,10 +636,10 @@ async function sendMessageRetry(promptText) {
   if (currentIndex === null) createNewChat();
   const chat = chats[currentIndex];
 
-  const userMessage = { role: "user", content: promptText, time: formatTime() };
+  const userMessage = { role: "user", content: promptText, time: formatDateTime() };
   chat.messages.push(userMessage);
 
-  chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatTime() });
+  chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
   renderMessages();
   saveChats();
   saveChatsToWorker();
@@ -660,13 +660,13 @@ async function sendMessageRetry(promptText) {
     chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: answer,
-      time: formatTime(),
+      time: formatDateTime(),
     };
   } catch (e) {
     chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: "Error: " + e.message,
-      time: formatTime(),
+      time: formatDateTime(),
     };
   }
 
@@ -773,6 +773,7 @@ async function sendMessageRetry(promptText) {
   })();
 
 }); 
+
 
 
 
