@@ -376,15 +376,10 @@ preview.innerHTML = `
       delBtn.addEventListener("click", (e) => { e.stopPropagation(); deleteChat(i); });
 
       item.addEventListener("click", () => {
-        
-  const [chat] = chats.splice(i, 1);
-  chats.unshift(chat);
-  currentIndex = 0;
-
-  saveChats();        // persist selection
-  renderChatList();
-  renderMessages();
-});
+        currentIndex = i;
+        renderChatList();
+        renderMessages();
+      });
 
       item.appendChild(preview);
       item.appendChild(delBtn);
@@ -696,20 +691,13 @@ document.addEventListener("touchend", e => {
       const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`);
       if (res.ok) {
         const workerChats = await res.json();
-       if (Array.isArray(workerChats) && workerChats.length) {
-  chats = workerChats;
-
-  // Try to restore last selected chat index
-  const savedIndex = Number(localStorage.getItem("secure_chat_index"));
-  if (!isNaN(savedIndex) && savedIndex >= 0 && savedIndex < chats.length) {
-    currentIndex = savedIndex;
-  } else {
-    currentIndex = 0; // fallback
-  }
-
-  saveChats(); 
-  gotFromWorker = true;
-}
+        if (Array.isArray(workerChats) && workerChats.length) {
+          chats = workerChats;
+          currentIndex = 0;
+          saveChats(); // sync Worker data back into local storage
+          gotFromWorker = true;
+        }
+      }
     } catch (e) {
       console.warn("Could not load from worker:", e);
     }
@@ -725,6 +713,4 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
-
-
 
