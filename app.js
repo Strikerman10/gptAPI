@@ -676,31 +676,6 @@ async function sendMessageRetry(promptText) {
     paletteSelector.classList.add("hidden"); // hide after selection
   });
 
-// ==========================
-// Sidebar toggle & swipe (mobile only)
-// ==========================
-const sidebar   = document.querySelector(".sidebar");
-const toggleBtn = document.getElementById("toggleSidebarBtn");
-const backdrop  = document.querySelector(".sidebar-backdrop");
-
-// Toggle handler
-toggleBtn.addEventListener("click", () => {
-  if (window.innerWidth <= 768) {
-    // Mobile: slide-in drawer
-    const isOpen = sidebar.classList.toggle("open");
-    backdrop.classList.toggle("visible", isOpen);
-  } else {
-    // Desktop: collapse/expand
-    sidebar.classList.toggle("hidden");
-  }
-});
-
-// Backdrop click closes drawer on mobile
-backdrop.addEventListener("click", () => {
-  sidebar.classList.remove("open");
-  backdrop.classList.remove("visible");
-});
-
 // =======================
 // Swipe gestures (mobile)
 // =======================
@@ -783,6 +758,7 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
+
 
 
 
