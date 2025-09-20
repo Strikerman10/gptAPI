@@ -37,22 +37,25 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   inputEl.addEventListener("input", autoResize);
-  // run once on load
-  autoResize();
-  const paletteSelector = document.getElementById("paletteSelector");
-  const themeToggleBtn = document.getElementById("toggleThemeBtn"); // 🌙/☀️ toggle
-  const sidebarEl = document.querySelector(".sidebar");
-  const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
-  // Create backdrop for sidebar
+// run once on load
+autoResize();
+
+const paletteSelector   = document.getElementById("paletteSelector");
+const themeToggleBtn    = document.getElementById("toggleThemeBtn"); // 🌙/☀️ toggle
+const sidebarEl         = document.querySelector(".sidebar");
+const toggleSidebarBtn  = document.getElementById("toggleSidebarBtn");
+
+// Create backdrop for sidebar
 const backdropEl = document.createElement("div");
 backdropEl.className = "sidebar-backdrop";
 document.body.appendChild(backdropEl);
-  const paletteBtn = document.getElementById("themeBtn"); // 🎨 palette button
+
+const paletteBtn = document.getElementById("themeBtn"); // 🎨 palette button
 
 // --- Scroll-to-top FAB behaviour ---
 const scrollTopBtn = document.getElementById("scrollTopBtn");
-const inputArea = document.querySelector(".input-area");
-const textarea  = inputArea.querySelector("textarea");
+const inputArea    = document.querySelector(".input-area");
+const textarea     = inputArea.querySelector("textarea");
 
 // adjust button bottom depending on input area height
 function updateScrollBtnPosition() {
@@ -73,6 +76,45 @@ messagesEl.addEventListener("scroll", () => {
 });
 scrollTopBtn.addEventListener("click", () => {
   messagesEl.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+
+// ==============================
+// Sidebar toggle with icon swap
+// ==============================
+
+// grab the two icons inside the toggle button
+const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon");
+const chevronIcon   = toggleSidebarBtn.querySelector(".show-icon");
+
+toggleSidebarBtn.addEventListener("click", () => {
+  if (window.innerWidth <= 768) {
+    // --- Mobile: slide-in drawer ---
+    const isOpen = sidebarEl.classList.toggle("open");
+    backdropEl.classList.toggle("visible", isOpen);
+
+    // update icons
+    hamburgerIcon.classList.toggle("hidden", isOpen);
+    chevronIcon.classList.toggle("hidden", !isOpen);
+
+  } else {
+    // --- Desktop: collapse/expand ---
+    const isHidden = sidebarEl.classList.toggle("hidden");
+
+    // update icons: hamburger when collapsed, chevron when expanded
+    hamburgerIcon.classList.toggle("hidden", !isHidden);
+    chevronIcon.classList.toggle("hidden", isHidden);
+  }
+});
+
+// Backdrop click closes drawer on mobile
+backdropEl.addEventListener("click", () => {
+  sidebarEl.classList.remove("open");
+  backdropEl.classList.remove("visible");
+
+  // reset to hamburger icon
+  hamburgerIcon.classList.remove("hidden");
+  chevronIcon.classList.add("hidden");
 });
   
   // ==========================
@@ -741,5 +783,6 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
+
 
 
