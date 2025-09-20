@@ -696,15 +696,15 @@ document.addEventListener("touchend", e => {
   const deltaX = touchEndX - touchStartX;
 
   // Swipe right from left edge → open
-  if (touchStartX < 50 && deltaX > 60 && !sidebar.classList.contains("open")) {
-    sidebar.classList.add("open");
-    backdrop.classList.add("visible");
+  if (touchStartX < 50 && deltaX > 60 && !sidebarEl.classList.contains("open")) {
+    sidebarEl.classList.add("open");
+    backdropEl.classList.add("visible");
   }
 
   // Swipe left → close
-  if (deltaX < -60 && sidebar.classList.contains("open")) {
-    sidebar.classList.remove("open");
-    backdrop.classList.remove("visible");
+  if (deltaX < -60 && sidebarEl.classList.contains("open")) {
+    sidebarEl.classList.remove("open");
+    backdropEl.classList.remove("visible");
   }
 });
 
@@ -762,6 +762,7 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
+
 
 
 
