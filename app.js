@@ -634,12 +634,16 @@ async function sendMessageRetry(promptText) {
     paletteSelector.classList.add("hidden"); // hide after selection
   });
 
-// ==========================
-// Sidebar toggle & swipe (mobile only)
-// ==========================
 const sidebar   = document.querySelector(".sidebar");
 const toggleBtn = document.getElementById("toggleSidebarBtn");
 const backdrop  = document.querySelector(".sidebar-backdrop");
+
+// Function to sync button icons with sidebar state
+function syncIcons() {
+  const isOpen = sidebar.classList.contains("open") || !sidebar.classList.contains("hidden");
+  toggleBtn.querySelector(".hide-icon").classList.toggle("hidden", isOpen);
+  toggleBtn.querySelector(".show-icon").classList.toggle("hidden", !isOpen);
+}
 
 // Toggle handler
 toggleBtn.addEventListener("click", () => {
@@ -654,7 +658,7 @@ toggleBtn.addEventListener("click", () => {
     isOpen = !sidebar.classList.toggle("hidden");
   }
 
-  // 🔑 Toggle the icons inside the button
+  // Toggle the icons
   toggleBtn.querySelector(".hide-icon").classList.toggle("hidden", isOpen);
   toggleBtn.querySelector(".show-icon").classList.toggle("hidden", !isOpen);
 });
@@ -663,10 +667,7 @@ toggleBtn.addEventListener("click", () => {
 backdrop.addEventListener("click", () => {
   sidebar.classList.remove("open");
   backdrop.classList.remove("visible");
-
-  // Ensure icons reset (hamburger visible, chevron hidden)
-  toggleBtn.querySelector(".hide-icon").classList.remove("hidden");
-  toggleBtn.querySelector(".show-icon").classList.add("hidden");
+  syncIcons();
 });
 
 // =======================
@@ -751,6 +752,7 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
+
 
 
 
