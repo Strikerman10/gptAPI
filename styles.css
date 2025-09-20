@@ -21,7 +21,7 @@ html, body {
   --color-4: #5a0000; /* dark neutral */
   --color-5: #1a0a0a; /* very dark base */
   --color-6: #008080; /* deep maroon (special actions) */
-  --color-7: color-mix(in srgb, var(--color-6) 80%, white 20%); /* brighter teal */
+  --color-7: color-mix(in srgb, var(--color-6) 60%, white 40%); /* brighter teal */
 }
 
 /* ===========================
@@ -71,7 +71,7 @@ body.dark-mode {
   --assistant-bubble-bg: color-mix(in srgb, var(--color-1) 30%, var(--color-4) 70%);
   --assistant-bubble-text: #fff;
   --ring: color-mix(in srgb, var(--color-2) 70%, transparent);
-   --sidebar-bg: color-mix(in srgb, var(--color-1) 88%, white 12%);
+   --sidebar-bg: var(--surface-2);
 }
 
 /* ===========================
@@ -765,6 +765,7 @@ body.theme-amoled .btn {
     opacity: 1;
   }
 }
+
 
 
 
