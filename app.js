@@ -41,12 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
   autoResize();
   const paletteSelector = document.getElementById("paletteSelector");
   const themeToggleBtn = document.getElementById("toggleThemeBtn"); // 🌙/☀️ toggle
-  const sidebarEl = document.querySelector(".sidebar");
-  const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
-  // Create backdrop for sidebar
-const backdropEl = document.createElement("div");
-backdropEl.className = "sidebar-backdrop";
-document.body.appendChild(backdropEl);
   const paletteBtn = document.getElementById("themeBtn"); // 🎨 palette button
 
 // --- Scroll-to-top FAB behaviour ---
@@ -752,6 +746,7 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
+
 
 
 
