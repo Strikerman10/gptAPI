@@ -296,7 +296,7 @@ body {
   position: absolute;
   bottom: 6px;
   left: 8px;
-  background: transparent;
+  background: var(--Color-6);
   border: none;
   cursor: pointer;
   color: inherit;
@@ -310,7 +310,9 @@ body {
 
 .refresh-button:hover {
   opacity: 1;
+  background: var(--accent);
   transform: rotate(90deg);
+
 }
 
 .refresh-button svg {
@@ -714,5 +716,6 @@ body.theme-amoled .btn {
     opacity: 1;
   }
 }
+
 
 
