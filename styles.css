@@ -102,7 +102,7 @@ body {
   min-width: 150px;
   max-width: 400px;
   transition: width 0.3s ease, opacity 0.3s ease;
-  background-color: color-mix(in srgb, var(--primary) 15%, white);
+  background-color: color-mix(in srgb, var(--primary) 45%, white);
   border-right: 1px solid #aaa;
   display: flex;
   flex-direction: column;
@@ -762,6 +762,7 @@ body.theme-amoled .btn {
     opacity: 1;
   }
 }
+
 
 
 
