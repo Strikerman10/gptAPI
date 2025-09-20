@@ -351,11 +351,11 @@ body {
 }
 
 .send-btn {
-  flex-shrink: 0;         /* prevent squishing */
-  align-self: flex-end;   /* stay at bottom of textarea */
+  flex-shrink: 0;
+  align-self: flex-end;
   width: 40px;
   height: 40px;
-  border-radius: 50%;     /* more like a floating button */
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -363,6 +363,9 @@ body {
   color: var(--primary-contrast);
   cursor: pointer;
   transition: background 0.25s ease, transform 0.1s ease-in-out;
+
+  border: none;         /* 🔥 remove grey border */
+  outline: none;        /* 🔥 remove focus outline (optional) */
 }
 
 .send-btn:hover {
@@ -692,6 +695,7 @@ body.theme-amoled .btn {
   0%, 80%, 100% { transform: scale(0); }
   40% { transform: scale(1); }
 }
+
 
 
 
