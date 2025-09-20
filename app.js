@@ -643,20 +643,30 @@ const backdrop  = document.querySelector(".sidebar-backdrop");
 
 // Toggle handler
 toggleBtn.addEventListener("click", () => {
+  let isOpen;
+
   if (window.innerWidth <= 768) {
     // Mobile: slide-in drawer
-    const isOpen = sidebar.classList.toggle("open");
+    isOpen = sidebar.classList.toggle("open");
     backdrop.classList.toggle("visible", isOpen);
   } else {
     // Desktop: collapse/expand
-    sidebar.classList.toggle("hidden");
+    isOpen = !sidebar.classList.toggle("hidden");
   }
+
+  // 🔑 Toggle the icons inside the button
+  toggleBtn.querySelector(".hide-icon").classList.toggle("hidden", isOpen);
+  toggleBtn.querySelector(".show-icon").classList.toggle("hidden", !isOpen);
 });
 
 // Backdrop click closes drawer on mobile
 backdrop.addEventListener("click", () => {
   sidebar.classList.remove("open");
   backdrop.classList.remove("visible");
+
+  // Ensure icons reset (hamburger visible, chevron hidden)
+  toggleBtn.querySelector(".hide-icon").classList.remove("hidden");
+  toggleBtn.querySelector(".show-icon").classList.add("hidden");
 });
 
 // =======================
@@ -741,6 +751,7 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
+
 
 
 
