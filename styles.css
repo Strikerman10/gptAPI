@@ -660,7 +660,7 @@ body.theme-amoled .btn {
   }
 }
 
-   /* ===========================
+/* ===========================
    Typing Indicator
    =========================== */
 .typing-indicator {
@@ -676,21 +676,54 @@ body.theme-amoled .btn {
   background: var(--assistant-bubble-text);
   border-radius: 50%;
   display: inline-block;
-  animation: bounce 1.2s infinite;
+
+  /* Combine animations: bounce + glow + wiggle */
+  animation: bounce 1.2s infinite,
+             glow 1.5s infinite alternate,
+             wiggle 0.6s ease-in-out infinite;
 }
 
+/* Timing offsets so each dot feels staggered */
 .typing-indicator span:nth-child(2) {
-  animation-delay: 0.2s;
+  animation-delay: 0.2s, 0.2s, 0.2s;
 }
 .typing-indicator span:nth-child(3) {
-  animation-delay: 0.4s;
+  animation-delay: 0.4s, 0.4s, 0.4s;
 }
 
+/* === Keyframes === */
+
+/* Bounce (size scaling) */
 @keyframes bounce {
-  0%, 80%, 100% { transform: scale(0); }
-  40% { transform: scale(1); }
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
 }
 
+/* Glow pulse (brightness + opacity tweak) */
+@keyframes glow {
+  from {
+    box-shadow: 0 0 0px var(--assistant-bubble-text);
+    opacity: 0.6;
+  }
+  to {
+    box-shadow: 0 0 6px var(--assistant-bubble-text);
+    opacity: 1;
+  }
+}
+
+/* Wiggle (side nudge) */
+@keyframes wiggle {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(2px);
+  }
+}
 
 
 
