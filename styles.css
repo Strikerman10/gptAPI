@@ -289,6 +289,50 @@ body {
   padding-bottom: 48px;   /* make room at bottom for refresh button */
 }
 
+/* === Message Animations & Gradients === */
+
+/* Keyframes */
+@keyframes fadeSlideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes fadeSlideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Assistant bubble */
+.message.assistant {
+  background: linear-gradient(145deg, var(--color-2), var(--color-3));
+  color: var(--assistant-bubble-text, #fff);
+  border-bottom-left-radius: 0.3rem;
+  align-self: flex-start;
+  position: relative;
+  padding-bottom: 48px;
+  animation: fadeSlideInLeft 0.35s ease-out;
+}
+
+/* User bubble */
+.message.user {
+  background: linear-gradient(145deg, var(--color-1), var(--color-2));
+  color: var(--user-bubble-text, #000);
+  border-bottom-right-radius: 0.3rem;
+  align-self: flex-end;
+  animation: fadeSlideInRight 0.35s ease-out;
+}
+
 /* ===========================
    Assistant Retry Refresh Button
    =========================== */
@@ -718,6 +762,7 @@ body.theme-amoled .btn {
     opacity: 1;
   }
 }
+
 
 
 
