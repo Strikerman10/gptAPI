@@ -153,9 +153,17 @@ body {
   cursor: pointer;
 }
 
-.new-chat:hover {
+.new-chat:active {
   background: var(--color-7);
   transform: translateY(-2px);
+}
+
+/* Hover effect only on devices that actually support hover */
+@media (hover: hover) and (pointer: fine) {
+  .new-chat:hover {
+    background: var(--color-7);
+    transform: translateY(-2px);
+  }
 }
 
 .chat-list {
@@ -411,7 +419,8 @@ body {
   outline: none;        /* 🔥 remove focus outline (optional) */
 }
 
-.send-btn:hover {
+.send-btn:hover,
+.send-btn:active {
   background: var(--color-7);
   transform: translateY(-2px);
 }
@@ -481,13 +490,26 @@ body {
   transition: background-color 0.2s, transform 0.1s;
 }
 
-.chat-header button:hover,
-.header-controls button:hover,
-#themeBtn:hover,
-#toggleThemeBtn:hover,
-#toggleSidebarBtn:hover {
+/* Active block works on ALL devices when you click/tap */
+.chat-header button:active,
+.header-controls button:active,
+#themeBtn:active,
+#toggleThemeBtn:active,
+#toggleSidebarBtn:active {
   background: var(--color-7);
   transform: translateY(-2px);
+}
+
+/* Hover block only applies if the device actually supports hover (like a mouse) */
+@media (hover: hover) and (pointer: fine) {
+  .chat-header button:hover,
+  .header-controls button:hover,
+  #themeBtn:hover,
+  #toggleThemeBtn:hover,
+  #toggleSidebarBtn:hover {
+    background: var(--color-7);
+    transform: translateY(-2px);
+  }
 }
 
 .chat-header button svg,
@@ -580,9 +602,18 @@ body.theme-amoled .btn {
   transition: background 0.25s ease, transform 0.2s ease;
 }
 
-.scroll-top-btn:hover {
+/* Active feedback when tapped or clicked – works everywhere */
+.scroll-top-btn:active {
   background: var(--color-7);
   transform: translateY(-2px);
+}
+
+/* Hover effect only on devices that actually support hover */
+@media (hover: hover) and (pointer: fine) {
+  .scroll-top-btn:hover {
+    background: var(--color-7);
+    transform: translateY(-2px);
+  }
 }
 
 .scroll-top-btn svg {
@@ -765,6 +796,7 @@ body.theme-amoled .btn {
     opacity: 1;
   }
 }
+
 
 
 
