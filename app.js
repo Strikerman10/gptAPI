@@ -85,7 +85,8 @@ scrollTopBtn.addEventListener("click", () => {
       "--color-3": "#5e8c61",
       "--color-4": "#4e6151",
       "--color-5": "#3b322c",
-      "--color-6": "#800000"
+      "--color-6": "#800000",
+      "--color-7": "#f30000"
     },
     Blue: {
       "--color-1": "#6da5f8",
@@ -93,7 +94,8 @@ scrollTopBtn.addEventListener("click", () => {
       "--color-3": "#2c4f80",
       "--color-4": "#1e3759",
       "--color-5": "#0d1628",
-      "--color-6": "#4e1818"
+      "--color-6": "#4e1818",
+      "--color-7": "#ac3535"
     },
     Amber: {
       "--color-1": "#ffd48a",
@@ -101,7 +103,8 @@ scrollTopBtn.addEventListener("click", () => {
       "--color-3": "#996515",
       "--color-4": "#5a3b0f",
       "--color-5": "#1a0e05",
-      "--color-6": "#7fd7d0"
+      "--color-6": "#7fd7d0",
+      "--color-7": "#a5e3de"
     },
     Purple: {
       "--color-1": "#e3c6ff",
@@ -109,7 +112,8 @@ scrollTopBtn.addEventListener("click", () => {
       "--color-3": "#9467bd",
       "--color-4": "#6a4c93",
       "--color-5": "#3e2c41",
-      "--color-6": "#007373"
+      "--color-6": "#007373",
+      "--color-7": "#00e9e9"
     },
     Red: {
       "--color-1": "#e07b7b",
@@ -117,7 +121,8 @@ scrollTopBtn.addEventListener("click", () => {
       "--color-3": "#8b0000",
       "--color-4": "#5a0000",
       "--color-5": "#1a0a0a",
-      "--color-6": "#008080"
+      "--color-6": "#008080",
+      "--color-7": "#00f3f3"
     },
     Teal: {
       "--color-1": "#7fd7d0",
@@ -125,7 +130,8 @@ scrollTopBtn.addEventListener("click", () => {
       "--color-3": "#006d65",
       "--color-4": "#004944",
       "--color-5": "#0a1c1b",
-      "--color-6": "#666699"
+      "--color-6": "#666699",
+      "--color-7": "
     },
     Gray: {
       "--color-1": "#e0e0e0",
@@ -133,7 +139,8 @@ scrollTopBtn.addEventListener("click", () => {
       "--color-3": "#4a4a4a",
       "--color-4": "#2c2c2c",
       "--color-5": "#121212",
-      "--color-6": "#5c5c3d"
+      "--color-6": "#5c5c3d",
+      "--color-7": "#9494b8"
     },
     Amoled: {
       "--color-1": "#eaff00",  // assistant chat
@@ -141,7 +148,8 @@ scrollTopBtn.addEventListener("click", () => {
       "--color-3": "#ffbf00",  // header
       "--color-4": "#fff7dc",  // background
       "--color-5": "#000000",  // pure black background
-      "--color-6": "#fff00"   // buttons
+      "--color-6": "#fff000",  // buttons
+      "--color-7": "#fff999"     
     }
   };
 
@@ -733,6 +741,7 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
+
 
 
 
