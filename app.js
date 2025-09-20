@@ -79,57 +79,44 @@ scrollTopBtn.addEventListener("click", () => {
 });
 
 
-// =======================
-// Sidebar + Toggle Button
-// =======================
+// ==============================
+// Sidebar toggle with icon swap
+// ==============================
 
-const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
-const sidebarEl        = document.querySelector(".sidebar");
-const backdropEl       = document.querySelector(".sidebar-backdrop");
-const hamburgerIcon    = toggleSidebarBtn.querySelector(".hide-icon"); // hamburger svg
-const chevronIcon      = toggleSidebarBtn.querySelector(".show-icon"); // chevron svg
+// grab the two icons inside the toggle button
+const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon");
+const chevronIcon   = toggleSidebarBtn.querySelector(".show-icon");
 
-// --- Helper: set initial icon state depending on screen size
-function setInitialIcon() {
-  if (window.innerWidth <= 768) {
-    // Mobile → sidebar closed, show hamburger
-    hamburgerIcon.classList.remove("hidden");
-    chevronIcon.classList.add("hidden");
-    sidebarEl.classList.remove("open");
-    backdropEl.classList.remove("visible");
-  } else {
-    // Desktop → sidebar open, show chevron
-    hamburgerIcon.classList.add("hidden");
-    chevronIcon.classList.remove("hidden");
-    sidebarEl.classList.add("open");
-    backdropEl.classList.remove("visible"); // no backdrop on desktop
-  }
-}
+// --- set initial state ---
+hamburgerIcon.classList.add("hidden");
+chevronIcon.classList.remove("hidden");
 
-// --- Run on load + resize
-setInitialIcon();
-window.addEventListener("resize", setInitialIcon);
-
-// --- Toggle button click
 toggleSidebarBtn.addEventListener("click", () => {
-  const isOpen = sidebarEl.classList.contains("open");
-  if (isOpen) {
-    sidebarEl.classList.remove("open");
-    backdropEl.classList.remove("visible");
-    hamburgerIcon.classList.remove("hidden");
-    chevronIcon.classList.add("hidden");
+  if (window.innerWidth <= 768) {
+    // --- Mobile: slide-in drawer ---
+    const isOpen = sidebarEl.classList.toggle("open");
+    backdropEl.classList.toggle("visible", isOpen);
+
+    // update icons
+    hamburgerIcon.classList.toggle("hidden", isOpen);
+    chevronIcon.classList.toggle("hidden", !isOpen);
+
   } else {
-    sidebarEl.classList.add("open");
-    backdropEl.classList.add("visible");
-    hamburgerIcon.classList.add("hidden");
-    chevronIcon.classList.remove("hidden");
+    // --- Desktop: collapse/expand ---
+    const isHidden = sidebarEl.classList.toggle("hidden");
+
+    // update icons: hamburger when collapsed, chevron when expanded
+    hamburgerIcon.classList.toggle("hidden", !isHidden);
+    chevronIcon.classList.toggle("hidden", isHidden);
   }
 });
 
-// --- Click on backdrop → close
+// Backdrop click closes drawer on mobile
 backdropEl.addEventListener("click", () => {
   sidebarEl.classList.remove("open");
   backdropEl.classList.remove("visible");
+
+  // reset to hamburger icon
   hamburgerIcon.classList.remove("hidden");
   chevronIcon.classList.add("hidden");
 });
@@ -699,7 +686,7 @@ async function sendMessageRetry(promptText) {
 let touchStartX = 0;
 
 document.addEventListener("touchstart", e => {
-  if (window.innerWidth > 768) return; // only on mobile
+  if (window.innerWidth > 768) return; // only enable on mobile
   touchStartX = e.changedTouches[0].screenX;
 });
 
@@ -712,16 +699,12 @@ document.addEventListener("touchend", e => {
   if (touchStartX < 50 && deltaX > 60 && !sidebarEl.classList.contains("open")) {
     sidebarEl.classList.add("open");
     backdropEl.classList.add("visible");
-    hamburgerIcon.classList.add("hidden");
-    chevronIcon.classList.remove("hidden");
   }
 
   // Swipe left → close
   if (deltaX < -60 && sidebarEl.classList.contains("open")) {
     sidebarEl.classList.remove("open");
     backdropEl.classList.remove("visible");
-    hamburgerIcon.classList.remove("hidden");
-    chevronIcon.classList.add("hidden");
   }
 });
 
@@ -779,10 +762,4 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
-
-
-
-
-
-
 
