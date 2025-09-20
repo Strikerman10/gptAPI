@@ -375,11 +375,16 @@ preview.innerHTML = `
       delBtn.textContent = "×";
       delBtn.addEventListener("click", (e) => { e.stopPropagation(); deleteChat(i); });
 
-      item.addEventListener("click", () => {
-        currentIndex = i;
-        renderChatList();
-        renderMessages();
-      });
+     item.addEventListener("click", () => {
+  // Move selected chat to the top
+  const [chat] = chats.splice(i, 1);
+  chats.unshift(chat);
+  currentIndex = 0; // always point to the top one now
+
+  saveChats();        // ✅ persist selection & index
+  renderChatList();
+  renderMessages();
+});
 
       item.appendChild(preview);
       item.appendChild(delBtn);
@@ -691,12 +696,22 @@ document.addEventListener("touchend", e => {
       const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`);
       if (res.ok) {
         const workerChats = await res.json();
-        if (Array.isArray(workerChats) && workerChats.length) {
-          chats = workerChats;
-          currentIndex = 0;
-          saveChats(); // sync Worker data back into local storage
-          gotFromWorker = true;
-        }
+       if (Array.isArray(workerChats) && workerChats.length) {
+  chats = workerChats;
+
+  // ✅ Restore last active chat, then move it to the top of the list
+  const savedIndex = Number(localStorage.getItem("secure_chat_index"));
+  if (!isNaN(savedIndex) && savedIndex >= 0 && savedIndex < chats.length) {
+    const [activeChat] = chats.splice(savedIndex, 1);
+    chats.unshift(activeChat);
+    currentIndex = 0;
+  } else {
+    currentIndex = 0; // fallback to first
+  }
+
+  saveChats();
+  gotFromWorker = true;
+}
       }
     } catch (e) {
       console.warn("Could not load from worker:", e);
@@ -713,4 +728,5 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
+
 
