@@ -80,65 +80,81 @@ const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon"); // hamburger
 const chevronIcon   = toggleSidebarBtn.querySelector(".show-icon"); // chevron svg
 
 function openSidebar() {
-  sidebarEl.classList.add("open");
   if (window.innerWidth <= 768) {
+    // MOBILE drawer mode
+    sidebarEl.classList.add("open");
     backdropEl.classList.add("visible");
+  } else {
+    // DESKTOP expanded
+    sidebarEl.classList.remove("collapsed");
   }
   hamburgerIcon.classList.add("hidden");
   chevronIcon.classList.remove("hidden");
 }
 
 function closeSidebar() {
-  sidebarEl.classList.remove("open");
-  backdropEl.classList.remove("visible");
+  if (window.innerWidth <= 768) {
+    // MOBILE drawer close
+    sidebarEl.classList.remove("open");
+    backdropEl.classList.remove("visible");
+  } else {
+    // DESKTOP collapsed
+    sidebarEl.classList.add("collapsed");
+  }
   hamburgerIcon.classList.remove("hidden");
   chevronIcon.classList.add("hidden");
 }
 
 function setInitialState() {
   if (window.innerWidth <= 768) {
-    // Mobile loads closed → hamburger visible
+    // Mobile loads closed
     closeSidebar();
   } else {
-    // Desktop loads open → chevron visible
+    // Desktop loads expanded
     openSidebar();
-    backdropEl.classList.remove("visible"); // no backdrop on desktop
+    backdropEl.classList.remove("visible"); // no backdrop in desktop
   }
 }
 setInitialState();
 
+// Toggle button
 toggleSidebarBtn.addEventListener("click", () => {
-  if (sidebarEl.classList.contains("open")) {
-    closeSidebar();
+  if (window.innerWidth <= 768) {
+    // Mobile check
+    if (sidebarEl.classList.contains("open")) {
+      closeSidebar();
+    } else {
+      openSidebar();
+    }
   } else {
-    openSidebar();
+    // Desktop check
+    if (sidebarEl.classList.contains("collapsed")) {
+      openSidebar();
+    } else {
+      closeSidebar();
+    }
   }
 });
 
-// Backdrop click → close (mobile)
+// Backdrop click → mobile close only
 backdropEl.addEventListener("click", closeSidebar);
 
 // =======================
 // Swipe gestures (mobile)
 // =======================
 let touchStartX = 0;
-
 document.addEventListener("touchstart", e => {
-  if (window.innerWidth > 768) return; // Only mobile
+  if (window.innerWidth > 768) return;
   touchStartX = e.changedTouches[0].screenX;
 });
-
 document.addEventListener("touchend", e => {
   if (window.innerWidth > 768) return;
   const touchEndX = e.changedTouches[0].screenX;
   const deltaX = touchEndX - touchStartX;
 
-  // Swipe right from left edge → open
   if (touchStartX < 50 && deltaX > 60 && !sidebarEl.classList.contains("open")) {
     openSidebar();
   }
-
-  // Swipe left → close
   if (deltaX < -60 && sidebarEl.classList.contains("open")) {
     closeSidebar();
   }
@@ -757,5 +773,6 @@ async function sendMessageRetry(promptText) {
   })();
 
 }); 
+
 
 
