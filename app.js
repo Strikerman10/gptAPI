@@ -87,6 +87,10 @@ scrollTopBtn.addEventListener("click", () => {
 const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon");
 const chevronIcon   = toggleSidebarBtn.querySelector(".show-icon");
 
+// --- set initial state ---
+hamburgerIcon.classList.add("hidden");
+chevronIcon.classList.remove("hidden");
+
 toggleSidebarBtn.addEventListener("click", () => {
   if (window.innerWidth <= 768) {
     // --- Mobile: slide-in drawer ---
@@ -758,6 +762,7 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
+
 
 
 
