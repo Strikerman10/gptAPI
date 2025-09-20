@@ -21,7 +21,7 @@ html, body {
   --color-4: #5a0000; /* dark neutral */
   --color-5: #1a0a0a; /* very dark base */
   --color-6: #008080; /* deep maroon (special actions) */
-  --color-7: color-mix(in srgb, var(--color-6) 60%, white 40%); /* brighter teal */
+  --color-7: #00f3f3" /*Hover over color*/
 }
 
 /* ===========================
@@ -796,6 +796,7 @@ body.theme-amoled .btn {
     opacity: 1;
   }
 }
+
 
 
 
