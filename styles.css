@@ -296,7 +296,7 @@ body {
   position: absolute;
   bottom: 6px;
   left: 8px;
-  background: var(--Color-6);
+  background: var(--color-6);
   border: none;
   cursor: pointer;
   color: inherit;
@@ -716,6 +716,7 @@ body.theme-amoled .btn {
     opacity: 1;
   }
 }
+
 
 
 
