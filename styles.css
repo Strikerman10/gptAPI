@@ -293,31 +293,28 @@ body {
    Assistant Retry Refresh Button
    =========================== */
 .refresh-button {
-  position: fixed;            /* stays in place on screen, not just within a container */
-  bottom: 16px;               /* distance from bottom edge */
-  left: 16px;                 /* distance from left edge */
-  
-  width: 56px;                /* size of the circular button */
-  height: 56px;               
-  background: var(--color-6); /* theme color */
+  position: absolute;
+  bottom: 16px;               /* a bit higher up so it "floats" */
+  left: 16px;
+  width: 32px;                /* control size */
+  height: 32px;               /* control size */
+  background: var(--color-6); /* your chosen theme color */
   border: none;
-  border-radius: 50%;         /* circle shape */
-  
+  border-radius: 50%;         /* makes it perfectly circular */
   color: #fff;                /* white icon for contrast */
-  font-size: 24px;            /* bigger icon inside */
+  font-size: 20px;            /* make the refresh icon larger */
   display: flex;
   align-items: center;
   justify-content: center;
-  
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* floating look */
-  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* floating effect */
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .refresh-button:hover {
-  background: var(--accent);                       /* hover accent color */
-  transform: scale(1.1) rotate(90deg);             /* scale + spin */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);       /* stronger shadow */
+  background: var(--accent);                      /* hover color */
+  transform: scale(1.1) rotate(90deg);            /* hover interaction */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);      /* stronger shadow on hover */
 }
 
 .refresh-button svg {
@@ -721,6 +718,7 @@ body.theme-amoled .btn {
     opacity: 1;
   }
 }
+
 
 
 
