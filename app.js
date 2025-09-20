@@ -29,14 +29,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const inputEl = document.getElementById("input");
   
   // ==========================
-  // AUTO-RESIZE TEXTAREA
-  // ==========================
-  function autoResize() {
-    inputEl.style.height = "auto"; // reset so it can shrink
-    inputEl.style.height = Math.min(inputEl.scrollHeight, 200) + "px";
-  }
-
-  inputEl.addEventListener("input", autoResize);
+// AUTO-RESIZE TEXTAREA
+// ==========================
+function autoResize() {
+  inputEl.style.height = "auto"; // reset so it can shrink
+  inputEl.style.height = Math.min(inputEl.scrollHeight, 200) + "px";
+}
+inputEl.addEventListener("input", autoResize);
 // run once on load
 autoResize();
 
@@ -52,25 +51,21 @@ document.body.appendChild(backdropEl);
 
 const paletteBtn = document.getElementById("themeBtn"); // 🎨 palette button
 
-// --- Scroll-to-top FAB behaviour ---
+// ==============================
+// Scroll-to-top FAB behaviour
+// ==============================
 const scrollTopBtn = document.getElementById("scrollTopBtn");
 const inputArea    = document.querySelector(".input-area");
 const textarea     = inputArea.querySelector("textarea");
 
-// adjust button bottom depending on input area height
 function updateScrollBtnPosition() {
   const inputHeight = inputArea.offsetHeight;
   scrollTopBtn.style.bottom = (inputHeight + 20) + "px"; // 20px gap
 }
-
-// run once on load
 updateScrollBtnPosition();
-
-// update whenever textarea grows/shrinks
 textarea.addEventListener("input", updateScrollBtnPosition);
 window.addEventListener("resize", updateScrollBtnPosition);
 
-// existing scroll behaviour
 messagesEl.addEventListener("scroll", () => {
   scrollTopBtn.style.display = messagesEl.scrollTop > 200 ? "flex" : "none";
 });
@@ -78,47 +73,75 @@ scrollTopBtn.addEventListener("click", () => {
   messagesEl.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-
 // ==============================
 // Sidebar toggle with icon swap
 // ==============================
+const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon"); // hamburger svg
+const chevronIcon   = toggleSidebarBtn.querySelector(".show-icon"); // chevron svg
 
-// grab the two icons inside the toggle button
-const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon");
-const chevronIcon   = toggleSidebarBtn.querySelector(".show-icon");
+function openSidebar() {
+  sidebarEl.classList.add("open");
+  if (window.innerWidth <= 768) {
+    backdropEl.classList.add("visible");
+  }
+  hamburgerIcon.classList.add("hidden");
+  chevronIcon.classList.remove("hidden");
+}
 
-// --- set initial state ---
-hamburgerIcon.classList.add("hidden");
-chevronIcon.classList.remove("hidden");
+function closeSidebar() {
+  sidebarEl.classList.remove("open");
+  backdropEl.classList.remove("visible");
+  hamburgerIcon.classList.remove("hidden");
+  chevronIcon.classList.add("hidden");
+}
+
+function setInitialState() {
+  if (window.innerWidth <= 768) {
+    // Mobile loads closed → hamburger visible
+    closeSidebar();
+  } else {
+    // Desktop loads open → chevron visible
+    openSidebar();
+    backdropEl.classList.remove("visible"); // no backdrop on desktop
+  }
+}
+setInitialState();
 
 toggleSidebarBtn.addEventListener("click", () => {
-  if (window.innerWidth <= 768) {
-    // --- Mobile: slide-in drawer ---
-    const isOpen = sidebarEl.classList.toggle("open");
-    backdropEl.classList.toggle("visible", isOpen);
-
-    // update icons
-    hamburgerIcon.classList.toggle("hidden", isOpen);
-    chevronIcon.classList.toggle("hidden", !isOpen);
-
+  if (sidebarEl.classList.contains("open")) {
+    closeSidebar();
   } else {
-    // --- Desktop: collapse/expand ---
-    const isHidden = sidebarEl.classList.toggle("hidden");
-
-    // update icons: hamburger when collapsed, chevron when expanded
-    hamburgerIcon.classList.toggle("hidden", !isHidden);
-    chevronIcon.classList.toggle("hidden", isHidden);
+    openSidebar();
   }
 });
 
-// Backdrop click closes drawer on mobile
-backdropEl.addEventListener("click", () => {
-  sidebarEl.classList.remove("open");
-  backdropEl.classList.remove("visible");
+// Backdrop click → close (mobile)
+backdropEl.addEventListener("click", closeSidebar);
 
-  // reset to hamburger icon
-  hamburgerIcon.classList.remove("hidden");
-  chevronIcon.classList.add("hidden");
+// =======================
+// Swipe gestures (mobile)
+// =======================
+let touchStartX = 0;
+
+document.addEventListener("touchstart", e => {
+  if (window.innerWidth > 768) return; // Only mobile
+  touchStartX = e.changedTouches[0].screenX;
+});
+
+document.addEventListener("touchend", e => {
+  if (window.innerWidth > 768) return;
+  const touchEndX = e.changedTouches[0].screenX;
+  const deltaX = touchEndX - touchStartX;
+
+  // Swipe right from left edge → open
+  if (touchStartX < 50 && deltaX > 60 && !sidebarEl.classList.contains("open")) {
+    openSidebar();
+  }
+
+  // Swipe left → close
+  if (deltaX < -60 && sidebarEl.classList.contains("open")) {
+    closeSidebar();
+  }
 });
   
   // ==========================
@@ -680,34 +703,6 @@ async function sendMessageRetry(promptText) {
     paletteSelector.classList.add("hidden"); // hide after selection
   });
 
-// =======================
-// Swipe gestures (mobile)
-// =======================
-let touchStartX = 0;
-
-document.addEventListener("touchstart", e => {
-  if (window.innerWidth > 768) return; // only enable on mobile
-  touchStartX = e.changedTouches[0].screenX;
-});
-
-document.addEventListener("touchend", e => {
-  if (window.innerWidth > 768) return;
-  const touchEndX = e.changedTouches[0].screenX;
-  const deltaX = touchEndX - touchStartX;
-
-  // Swipe right from left edge → open
-  if (touchStartX < 50 && deltaX > 60 && !sidebarEl.classList.contains("open")) {
-    sidebarEl.classList.add("open");
-    backdropEl.classList.add("visible");
-  }
-
-  // Swipe left → close
-  if (deltaX < -60 && sidebarEl.classList.contains("open")) {
-    sidebarEl.classList.remove("open");
-    backdropEl.classList.remove("visible");
-  }
-});
-
 // ==========================
   // INITIAL LOAD
   // ==========================
@@ -762,4 +757,5 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
+
 
