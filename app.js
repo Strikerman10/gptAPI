@@ -324,19 +324,24 @@ function formatTime(date = new Date()) {
     saveChatsToWorker();
   }
 
-  function deleteChat(index) {
-    if (index < 0 || index >= chats.length) return;
-    chats.splice(index, 1);
-    if (chats.length === 0) {
-      currentIndex = null;
-    } else if (currentIndex >= chats.length) {
-      currentIndex = chats.length - 1;
-    }
-    saveChats();
-    saveChatsToWorker();
-    renderChatList();
-    renderMessages();
+ function deleteChat(index) {
+  if (index < 0 || index >= chats.length) return;
+
+  // Remove selected chat
+  chats.splice(index, 1);
+
+  if (chats.length === 0) {
+    currentIndex = null;
+  } else {
+    // Always keep the *first chat* as active (since Option B keeps active chats at top)
+    currentIndex = 0;
   }
+
+  saveChats();
+  saveChatsToWorker();
+  renderChatList();
+  renderMessages();
+}
 
   function renderChatList() {
     chatListEl.innerHTML = "";
@@ -728,5 +733,6 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
+
 
 
