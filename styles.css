@@ -286,7 +286,7 @@ body {
   align-self: flex-start;
 
   position: relative;     /* so child can be absolutely positioned */
-  padding-bottom: 30px;   /* make room at bottom for refresh button */
+  padding-bottom: 48px;   /* make room at bottom for refresh button */
 }
 
 /* ===========================
@@ -718,6 +718,7 @@ body.theme-amoled .btn {
     opacity: 1;
   }
 }
+
 
 
 
