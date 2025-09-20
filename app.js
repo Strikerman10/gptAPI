@@ -41,6 +41,12 @@ document.addEventListener("DOMContentLoaded", () => {
   autoResize();
   const paletteSelector = document.getElementById("paletteSelector");
   const themeToggleBtn = document.getElementById("toggleThemeBtn"); // 🌙/☀️ toggle
+  const sidebarEl = document.querySelector(".sidebar");
+  const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
+  // Create backdrop for sidebar
+const backdropEl = document.createElement("div");
+backdropEl.className = "sidebar-backdrop";
+document.body.appendChild(backdropEl);
   const paletteBtn = document.getElementById("themeBtn"); // 🎨 palette button
 
 // --- Scroll-to-top FAB behaviour ---
@@ -628,40 +634,29 @@ async function sendMessageRetry(promptText) {
     paletteSelector.classList.add("hidden"); // hide after selection
   });
 
+// ==========================
+// Sidebar toggle & swipe (mobile only)
+// ==========================
 const sidebar   = document.querySelector(".sidebar");
 const toggleBtn = document.getElementById("toggleSidebarBtn");
 const backdrop  = document.querySelector(".sidebar-backdrop");
 
-// Function to sync button icons with sidebar state
-function syncIcons() {
-  const isOpen = sidebar.classList.contains("open") || !sidebar.classList.contains("hidden");
-  toggleBtn.querySelector(".hide-icon").classList.toggle("hidden", isOpen);
-  toggleBtn.querySelector(".show-icon").classList.toggle("hidden", !isOpen);
-}
-
 // Toggle handler
 toggleBtn.addEventListener("click", () => {
-  let isOpen;
-
   if (window.innerWidth <= 768) {
     // Mobile: slide-in drawer
-    isOpen = sidebar.classList.toggle("open");
+    const isOpen = sidebar.classList.toggle("open");
     backdrop.classList.toggle("visible", isOpen);
   } else {
     // Desktop: collapse/expand
-    isOpen = !sidebar.classList.toggle("hidden");
+    sidebar.classList.toggle("hidden");
   }
-
-  // Toggle the icons
-  toggleBtn.querySelector(".hide-icon").classList.toggle("hidden", isOpen);
-  toggleBtn.querySelector(".show-icon").classList.toggle("hidden", !isOpen);
 });
 
 // Backdrop click closes drawer on mobile
 backdrop.addEventListener("click", () => {
   sidebar.classList.remove("open");
   backdrop.classList.remove("visible");
-  syncIcons();
 });
 
 // =======================
@@ -746,9 +741,5 @@ document.addEventListener("touchend", e => {
   })();
 
 }); 
-
-
-
-
 
 
