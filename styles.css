@@ -534,6 +534,13 @@ body {
   opacity: 0.8;                   /* a touch lighter so it feels like metadata */
 }
 
+#toggleSidebarBtn .icon {
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+#toggleSidebarBtn .hidden {
+  opacity: 0;
+}
 /* ===========================
    Palette Dropdown
    =========================== */
@@ -796,6 +803,7 @@ body.theme-amoled .btn {
     opacity: 1;
   }
 }
+
 
 
 
