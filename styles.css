@@ -46,7 +46,7 @@ html, body {
   --danger: hsl(0 72% 48%);
   --danger-contrast: #fff;
   --ring: color-mix(in srgb, var(--color-2) 60%, transparent);
-  --sidebar-bg: color-mix(in srgb, var(--color-1) 12%, white 88%);
+  --sidebar-bg: color-mix(in srgb, var(--color-1) 42%, white 58%);
 }
 
 /* ===========================
@@ -486,6 +486,7 @@ body {
 #toggleThemeBtn:hover,
 #toggleSidebarBtn:hover {
   background: var(--accent);
+  transform: translateY(-2px);
 }
 
 .chat-header button svg,
@@ -613,7 +614,7 @@ body.theme-amoled .btn {
   min-width: 200px;
   max-width: 400px;
   transition: width 0.3s ease, opacity 0.3s ease;
-  background: var(--surface-2);
+  background: var(--sidebar-bg);
   border-right: 1px solid var(--surface-1);
   display: flex;
   flex-direction: column;
@@ -763,6 +764,7 @@ body.theme-amoled .btn {
     opacity: 1;
   }
 }
+
 
 
 
