@@ -52,26 +52,61 @@ document.body.appendChild(backdropEl);
 const paletteBtn = document.getElementById("themeBtn"); // 🎨 palette button
 
 // ==============================
-// Scroll-to-top FAB behaviour
+// Scroll-to-top Button Behaviour
 // ==============================
+function placeScrollButton() {
+  const btn = document.getElementById("scrollTopBtn");
+  const lastMessage = document.querySelector(".message:last-child");
+  if (!btn) return;
+
+  btn.classList.remove("inside-message");
+
+  // On small screens → tuck into the last message bubble
+  if (window.innerWidth <= 600 && lastMessage) {
+    lastMessage.appendChild(btn);
+    btn.classList.add("inside-message");
+  } else {
+    // Larger screens → ensure it’s attached to <body>
+    if (!btn.parentElement.isSameNode(document.body)) {
+      document.body.appendChild(btn);
+    }
+    btn.style.bottom = (document.querySelector(".input-area").offsetHeight + 20) + "px";
+  }
+}
+
 const scrollTopBtn = document.getElementById("scrollTopBtn");
 const inputArea    = document.querySelector(".input-area");
 const textarea     = inputArea.querySelector("textarea");
 
+// (A) Adjust desktop “fixed” bottom offset as input grows
 function updateScrollBtnPosition() {
-  const inputHeight = inputArea.offsetHeight;
-  scrollTopBtn.style.bottom = (inputHeight + 20) + "px"; // 20px gap
+  if (window.innerWidth > 600 && scrollTopBtn) {
+    scrollTopBtn.style.bottom = (inputArea.offsetHeight + 20) + "px";
+  }
 }
-updateScrollBtnPosition();
 textarea.addEventListener("input", updateScrollBtnPosition);
-window.addEventListener("resize", updateScrollBtnPosition);
+window.addEventListener("resize", () => {
+  updateScrollBtnPosition();
+  placeScrollButton();
+});
 
+// (B) Toggle show/hide based on scroll position
 messagesEl.addEventListener("scroll", () => {
+  if (!scrollTopBtn) return;
   scrollTopBtn.style.display = messagesEl.scrollTop > 200 ? "flex" : "none";
+  placeScrollButton();
 });
-scrollTopBtn.addEventListener("click", () => {
-  messagesEl.scrollTo({ top: 0, behavior: "smooth" });
-});
+
+// (C) Button click → smooth scroll to top
+if (scrollTopBtn) {
+  scrollTopBtn.addEventListener("click", () => {
+    messagesEl.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
+
+// Initial setup
+placeScrollButton();
+updateScrollBtnPosition();
 
 // ==============================
 // Sidebar toggle with icon swap
@@ -780,3 +815,4 @@ async function sendMessageRetry(promptText) {
   })();
 
 }); 
+
