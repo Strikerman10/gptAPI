@@ -585,7 +585,7 @@ async function sendMessage() {
   }
 
   // Add typing placeholder
-  chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatTime() });
+  chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
   renderMessages();
   inputEl.value = "";
   autoResize();   // reset height after clearing
@@ -773,6 +773,7 @@ async function sendMessageRetry(promptText) {
   })();
 
 }); 
+
 
 
 
