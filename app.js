@@ -57,20 +57,27 @@ const paletteBtn = document.getElementById("themeBtn"); // 🎨 palette button
 function placeScrollButton() {
   const btn = document.getElementById("scrollTopBtn");
   const lastMessage = document.querySelector(".message:last-child");
-  if (!btn) return;
+  if (!btn || !lastMessage) return;
 
-  btn.classList.remove("inside-message");
+  if (window.innerWidth <= 600) {
+    const msgTime = lastMessage.querySelector(".msg-time");
 
-  // On small screens → tuck into the last message bubble
-  if (window.innerWidth <= 600 && lastMessage) {
-    lastMessage.appendChild(btn);
-    btn.classList.add("inside-message");
-  } else {
-    // Larger screens → ensure it’s attached to <body>
-    if (!btn.parentElement.isSameNode(document.body)) {
-      document.body.appendChild(btn);
+    if (msgTime) {
+      // Actually move button *after* the timestamp node
+      msgTime.insertAdjacentElement("afterend", btn);
+    } else {
+      lastMessage.appendChild(btn);
     }
-    btn.style.bottom = (document.querySelector(".input-area").offsetHeight + 20) + "px";
+
+    btn.classList.add("inside-message");
+    btn.style.position = "static";  // ✅ no more absolute positioning
+    btn.style.marginTop = "6px";    // spacing below the time
+    btn.style.alignSelf = "flex-end"; // right-align at end if using flexbox bubbles
+  } else {
+    // restore to body as floating FAB
+    document.body.appendChild(btn);
+    btn.classList.remove("inside-message");
+    btn.removeAttribute("style"); // clear inline tweaks
   }
 }
 
@@ -815,4 +822,5 @@ async function sendMessageRetry(promptText) {
   })();
 
 }); 
+
 
