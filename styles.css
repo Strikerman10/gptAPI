@@ -601,8 +601,8 @@ body.theme-amoled .btn {
   right: 20px;
   z-index: 50;
   display: none; /* hidden by default */
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: none;
   cursor: pointer;
@@ -880,3 +880,4 @@ body.theme-amoled .btn {
   justify-content: center;
   padding-right: 0;
 }
+
