@@ -638,33 +638,30 @@ body.theme-amoled .btn {
    Mobile Bubble Override
    =========================== */
 @media (max-width: 600px) {
-  .message {
-    position: relative; /* make each bubble a positioning context */
+  .msg-time {
+    display: block;
+    margin-top: 4px;
+    margin-right: 34px; /* ✅ shift time left so button can sit on the right */
+    font-size: 12px;
+    opacity: 0.7;
+    text-align: right;
   }
 
   .scroll-top-btn.inside-message {
     position: absolute;
     right: 6px;
-    bottom: 4px; /* ensures it sits below the timestamp */
+    bottom: 4px;
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: var(--color-6);   /* ✅ restore solid background */
-    color: #fff;                  /* white arrow/icon */
-    border: none;
+    background: var(--color-6);
+    color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 4px rgba(0,0,0,0.25);
-    opacity: 0.9;                 /* slightly subdued if desired */
-  }
-
-  .scroll-top-btn.inside-message:active {
-    background: var(--color-7);
-    transform: translateY(-1px);
   }
 }
-
 .input-area textarea {
   resize: none;           /* remove manual drag handle */
   max-height: 200px;      /* cap max size */
@@ -897,6 +894,7 @@ body.theme-amoled .btn {
   justify-content: center;
   padding-right: 0;
 }
+
 
 
 
