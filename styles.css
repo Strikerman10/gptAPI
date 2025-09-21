@@ -594,13 +594,17 @@ body.theme-amoled .btn {
   color: #000000; /* black text */
 }
 
-/* Scroll-to-top button */
+/* ===========================
+   Scroll-to-Top Button
+   =========================== */
+
+/* Desktop / default floating */
 .scroll-top-btn {
-  position: absolute;
+  position: fixed;              /* float over page */
   bottom: 95px;
   right: 20px;
-  z-index: 50;
-  display: none; /* hidden by default */
+  z-index: 1000;
+  display: none;                /* hidden by default */
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -608,23 +612,20 @@ body.theme-amoled .btn {
   cursor: pointer;
   background: var(--color-6);
   color: var(--primary-contrast);
-
   display: flex;
   align-items: center;
   justify-content: center;
-
-  /* Material FAB style */
   box-shadow: 0 4px 8px rgba(0,0,0,0.25);
   transition: background 0.25s ease, transform 0.2s ease;
 }
 
-/* Active feedback when tapped or clicked – works everywhere */
+/* Active feedback */
 .scroll-top-btn:active {
   background: var(--color-7);
   transform: translateY(-2px);
 }
 
-/* Hover effect only on devices that actually support hover */
+/* Hover — only on devices with hover (desktop mouse) */
 @media (hover: hover) and (pointer: fine) {
   .scroll-top-btn:hover {
     background: var(--color-7);
@@ -633,18 +634,27 @@ body.theme-amoled .btn {
 }
 
 .scroll-top-btn svg {
-  stroke: #fff;  /* force arrow to white */
+  stroke: #fff;
 }
 
 /* --- Responsive rules for mobile etc --- */
 @media (max-width: 600px) {
-  /* Adjust size/position for smaller screens if needed */
-  .scroll-top-btn {
-    bottom: 70px;
-    right: 15px;
-    width: 36px;
-    height: 36px;
-    font-size: 18px;
+  .message {
+    position: relative;
+  }
+
+  .scroll-top-btn.inside-message {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--primary-contrast);
+    opacity: 0.7;
   }
 }
 
@@ -880,5 +890,6 @@ body.theme-amoled .btn {
   justify-content: center;
   padding-right: 0;
 }
+
 
 
