@@ -639,13 +639,13 @@ body.theme-amoled .btn {
    =========================== */
 @media (max-width: 600px) {
   .message {
-    position: relative; /* enables button inside bubble */
+    position: relative; /* needed for absolute positioning inside */
   }
 
   .scroll-top-btn.inside-message {
-    position: absolute;  /* not fixed anymore */
-    right: 6px;
-    bottom: 6px;
+    position: absolute;
+    right: 4px;
+    bottom: 4px;    /* this locks it to the very bottom corner */
     width: 28px;
     height: 28px;
     font-size: 14px;
@@ -654,6 +654,9 @@ body.theme-amoled .btn {
     box-shadow: none;
     color: var(--primary-contrast);
     opacity: 0.7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
@@ -889,5 +892,6 @@ body.theme-amoled .btn {
   justify-content: center;
   padding-right: 0;
 }
+
 
 
