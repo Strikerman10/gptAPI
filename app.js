@@ -571,7 +571,7 @@ function renderMessages() {
     messagesEl.appendChild(div);
   });
 
-  messagesEl.scrollTop = messagesEl.scrollHeight; placeScrollButton(); 
+  messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
 // ==========================
@@ -780,11 +780,3 @@ async function sendMessageRetry(promptText) {
   })();
 
 }); 
-
-
-
-
-
-
-
-
