@@ -597,16 +597,71 @@ function renderMessages() {
       textDiv.textContent = msg.content;
     }
 
-    const timeDiv = document.createElement("div");
-    timeDiv.className = "msg-time";
-    timeDiv.textContent = msg.time || "";
-    textDiv.appendChild(timeDiv);
-    div.appendChild(textDiv);
+   // Add text
+div.appendChild(textDiv);
 
-    if (msg.role === "assistant" && msg.content !== "__TYPING__") {
+// Only assistants get footer
+if (msg.role === "assistant" && msg.content !== "__TYPING__") {
+  // Footer container
+  const footer = document.createElement("div");
+  footer.className = "msg-footer";
+
+  // Timestamp row
+  const timeRow = document.createElement("div");
+  timeRow.className = "msg-time-row";
+  const timeSpan = document.createElement("span");
+  timeSpan.className = "msg-time";
+  timeSpan.textContent = msg.time || "";
+  timeRow.appendChild(timeSpan);
+  footer.appendChild(timeRow);
+
+  // Actions row (retry + scroll slot)
+  const actionsRow = document.createElement("div");
+  actionsRow.className = "msg-actions-row";
+
+  // Retry button
   const refreshBtn = document.createElement("button");
   refreshBtn.title = "Retry this user prompt";
-  refreshBtn.className = "refresh-button";
+  refreshBtn.className = "retry-btn";
+  refreshBtn.innerHTML = `
+    <svg viewBox="0 0 24 24" width="16" height="16"
+         fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="23 4 23 10 17 10"></polyline>
+      <polyline points="1 20 1 14 7 14"></polyline>
+      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+    </svg>
+  `;
+
+  // Find linked user prompt
+  let originalPrompt = "";
+  for (let j = idx - 1; j >= 0; j--) {
+    if (chat.messages[j].role === "user") {
+      originalPrompt = chat.messages[j].content;
+      break;
+    }
+  }
+  refreshBtn.onclick = () => {
+    chat.messages.splice(idx, 1);
+    renderMessages();
+    sendMessageRetry(originalPrompt);
+  };
+
+  actionsRow.appendChild(refreshBtn);
+
+  // 🔑 The scrollTopBtn will be moved here on mobile via placeScrollButton()
+  footer.appendChild(actionsRow);
+
+  div.appendChild(footer);
+}
+
+// For user messages → just append time inline
+if (msg.role === "user") {
+  const timeSpan = document.createElement("span");
+  timeSpan.className = "msg-time";
+  timeSpan.textContent = msg.time || "";
+  textDiv.appendChild(timeSpan);
+}
 
   // insert SVG instead of text
   refreshBtn.innerHTML = `
@@ -850,6 +905,7 @@ async function sendMessageRetry(promptText) {
   })();
 
 }); 
+
 
 
 
