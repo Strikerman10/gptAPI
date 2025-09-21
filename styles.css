@@ -594,15 +594,13 @@ body.theme-amoled .btn {
   color: #000000; /* black text */
 }
 
-/* ===========================
-   Scroll-to-Top Button (Base)
-   =========================== */
+/* Scroll-to-top button */
 .scroll-top-btn {
-  position: fixed;           /* default: floats over page */
-  bottom: 95px;              /* offset, updated in JS */
+  position: absolute;
+  bottom: 95px;
   right: 20px;
-  z-index: 1000;
-  display: none;             /* hidden until scroll > 200 */
+  z-index: 50;
+  display: none; /* hidden by default */
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -610,18 +608,23 @@ body.theme-amoled .btn {
   cursor: pointer;
   background: var(--color-6);
   color: var(--primary-contrast);
+
   display: flex;
   align-items: center;
   justify-content: center;
+
+  /* Material FAB style */
   box-shadow: 0 4px 8px rgba(0,0,0,0.25);
   transition: background 0.25s ease, transform 0.2s ease;
 }
 
+/* Active feedback when tapped or clicked – works everywhere */
 .scroll-top-btn:active {
   background: var(--color-7);
   transform: translateY(-2px);
 }
 
+/* Hover effect only on devices that actually support hover */
 @media (hover: hover) and (pointer: fine) {
   .scroll-top-btn:hover {
     background: var(--color-7);
@@ -630,27 +633,18 @@ body.theme-amoled .btn {
 }
 
 .scroll-top-btn svg {
-  stroke: #fff;
+  stroke: #fff;  /* force arrow to white */
 }
 
-
-/* ===========================
-   Mobile Bubble Override
-   =========================== */
+/* --- Responsive rules for mobile etc --- */
 @media (max-width: 600px) {
-  .scroll-top-btn.inside-message {
-    position: static;      /* stay in flow below timestamp */
-    margin-top: 6px;       /* space below timestamp */
-    margin-left: auto;     /* push it to the right */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--color-6);
-    color: #fff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  /* Adjust size/position for smaller screens if needed */
+  .scroll-top-btn {
+    bottom: 70px;
+    right: 15px;
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
   }
 }
 
@@ -886,126 +880,3 @@ body.theme-amoled .btn {
   justify-content: center;
   padding-right: 0;
 }
-
-/* ===========================
-   Message Footer Layout
-   =========================== */
-.msg-footer {
-  display: flex;
-  flex-direction: column;
-  margin-top: 6px;
-  font-size: 12px;
-}
-
-.msg-time-row {
-  display: flex;
-  justify-content: flex-end; /* timestamp right */
-  margin-bottom: 4px;
-}
-
-.msg-time {
-  font-size: 11px;
-  opacity: 0.7;
-}
-
-.msg-actions-row {
-  display: flex;
-  justify-content: space-between; /* refresh left, scroll right */
-  align-items: center;
-}
-
-/* Scroll button when inside a message bubble (mobile) */
-.scroll-top-btn.inside-message {
-  width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  background: var(--color-6);
-  color: #fff;
-}
-
-/* Retry button styling */
-.retry-btn {
-  width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-
-  background: var(--color-6); /* accent from your palette */
-  color: #fff;                /* icon color */
-  transition: background 0.2s;
-  margin-top: 4px;            /* pushes it downward slightly */
-}
-
-.retry-btn:hover {
-  background: var(--color-7); /* brighter hover color */
-}
-
-/* Adjust footer spacing */
-.msg-footer {
-  margin-top: 6px;  /* space between message text and footer rows */
-}
-.msg-actions-row {
-  margin-top: 3px;  /* space between time row and action buttons */
-  display: flex;
-  justify-content: flex-end;
-  gap: 6px;
-}
-
-.scroll-top-btn.inside-message {
-  background: var(--color-6);
-  color: #fff;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-}
-
-/* Footer spacing tweak */
-.message.assistant .msg-footer {
-  margin-top: 8px;       /* space between text and footer */
-  margin-bottom: 2px;    /* nudge footers down near bubble bottom */
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end; /* push rows toward bottom edge */
-}
-
-/* Stack rows cleanly */
-.message.assistant .msg-time-row {
-  text-align: right;
-  font-size: 0.75rem;
-  color: var(--text-muted, #666);
-  margin-bottom: 2px; /* small gap between time and actions */
-}
-
-.message.assistant .msg-actions-row {
-  display: flex;
-  justify-content: flex-end;
-  gap: 6px;
-}
-
-.message.assistant {
-  display: flex;
-  flex-direction: column;
-}
-
-/* make the footer sink to the bottom edge */
-.message.assistant .msg-footer {
-  margin-top: auto;       /* pushes footer down */
-  padding-bottom: 2px;    /* ensures tiny breathing room */
-}
-
-.message.assistant .msg-actions-row {
-  display: flex;
-  justify-content: flex-end;
-  gap: 6px;
-}
-
-
-
-
