@@ -663,36 +663,6 @@ if (msg.role === "user") {
   textDiv.appendChild(timeSpan);
 }
 
-  // insert SVG instead of text
-  refreshBtn.innerHTML = `
-    <svg viewBox="0 0 24 24" width="16" height="16"
-         fill="none" stroke="currentColor" stroke-width="2" 
-         stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="23 4 23 10 17 10"></polyline>
-      <polyline points="1 20 1 14 7 14"></polyline>
-      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-    </svg>
-  `;
-
-  // Associate this assistant message with the user prompt before it
-  let originalPrompt = "";
-  for (let j = idx - 1; j >= 0; j--) {
-    if (chat.messages[j].role === "user") {
-      originalPrompt = chat.messages[j].content;
-      break;
-    }
-  }
-
-  refreshBtn.onclick = () => {
-    // remove old assistant msg and retry
-    chat.messages.splice(idx, 1);
-    renderMessages();
-    sendMessageRetry(originalPrompt);
-  };
-
-  div.appendChild(refreshBtn);
-}
-
     messagesEl.appendChild(div);
   });
 
@@ -905,6 +875,7 @@ async function sendMessageRetry(promptText) {
   })();
 
 }); 
+
 
 
 
