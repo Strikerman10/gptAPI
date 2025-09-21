@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const headerEl = document.getElementById("chatHeader").querySelector("span");
   const inputEl = document.getElementById("input");
   
-  // ==========================
+// ==========================
 // AUTO-RESIZE TEXTAREA
 // ==========================
 function autoResize() {
@@ -60,21 +60,47 @@ function placeScrollButton() {
   if (!btn || !lastMessage) return;
 
   if (window.innerWidth <= 600) {
-    const msgTime = lastMessage.querySelector(".msg-time");
+    let footer = lastMessage.querySelector(".msg-footer");
+    if (!footer) {
+      footer = document.createElement("div");
+      footer.classList.add("msg-footer");
+      lastMessage.appendChild(footer);
+    }
 
-    if (msgTime) {
-      // Actually move button *after* the timestamp node
-      msgTime.insertAdjacentElement("afterend", btn);
-    } else {
-      lastMessage.appendChild(btn);
+    // Time row (right aligned)
+    let timeRow = footer.querySelector(".msg-time-row");
+    const msgTime = lastMessage.querySelector(".msg-time");
+    if (!timeRow && msgTime) {
+      timeRow = document.createElement("div");
+      timeRow.classList.add("msg-time-row");
+      timeRow.appendChild(msgTime);
+      footer.insertBefore(timeRow, footer.firstChild);
+    }
+
+    // Actions row (refresh left, scroll right)
+    let actionsRow = footer.querySelector(".msg-actions-row");
+    if (!actionsRow) {
+      actionsRow = document.createElement("div");
+      actionsRow.classList.add("msg-actions-row");
+      footer.appendChild(actionsRow);
+    }
+
+    // Move retry into left side
+    const retry = lastMessage.querySelector(".retry-btn");
+    if (retry && !actionsRow.contains(retry)) {
+      actionsRow.insertBefore(retry, actionsRow.firstChild);
+    }
+
+    // Scroll button → right side
+    if (!actionsRow.contains(btn)) {
+      actionsRow.appendChild(btn);
     }
 
     btn.classList.add("inside-message");
-    btn.style.position = "static";  // ✅ no more absolute positioning
-    btn.style.marginTop = "6px";    // spacing below the time
-    btn.style.alignSelf = "flex-end"; // right-align at end if using flexbox bubbles
+    btn.style.position = "static";
+    btn.style.display = "flex";
   } else {
-    // restore to body as floating FAB
+    // Restore scroll button as floating FAB
     document.body.appendChild(btn);
     btn.classList.remove("inside-message");
     btn.removeAttribute("style"); // clear inline tweaks
@@ -111,9 +137,11 @@ if (scrollTopBtn) {
   });
 }
 
-// Initial setup
-placeScrollButton();
-updateScrollBtnPosition();
+// Initial placement
+document.addEventListener("DOMContentLoaded", () => {
+  updateScrollBtnPosition();
+  placeScrollButton();
+});
 
 // ==============================
 // Sidebar toggle with icon swap
@@ -822,5 +850,6 @@ async function sendMessageRetry(promptText) {
   })();
 
 }); 
+
 
 
