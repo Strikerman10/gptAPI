@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const headerEl = document.getElementById("chatHeader").querySelector("span");
   const inputEl = document.getElementById("input");
   
-// ==========================
+  // ==========================
 // AUTO-RESIZE TEXTAREA
 // ==========================
 function autoResize() {
@@ -52,95 +52,25 @@ document.body.appendChild(backdropEl);
 const paletteBtn = document.getElementById("themeBtn"); // 🎨 palette button
 
 // ==============================
-// Scroll-to-top Button Behaviour
+// Scroll-to-top FAB behaviour
 // ==============================
-function placeScrollButton() {
-  const btn = document.getElementById("scrollTopBtn");
-  const lastMessage = document.querySelector(".message:last-child");
-  if (!btn || !lastMessage) return;
-
-  if (window.innerWidth <= 600) {
-    let footer = lastMessage.querySelector(".msg-footer");
-    if (!footer) {
-      footer = document.createElement("div");
-      footer.classList.add("msg-footer");
-      lastMessage.appendChild(footer);
-    }
-
-    // Time row (right aligned)
-    let timeRow = footer.querySelector(".msg-time-row");
-    const msgTime = lastMessage.querySelector(".msg-time");
-    if (!timeRow && msgTime) {
-      timeRow = document.createElement("div");
-      timeRow.classList.add("msg-time-row");
-      timeRow.appendChild(msgTime);
-      footer.insertBefore(timeRow, footer.firstChild);
-    }
-
-    // Actions row (refresh left, scroll right)
-    let actionsRow = footer.querySelector(".msg-actions-row");
-    if (!actionsRow) {
-      actionsRow = document.createElement("div");
-      actionsRow.classList.add("msg-actions-row");
-      footer.appendChild(actionsRow);
-    }
-
-    // Move retry into left side
-    const retry = lastMessage.querySelector(".retry-btn");
-    if (retry && !actionsRow.contains(retry)) {
-      actionsRow.insertBefore(retry, actionsRow.firstChild);
-    }
-
-    // Scroll button → right side
-    if (!actionsRow.contains(btn)) {
-      actionsRow.appendChild(btn);
-    }
-
-    btn.classList.add("inside-message");
-    btn.style.position = "static";
-    btn.style.display = "flex";
-  } else {
-    // Restore scroll button as floating FAB
-    document.body.appendChild(btn);
-    btn.classList.remove("inside-message");
-    btn.removeAttribute("style"); // clear inline tweaks
-  }
-}
-
 const scrollTopBtn = document.getElementById("scrollTopBtn");
 const inputArea    = document.querySelector(".input-area");
 const textarea     = inputArea.querySelector("textarea");
 
-// (A) Adjust desktop “fixed” bottom offset as input grows
 function updateScrollBtnPosition() {
-  if (window.innerWidth > 600 && scrollTopBtn) {
-    scrollTopBtn.style.bottom = (inputArea.offsetHeight + 20) + "px";
-  }
+  const inputHeight = inputArea.offsetHeight;
+  scrollTopBtn.style.bottom = (inputHeight + 20) + "px"; // 20px gap
 }
+updateScrollBtnPosition();
 textarea.addEventListener("input", updateScrollBtnPosition);
-window.addEventListener("resize", () => {
-  updateScrollBtnPosition();
-  placeScrollButton();
-});
+window.addEventListener("resize", updateScrollBtnPosition);
 
-// (B) Toggle show/hide based on scroll position
 messagesEl.addEventListener("scroll", () => {
-  if (!scrollTopBtn) return;
   scrollTopBtn.style.display = messagesEl.scrollTop > 200 ? "flex" : "none";
-  placeScrollButton();
 });
-
-// (C) Button click → smooth scroll to top
-if (scrollTopBtn) {
-  scrollTopBtn.addEventListener("click", () => {
-    messagesEl.scrollTo({ top: 0, behavior: "smooth" });
-  });
-}
-
-// Initial placement
-document.addEventListener("DOMContentLoaded", () => {
-  updateScrollBtnPosition();
-  placeScrollButton();
+scrollTopBtn.addEventListener("click", () => {
+  messagesEl.scrollTo({ top: 0, behavior: "smooth" });
 });
 
 // ==============================
@@ -593,80 +523,55 @@ function renderMessages() {
           <span></span><span></span><span></span>
         </div>
       `;
-      div.appendChild(textDiv);
-      messagesEl.appendChild(div);
-      return;
     } else {
       textDiv.textContent = msg.content;
     }
 
+    const timeDiv = document.createElement("div");
+    timeDiv.className = "msg-time";
+    timeDiv.textContent = msg.time || "";
+    textDiv.appendChild(timeDiv);
     div.appendChild(textDiv);
 
-    // Assistant messages get footer
-    if (msg.role === "assistant") {
-      const footer = document.createElement("div");
-      footer.className = "msg-footer";
+    if (msg.role === "assistant" && msg.content !== "__TYPING__") {
+  const refreshBtn = document.createElement("button");
+  refreshBtn.title = "Retry this user prompt";
+  refreshBtn.className = "refresh-button";
 
-      // time row
-      const timeRow = document.createElement("div");
-      timeRow.className = "msg-time-row";
-      const timeSpan = document.createElement("span");
-      timeSpan.className = "msg-time";
-      timeSpan.textContent = msg.time || "";
-      timeRow.appendChild(timeSpan);
-      footer.appendChild(timeRow);
+  // insert SVG instead of text
+  refreshBtn.innerHTML = `
+    <svg viewBox="0 0 24 24" width="16" height="16"
+         fill="none" stroke="currentColor" stroke-width="2" 
+         stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="23 4 23 10 17 10"></polyline>
+      <polyline points="1 20 1 14 7 14"></polyline>
+      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+    </svg>
+  `;
 
-      // actions row
-      const actionsRow = document.createElement("div");
-      actionsRow.className = "msg-actions-row";
-
-      // retry button
-      const refreshBtn = document.createElement("button");
-      refreshBtn.title = "Retry this user prompt";
-      refreshBtn.className = "retry-btn";
-      refreshBtn.innerHTML = `
-        <svg viewBox="0 0 24 24" width="16" height="16"
-             fill="none" stroke="currentColor" stroke-width="2"
-             stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="23 4 23 10 17 10"></polyline>
-          <polyline points="1 20 1 14 7 14"></polyline>
-          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-        </svg>
-      `;
-
-      // find linked user prompt
-      let originalPrompt = "";
-      for (let j = idx - 1; j >= 0; j--) {
-        if (chat.messages[j].role === "user") {
-          originalPrompt = chat.messages[j].content;
-          break;
-        }
-      }
-      refreshBtn.onclick = () => {
-        chat.messages.splice(idx, 1);
-        renderMessages();
-        sendMessageRetry(originalPrompt);
-      };
-
-      actionsRow.appendChild(refreshBtn);
-      footer.appendChild(actionsRow);
-
-      div.appendChild(footer);
+  // Associate this assistant message with the user prompt before it
+  let originalPrompt = "";
+  for (let j = idx - 1; j >= 0; j--) {
+    if (chat.messages[j].role === "user") {
+      originalPrompt = chat.messages[j].content;
+      break;
     }
+  }
 
-    // User messages just show inline time
-    if (msg.role === "user") {
-      const timeSpan = document.createElement("span");
-      timeSpan.className = "msg-time";
-      timeSpan.textContent = msg.time || "";
-      textDiv.appendChild(timeSpan);
-    }
+  refreshBtn.onclick = () => {
+    // remove old assistant msg and retry
+    chat.messages.splice(idx, 1);
+    renderMessages();
+    sendMessageRetry(originalPrompt);
+  };
+
+  div.appendChild(refreshBtn);
+}
 
     messagesEl.appendChild(div);
   });
 
   messagesEl.scrollTop = messagesEl.scrollHeight;
-  placeScrollButton(); // re-place scroll button on new messages
 }
 
 // ==========================
@@ -875,9 +780,3 @@ async function sendMessageRetry(promptText) {
   })();
 
 }); 
-
-
-
-
-
-
