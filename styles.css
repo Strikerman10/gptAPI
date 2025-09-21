@@ -539,7 +539,8 @@ main-content {
   font-size: 0.75rem;             /* smaller font */
   margin-top: 4px;                /* space between text and time */
   color: var(--primary-contrast); /* use primary contrast color */
-  opacity: 0.8;                   /* a touch lighter so it feels like metadata */
+  opacity: 0.8;   /* a touch lighter so it feels like metadata */
+  white-space: pre-line; /* ✅ needed to render the newline as a break */
 }
 
 #toggleSidebarBtn .icon {
@@ -879,4 +880,5 @@ body.theme-amoled .btn {
   justify-content: center;
   padding-right: 0;
 }
+
 
