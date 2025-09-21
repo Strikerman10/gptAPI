@@ -989,7 +989,22 @@ body.theme-amoled .btn {
   gap: 6px;
 }
 
+.message.assistant {
+  display: flex;
+  flex-direction: column;
+}
 
+/* make the footer sink to the bottom edge */
+.message.assistant .msg-footer {
+  margin-top: auto;       /* pushes footer down */
+  padding-bottom: 2px;    /* ensures tiny breathing room */
+}
+
+.message.assistant .msg-actions-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
 
 
 
