@@ -493,6 +493,7 @@ preview.innerHTML = `
   // 👇 auto-close if mobile
   if (window.innerWidth <= 768) {
     closeSidebar();
+  }
 });
 
       item.appendChild(preview);
@@ -784,4 +785,5 @@ async function sendMessageRetry(promptText) {
   })();
 
 }); 
+
 
