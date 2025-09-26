@@ -691,7 +691,14 @@ async function sendMessageRetry(promptText) {
   // ==========================
   // EVENT LISTENERS
   // ==========================
-  document.getElementById("newChatBtn").addEventListener("click", createNewChat);
+  document.getElementById("newChatBtn").addEventListener("click", () => {
+  createNewChat();
+
+  // ✅ auto-close sidebar on mobile
+  if (window.innerWidth <= 768) {
+    closeSidebar();
+  }
+});
   document.getElementById("sendBtn").addEventListener("click", sendMessage);
   inputEl.addEventListener("keydown", e => { 
     if (e.key === "Enter" && !e.shiftKey) { 
@@ -785,5 +792,6 @@ async function sendMessageRetry(promptText) {
   })();
 
 }); 
+
 
 
