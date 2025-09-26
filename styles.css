@@ -48,6 +48,8 @@ html, body {
   --danger-contrast: #fff;
   --ring: color-mix(in srgb, var(--color-2) 60%, transparent);
   --sidebar-bg: color-mix(in srgb, var(--color-1) 22%, white 78%);
+  --typing-dot-color: #fff; /* white dots on dark backgrounds */
+}
 }
 
 /* ===========================
@@ -71,7 +73,9 @@ body.dark-mode {
   --assistant-bubble-bg: color-mix(in srgb, var(--color-1) 30%, var(--color-4) 70%);
   --assistant-bubble-text: #fff;
   --ring: color-mix(in srgb, var(--color-2) 70%, transparent);
-   --sidebar-bg: var(--surface-2);
+  --sidebar-bg: var(--surface-2);
+  --typing-dot-color: #fff; /* white dots on dark backgrounds */
+}
 }
 
 /* ===========================
@@ -824,7 +828,7 @@ body.theme-amoled .btn {
 .typing-indicator span {
   width: 6px;
   height: 6px;
-  background: #fff;
+  background: var(--typing-dot-color);
   border-radius: 50%;
   display: inline-block;
 
@@ -859,11 +863,11 @@ body.theme-amoled .btn {
 /* Glow pulse (separate, so can stack) */
 @keyframes glow {
   from {
-    box-shadow: 0 0 0px #fff;
+    box-shadow: 0 0 0px var(--typing-dot-color);
     opacity: 0.6;
   }
   to {
-    box-shadow: 0 0 6px #fff;
+    box-shadow: 0 0 6px var(--typing-dot-color);
     opacity: 1;
   }
 }
@@ -880,6 +884,7 @@ body.theme-amoled .btn {
   justify-content: center;
   padding-right: 0;
 }
+
 
 
 
