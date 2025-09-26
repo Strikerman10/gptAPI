@@ -859,11 +859,11 @@ body.theme-amoled .btn {
 /* Glow pulse (separate, so can stack) */
 @keyframes glow {
   from {
-    box-shadow: 0 0 0px var(--assistant-bubble-text);
+    box-shadow: 0 0 0px #fff;
     opacity: 0.6;
   }
   to {
-    box-shadow: 0 0 6px var(--assistant-bubble-text);
+    box-shadow: 0 0 6px #fff;
     opacity: 1;
   }
 }
@@ -880,5 +880,6 @@ body.theme-amoled .btn {
   justify-content: center;
   padding-right: 0;
 }
+
 
 
