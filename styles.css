@@ -824,7 +824,7 @@ body.theme-amoled .btn {
 .typing-indicator span {
   width: 6px;
   height: 6px;
-  background: var(--assistant-bubble-text);
+  background: #fff;
   border-radius: 50%;
   display: inline-block;
 
@@ -880,4 +880,5 @@ body.theme-amoled .btn {
   justify-content: center;
   padding-right: 0;
 }
+
 
