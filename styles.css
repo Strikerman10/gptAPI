@@ -335,7 +335,7 @@ main-content {
 
 /* Assistant bubble */
 .message.assistant {
-  background: linear-gradient(145deg, var(--color-2), var(--color-3));
+  background: linear-gradient(145deg, var(--color-1), var(--color-3));
   color: var(--primary-contrast);
   border-bottom-left-radius: 0.3rem;
   align-self: flex-start;
@@ -882,6 +882,7 @@ body.theme-amoled .btn {
   justify-content: center;
   padding-right: 0;
 }
+
 
 
 
