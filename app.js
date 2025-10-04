@@ -54,78 +54,107 @@ function formatDateTime(date = new Date()) {
 // AUTH CLIENT
 // ==========================
 
-// In-memory token (safer than persistent localStorage; consider httpOnly cookie server-side)
-let authToken = null;
+let authToken = null; // in-memory token
 
-// Obtain JWT from Worker /login
+function authHeaders(extra = {}) {
+  return authToken ? { ...extra, Authorization: `Bearer ${authToken}` } : extra;
+}
+
 async function login(username, password) {
   const res = await fetchWithBackoff(`${WORKER_URL}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password })
   });
-  if (!res.ok) throw new Error("Login failed");
+  if (!res.ok) throw new Error(await res.text());
   const data = await res.json();
-  authToken = data.token || null;
+  authToken = data.token;
   if (!authToken) throw new Error("No token received");
-  // Use the server identity as userId for chat segregation
   localStorage.setItem("chat_user_id", username);
   return true;
 }
 
-function authHeaders(extra = {}) {
-  return authToken
-    ? { ...extra, Authorization: `Bearer ${authToken}` }
-    : extra;
+async function registerUser(username, password) {
+  const res = await fetchWithBackoff(`${WORKER_URL}/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return true;
 }
 
-// Prompt loop to ensure credentials
-async function ensureLogin() {
-  let ok = false;
-  while (!ok) {
-    const u = (prompt("Username:", "") || "").trim();
-    const p = (prompt("Password:", "") || "");
-    if (!u || !p) { alert("Credentials required."); continue; }
+// Modal-based login/register flow
+async function ensureLoginUI() {
+  // Create a simple modal dynamically if it doesn't exist in HTML
+  let modal = document.getElementById("authModal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "authModal";
+    modal.style.cssText = "position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);z-index:9999;";
+    modal.innerHTML = `
+      <div style="background:#fff;color:#000;padding:16px;border-radius:8px;width:320px;max-width:90%;box-shadow:0 10px 30px rgba(0,0,0,0.2);">
+        <h3 style="margin:0 0 12px;">Sign in</h3>
+        <label style="display:block;font-size:14px;margin-bottom:6px;">Username</label>
+        <input id="authUsername" type="text" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;margin-bottom:10px;" />
+        <label style="display:block;font-size:14px;margin-bottom:6px;">Password</label>
+        <input id="authPassword" type="password" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;margin-bottom:14px;" />
+        <div style="display:flex;gap:8px;">
+          <button id="btnLogin" style="flex:1;padding:10px;border:none;border-radius:6px;background:#008080;color:#fff;cursor:pointer;">Log in</button>
+          <button id="btnRegister" style="flex:1;padding:10px;border:1px solid #008080;border-radius:6px;background:#fff;color:#008080;cursor:pointer;">Register</button>
+        </div>
+        <div id="authStatus" style="margin-top:10px;font-size:13px;color:#b94c4c;"></div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
 
-    // Try login first
-    try {
-      ok = await login(u, p);
-      if (ok) {
-        // login() stores username in localStorage and token in memory
-        break;
-      }
-    } catch (e) {
-      // If login failed, offer to register
-      const make = confirm("No account found or wrong password. Create this user now?");
-      if (!make) continue;
+  const uEl = document.getElementById("authUsername");
+  const pEl = document.getElementById("authPassword");
+  const statusEl = document.getElementById("authStatus");
+  const btnLogin = document.getElementById("btnLogin");
+  const btnRegister = document.getElementById("btnRegister");
 
-      // Call /register, then retry /login
+  return new Promise((resolve) => {
+    async function doLogin() {
+      statusEl.textContent = "";
+      const u = (uEl.value || "").trim();
+      const p = pEl.value || "";
+      if (!u || !p) { statusEl.textContent = "Enter username and password."; return; }
+      btnLogin.disabled = btnRegister.disabled = true;
       try {
-        const res = await fetch(`${WORKER_URL}/register`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username: u, password: p })
-        });
-        if (!res.ok) {
-          const text = await res.text();
-          alert("Register failed: " + text);
-          continue;
-        }
-        // Now log in with the same credentials
-        ok = await login(u, p);
-      } catch (err) {
-        alert("Register error: " + err.message);
+        await login(u, p);
+        modal.style.display = "none";
+        resolve(true);
+      } catch (e) {
+        statusEl.textContent = "Login failed. Check details or Register.";
+      } finally {
+        btnLogin.disabled = btnRegister.disabled = false;
       }
     }
-  }
-}
 
+    async function doRegister() {
+      statusEl.textContent = "";
+      const u = (uEl.value || "").trim();
+      const p = pEl.value || "";
+      if (!u || !p) { statusEl.textContent = "Enter username and password."; return; }
+      btnLogin.disabled = btnRegister.disabled = true;
+      try {
+        await registerUser(u, p);
+        await login(u, p);
+        modal.style.display = "none";
+        resolve(true);
+      } catch (e) {
+        statusEl.textContent = "Register failed. Try a different username.";
+      } finally {
+        btnLogin.disabled = btnRegister.disabled = false;
+      }
+    }
 
-function logout() {
-  authToken = null;
-  localStorage.removeItem("chat_user_id");
-  // Optionally clear chats or reload
-  // window.location.reload();
+    btnLogin.onclick = doLogin;
+    btnRegister.onclick = doRegister;
+    pEl.addEventListener("keydown", (e) => { if (e.key === "Enter") doLogin(); });
+  });
 }
 
 // ==========================
@@ -163,7 +192,6 @@ async function chatWithWorker(model, messages) {
 // ==========================
 // STATE
 // ==========================
-let userId = localStorage.getItem("chat_user_id") || null; // will be set after login
 let chats = [];
 let currentChatId = localStorage.getItem("secure_chat_current_id") || null;
 let currentModel = localStorage.getItem("chat_model") || "gpt-5-chat-latest";
@@ -186,13 +214,14 @@ function saveLocal() {
 // Cloud + local save
 function saveChats() {
   saveLocal();
+  const userId = localStorage.getItem("chat_user_id");
   if (userId) {
     saveToWorker(userId, chats).catch(e => console.warn("Cloud save failed:", e));
   }
 }
 
 // ==========================
-// THEME (unchanged from prior patch)
+// THEME (kept from prior version)
 // ==========================
 const palettes = {
   Green: {"--color-1":"#94e8b4","--color-2":"#72bda3","--color-3":"#5e8c61","--color-4":"#4e6151","--color-5":"#3b322c","--color-6":"#800000","--color-7":"#f30000"},
@@ -204,13 +233,11 @@ const palettes = {
   Gray: {"--color-1":"#e0e0e0","--color-2":"#b0b0b0","--color-3":"#4a4a4a","--color-4":"#2c2c2c","--color-5":"#121212","--color-6":"#5c5c3d","--color-7":"#9494b8"},
   Amoled: {"--color-1":"#eaff00","--color-2":"#ffea00","--color-3":"#ffbf00","--color-4":"#fff7dc","--color-5":"#000000","--color-6":"#fff000","--color-7":"#fff999"}
 };
-
 const neutrals = {
   light: {"--bg":"hsl(0 0% 99%)","--surface-1":"hsl(0 0% 98%)","--surface-2":"hsl(0 0% 96%)","--surface-hover":"hsl(0 0% 94%)","--border":"hsl(0 0% 85%)","--text":"hsl(0 0% 10%)","--text-muted":"hsl(0 0% 45%)"},
   dark: {"--bg":"hsl(0 0% 8%)","--surface-1":"hsl(0 0% 12%)","--surface-2":"hsl(0 0% 16%)","--surface-hover":"hsl(0 0% 20%)","--border":"hsl(0 0% 30%)","--text":"hsl(0 0% 92%)","--text-muted":"hsl(0 0% 70%)"},
   amoled: {"--bg":"#000000","--surface-1":"#000000","--surface-2":"#0a0a0a","--surface-hover":"#111111","--border":"#222222","--text":"#000000","--text-muted":"#333333"}
 };
-
 let currentPalette = localStorage.getItem("palette") || "Red";
 let currentMode = localStorage.getItem("mode") || "light";
 
@@ -227,10 +254,10 @@ function applyTheme() {
 }
 
 // ==========================
-// DOM READY
+// APP BOOT
 // ==========================
 document.addEventListener("DOMContentLoaded", () => {
-  // DOM
+  // DOM refs
   const chatListEl = document.getElementById("chatList");
   const messagesEl = document.getElementById("messages");
   const headerEl = document.getElementById("chatHeader")?.querySelector("span");
@@ -248,12 +275,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // Require login before proceeding
-  (async () => {
-    await ensureLogin();
-    userId = localStorage.getItem("chat_user_id");
-  })();
-
   // Auto-resize textarea
   function autoResize() {
     inputEl.style.height = "auto";
@@ -267,7 +288,7 @@ document.addEventListener("DOMContentLoaded", () => {
   backdropEl.className = "sidebar-backdrop";
   document.body.appendChild(backdropEl);
 
-  // Scroll FAB position via ResizeObserver
+  // FAB position via ResizeObserver
   if (scrollTopBtn && inputArea) {
     const ro = new ResizeObserver(entries => {
       for (const entry of entries) {
@@ -277,7 +298,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ro.observe(inputArea);
   }
 
-  // Show/hide FAB on scroll (debounced, passive)
+  // Show/hide FAB on scroll
   messagesEl.addEventListener("scroll", debounce(() => {
     if (!scrollTopBtn) return;
     scrollTopBtn.style.display = messagesEl.scrollTop > 200 ? "flex" : "none";
@@ -287,7 +308,7 @@ document.addEventListener("DOMContentLoaded", () => {
     messagesEl.scrollTo({ top: 0, behavior: "smooth" });
   });
 
-  // Sidebar toggle with icon swap
+  // Sidebar toggle
   const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon");
   const chevronIcon = toggleSidebarBtn.querySelector(".show-icon");
 
@@ -301,7 +322,6 @@ document.addEventListener("DOMContentLoaded", () => {
     hamburgerIcon?.classList.add("hidden");
     chevronIcon?.classList.remove("hidden");
   }
-
   function closeSidebar() {
     if (window.innerWidth <= 768) {
       sidebarEl.classList.remove("open");
@@ -312,17 +332,11 @@ document.addEventListener("DOMContentLoaded", () => {
     hamburgerIcon?.classList.remove("hidden");
     chevronIcon?.classList.add("hidden");
   }
-
   function setInitialState() {
-    if (window.innerWidth <= 768) {
-      closeSidebar();
-    } else {
-      openSidebar();
-      backdropEl.classList.remove("visible");
-    }
+    if (window.innerWidth <= 768) closeSidebar();
+    else { openSidebar(); backdropEl.classList.remove("visible"); }
   }
   setInitialState();
-
   toggleSidebarBtn.addEventListener("click", () => {
     if (window.innerWidth <= 768) {
       sidebarEl.classList.contains("open") ? closeSidebar() : openSidebar();
@@ -330,27 +344,10 @@ document.addEventListener("DOMContentLoaded", () => {
       sidebarEl.classList.contains("collapsed") ? openSidebar() : closeSidebar();
     }
   });
-
   backdropEl.addEventListener("click", closeSidebar);
-
-  // Swipe gestures (mobile)
-  let touchStartX = 0;
-  document.addEventListener("touchstart", e => {
-    if (window.innerWidth > 768) return;
-    touchStartX = e.changedTouches[0].screenX;
-  }, { passive: true });
-
-  document.addEventListener("touchend", e => {
-    if (window.innerWidth > 768) return;
-    const touchEndX = e.changedTouches[0].screenX;
-    const deltaX = touchEndX - touchStartX;
-    if (touchStartX < 50 && deltaX > 60 && !sidebarEl.classList.contains("open")) openSidebar();
-    if (deltaX < -60 && sidebarEl.classList.contains("open")) closeSidebar();
-  }, { passive: true });
 
   // Theme controls
   applyTheme();
-
   if (paletteSelector) {
     paletteSelector.value = currentPalette;
     paletteBtn?.addEventListener("click", () => {
@@ -363,13 +360,11 @@ document.addEventListener("DOMContentLoaded", () => {
       paletteSelector.classList.add("hidden");
     });
   }
-
   if (themeToggleBtn) {
     const darkIcon = themeToggleBtn.querySelector(".dark-icon");
     const lightIcon = themeToggleBtn.querySelector(".light-icon");
     darkIcon?.classList.toggle("hidden", currentMode === "dark");
     lightIcon?.classList.toggle("hidden", currentMode === "light");
-
     themeToggleBtn.addEventListener("click", () => {
       currentMode = currentMode === "light" ? "dark" : "light";
       darkIcon?.classList.toggle("hidden", currentMode === "dark");
@@ -393,11 +388,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function deleteChat(index) {
     if (index < 0 || index >= chats.length) return;
     chats.splice(index, 1);
-    if (!chats.length) {
-      setActiveChatById(null);
-    } else {
-      setActiveChatById(chats[0].id);
-    }
+    if (!chats.length) setActiveChatById(null);
+    else setActiveChatById(chats[0].id);
     saveChats();
     renderChatList();
     renderMessages();
@@ -410,7 +402,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const active = chat.id === currentChatId;
       item.className = "chat-item" + (active ? " selected" : "");
 
-      // mobile-aware truncation
       const isMobile = window.matchMedia("(max-width: 768px)").matches;
       const titleLimit = isMobile ? 45 : 70;
       const subtitleLimit = isMobile ? 40 : 60;
@@ -432,7 +423,6 @@ document.addEventListener("DOMContentLoaded", () => {
       delBtn.addEventListener("click", (e) => { e.stopPropagation(); deleteChat(i); });
 
       item.addEventListener("click", () => {
-        // move clicked chat to top
         const idx = chats.findIndex(c => c.id === chat.id);
         if (idx > -1) {
           const [c] = chats.splice(idx, 1);
@@ -500,14 +490,11 @@ document.addEventListener("DOMContentLoaded", () => {
             <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
           </svg>
         `;
-
-        // find preceding user prompt
         let originalPrompt = "";
         for (let j = i - 1; j >= 0; j--) {
           if (chat.messages[j].role === "user") { originalPrompt = chat.messages[j].content; break; }
         }
         refreshBtn.onclick = () => {
-          // remove current assistant msg and retry
           chat.messages.splice(i, 1);
           renderMessages();
           sendMessageRetry(originalPrompt);
@@ -535,24 +522,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     const chat = chats[idx];
 
-    // push user
     chat.messages.push({ role: "user", content: text, time: formatDateTime() });
 
-    // title from first line
     if (!chat.title || chat.title === "New Chat") {
       const firstLine = text.split(/\r?\n/)[0];
       chat.title = firstLine.length > 40 ? firstLine.slice(0, 40) + "…" : firstLine;
     }
 
-    // typing placeholder
     chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
     renderMessages();
     inputEl.value = "";
-    // reset height after clearing
     inputEl.style.height = "auto";
     saveChats();
 
-    // disable send to avoid rapid repeats
     const sendBtn = document.getElementById("sendBtn");
     const prevDisabled = sendBtn?.disabled;
     if (sendBtn) sendBtn.disabled = true;
@@ -621,21 +603,18 @@ document.addEventListener("DOMContentLoaded", () => {
   // INITIAL LOAD
   // ==========================
   (async () => {
-    // Make sure theme applied
     applyTheme();
 
-    // Ensure we are logged in before fetching
-    await ensureLogin();
-    userId = localStorage.getItem("chat_user_id");
+    // Show modal and wait for login/register success
+    await ensureLoginUI();
+    const userId = localStorage.getItem("chat_user_id");
 
-    // 1) Cloud load
+    // Try to hydrate from cloud
     let hydrated = false;
     try {
       const workerChats = await loadFromWorker(userId);
       if (Array.isArray(workerChats) && workerChats.length) {
         chats = workerChats;
-
-        // restore active chat by id if present
         if (currentChatId && chats.some(c => c.id === currentChatId)) {
           const idx = chats.findIndex(c => c.id === currentChatId);
           if (idx > -1) {
@@ -652,7 +631,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.warn("Could not load from worker:", e);
     }
 
-    // 2) Fallback to local
+    // Fallback to local
     if (!hydrated) {
       const raw = localStorage.getItem("secure_chat_chats");
       if (raw) {
@@ -671,9 +650,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // 3) Render
     renderChatList();
     renderMessages();
   })();
 });
-
