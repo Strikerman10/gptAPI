@@ -70,7 +70,7 @@ async function login(username, password) {
   const data = await res.json();
   authToken = data.token;
   if (!authToken) throw new Error("No token received");
-  localStorage.setItem("chat_user_id", username);
+  localStorage.setItem("chat_user_id", username); // align with Worker subject
   return true;
 }
 
@@ -86,34 +86,16 @@ async function registerUser(username, password) {
 
 // Modal-based login/register flow
 async function ensureLoginUI() {
-  // Create a simple modal dynamically if it doesn't exist in HTML
-  let modal = document.getElementById("authModal");
-  if (!modal) {
-    modal = document.createElement("div");
-    modal.id = "authModal";
-    modal.style.cssText = "position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);z-index:9999;";
-    modal.innerHTML = `
-      <div style="background:#fff;color:#000;padding:16px;border-radius:8px;width:320px;max-width:90%;box-shadow:0 10px 30px rgba(0,0,0,0.2);">
-        <h3 style="margin:0 0 12px;">Sign in</h3>
-        <label style="display:block;font-size:14px;margin-bottom:6px;">Username</label>
-        <input id="authUsername" type="text" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;margin-bottom:10px;" />
-        <label style="display:block;font-size:14px;margin-bottom:6px;">Password</label>
-        <input id="authPassword" type="password" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;margin-bottom:14px;" />
-        <div style="display:flex;gap:8px;">
-          <button id="btnLogin" style="flex:1;padding:10px;border:none;border-radius:6px;background:#008080;color:#fff;cursor:pointer;">Log in</button>
-          <button id="btnRegister" style="flex:1;padding:10px;border:1px solid #008080;border-radius:6px;background:#fff;color:#008080;cursor:pointer;">Register</button>
-        </div>
-        <div id="authStatus" style="margin-top:10px;font-size:13px;color:#b94c4c;"></div>
-      </div>
-    `;
-    document.body.appendChild(modal);
-  }
-
+  const modal = document.getElementById("authModal");
   const uEl = document.getElementById("authUsername");
   const pEl = document.getElementById("authPassword");
   const statusEl = document.getElementById("authStatus");
   const btnLogin = document.getElementById("btnLogin");
   const btnRegister = document.getElementById("btnRegister");
+  const lnkForgot = document.getElementById("lnkForgot"); // optional link
+
+  // Ensure the modal is visible
+  if (modal) modal.style.display = "flex";
 
   return new Promise((resolve) => {
     async function doLogin() {
@@ -126,7 +108,7 @@ async function ensureLoginUI() {
         await login(u, p);
         modal.style.display = "none";
         resolve(true);
-      } catch (e) {
+      } catch {
         statusEl.textContent = "Login failed. Check details or Register.";
       } finally {
         btnLogin.disabled = btnRegister.disabled = false;
@@ -154,6 +136,32 @@ async function ensureLoginUI() {
     btnLogin.onclick = doLogin;
     btnRegister.onclick = doRegister;
     pEl.addEventListener("keydown", (e) => { if (e.key === "Enter") doLogin(); });
+
+    if (lnkForgot) {
+      lnkForgot.onclick = async (e) => {
+        e.preventDefault();
+        statusEl.textContent = "";
+        const u = (uEl.value || "").trim();
+        if (!u) { statusEl.textContent = "Enter your username first."; return; }
+        const adminKey = prompt("Enter admin reset key (leave blank to cancel):", "") || "";
+        if (!adminKey) return;
+        const newPass = prompt("Enter a new password:", "") || "";
+        if (!newPass) return;
+        try {
+          const res = await fetchWithBackoff(`${WORKER_URL}/reset-password`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: u, adminKey, newPassword: newPass })
+          });
+          if (!res.ok) { statusEl.textContent = "Reset failed: " + (await res.text()); return; }
+          await login(u, newPass);
+          modal.style.display = "none";
+          resolve(true);
+        } catch (err) {
+          statusEl.textContent = "Reset error: " + err.message;
+        }
+      };
+    }
   });
 }
 
