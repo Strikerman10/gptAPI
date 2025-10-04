@@ -81,19 +81,45 @@ function authHeaders(extra = {}) {
 
 // Prompt loop to ensure credentials
 async function ensureLogin() {
-  // Replace with a proper modal in production
   let ok = false;
   while (!ok) {
     const u = (prompt("Username:", "") || "").trim();
     const p = (prompt("Password:", "") || "");
     if (!u || !p) { alert("Credentials required."); continue; }
+
+    // Try login first
     try {
       ok = await login(u, p);
+      if (ok) {
+        // login() stores username in localStorage and token in memory
+        break;
+      }
     } catch (e) {
-      alert("Invalid login. Try again.");
+      // If login failed, offer to register
+      const make = confirm("No account found or wrong password. Create this user now?");
+      if (!make) continue;
+
+      // Call /register, then retry /login
+      try {
+        const res = await fetch(`${WORKER_URL}/register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: u, password: p })
+        });
+        if (!res.ok) {
+          const text = await res.text();
+          alert("Register failed: " + text);
+          continue;
+        }
+        // Now log in with the same credentials
+        ok = await login(u, p);
+      } catch (err) {
+        alert("Register error: " + err.message);
+      }
     }
   }
 }
+
 
 function logout() {
   authToken = null;
@@ -650,3 +676,4 @@ document.addEventListener("DOMContentLoaded", () => {
     renderMessages();
   })();
 });
+
