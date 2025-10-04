@@ -50,20 +50,66 @@ function formatDateTime(date = new Date()) {
   return `${hh}:${mi}\n${dd}/${mm}/${yyyy}`;
 }
 
-// userId guard
-function ensureUserId() {
-  let id = localStorage.getItem("chat_user_id");
-  while (!id) {
-    id = (prompt("Enter a username to identify your chats:", "") || "").trim();
-    if (!id) alert("A non-empty username is required.");
-  }
-  localStorage.setItem("chat_user_id", id);
-  return id;
+// ==========================
+// AUTH CLIENT
+// ==========================
+
+// In-memory token (safer than persistent localStorage; consider httpOnly cookie server-side)
+let authToken = null;
+
+// Obtain JWT from Worker /login
+async function login(username, password) {
+  const res = await fetchWithBackoff(`${WORKER_URL}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
+  });
+  if (!res.ok) throw new Error("Login failed");
+  const data = await res.json();
+  authToken = data.token || null;
+  if (!authToken) throw new Error("No token received");
+  // Use the server identity as userId for chat segregation
+  localStorage.setItem("chat_user_id", username);
+  return true;
 }
 
-// Cloud API wrappers
+function authHeaders(extra = {}) {
+  return authToken
+    ? { ...extra, Authorization: `Bearer ${authToken}` }
+    : extra;
+}
+
+// Prompt loop to ensure credentials
+async function ensureLogin() {
+  // Replace with a proper modal in production
+  let ok = false;
+  while (!ok) {
+    const u = (prompt("Username:", "") || "").trim();
+    const p = (prompt("Password:", "") || "");
+    if (!u || !p) { alert("Credentials required."); continue; }
+    try {
+      ok = await login(u, p);
+    } catch (e) {
+      alert("Invalid login. Try again.");
+    }
+  }
+}
+
+function logout() {
+  authToken = null;
+  localStorage.removeItem("chat_user_id");
+  // Optionally clear chats or reload
+  // window.location.reload();
+}
+
+// ==========================
+// CLOUD API WRAPPERS
+// ==========================
 async function loadFromWorker(uid) {
-  const res = await fetchWithBackoff(`${WORKER_URL}/load?userId=${encodeURIComponent(uid)}`, { method: "GET" });
+  const res = await fetchWithBackoff(`${WORKER_URL}/load?userId=${encodeURIComponent(uid)}`, {
+    method: "GET",
+    headers: authHeaders()
+  });
   if (!res.ok) return [];
   return res.json();
 }
@@ -71,7 +117,7 @@ async function loadFromWorker(uid) {
 async function saveToWorker(uid, chats) {
   return fetchWithBackoff(`${WORKER_URL}/save`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify({ userId: uid, chats })
   });
 }
@@ -81,7 +127,7 @@ async function chatWithWorker(model, messages) {
   const payload = messages.filter(m => m.content !== "__TYPING__").slice(-10);
   const res = await fetchWithBackoff(`${WORKER_URL}/chat`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify({ model, messages: payload })
   });
   if (!res.ok) throw new Error(`Worker returned ${res.status}`);
@@ -91,7 +137,7 @@ async function chatWithWorker(model, messages) {
 // ==========================
 // STATE
 // ==========================
-let userId = ensureUserId(); // validated
+let userId = localStorage.getItem("chat_user_id") || null; // will be set after login
 let chats = [];
 let currentChatId = localStorage.getItem("secure_chat_current_id") || null;
 let currentModel = localStorage.getItem("chat_model") || "gpt-5-chat-latest";
@@ -102,7 +148,7 @@ function getActiveChatIndex() {
 }
 function setActiveChatById(id) {
   currentChatId = id;
-  localStorage.setItem("secure_chat_current_id", id);
+  localStorage.setItem("secure_chat_current_id", id || "");
 }
 
 // Local cache
@@ -114,12 +160,13 @@ function saveLocal() {
 // Cloud + local save
 function saveChats() {
   saveLocal();
-  // fire and forget; errors logged in wrapper
-  saveToWorker(userId, chats).catch(e => console.warn("Cloud save failed:", e));
+  if (userId) {
+    saveToWorker(userId, chats).catch(e => console.warn("Cloud save failed:", e));
+  }
 }
 
 // ==========================
-// THEME
+// THEME (unchanged from prior patch)
 // ==========================
 const palettes = {
   Green: {"--color-1":"#94e8b4","--color-2":"#72bda3","--color-3":"#5e8c61","--color-4":"#4e6151","--color-5":"#3b322c","--color-6":"#800000","--color-7":"#f30000"},
@@ -174,6 +221,12 @@ document.addEventListener("DOMContentLoaded", () => {
     console.warn("Missing required DOM elements");
     return;
   }
+
+  // Require login before proceeding
+  (async () => {
+    await ensureLogin();
+    userId = localStorage.getItem("chat_user_id");
+  })();
 
   // Auto-resize textarea
   function autoResize() {
@@ -269,9 +322,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (deltaX < -60 && sidebarEl.classList.contains("open")) closeSidebar();
   }, { passive: true });
 
-  // ==========================
-  // THEME CONTROLS
-  // ==========================
+  // Theme controls
   applyTheme();
 
   if (paletteSelector) {
@@ -315,11 +366,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function deleteChat(index) {
     if (index < 0 || index >= chats.length) return;
-    const removed = chats.splice(index, 1)[0];
+    chats.splice(index, 1);
     if (!chats.length) {
       setActiveChatById(null);
     } else {
-      // keep first chat active after deletion
       setActiveChatById(chats[0].id);
     }
     saveChats();
@@ -472,7 +522,8 @@ document.addEventListener("DOMContentLoaded", () => {
     chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
     renderMessages();
     inputEl.value = "";
-    autoResize();
+    // reset height after clearing
+    inputEl.style.height = "auto";
     saveChats();
 
     // disable send to avoid rapid repeats
@@ -544,6 +595,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // INITIAL LOAD
   // ==========================
   (async () => {
+    // Make sure theme applied
+    applyTheme();
+
+    // Ensure we are logged in before fetching
+    await ensureLogin();
+    userId = localStorage.getItem("chat_user_id");
+
     // 1) Cloud load
     let hydrated = false;
     try {
@@ -553,7 +611,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // restore active chat by id if present
         if (currentChatId && chats.some(c => c.id === currentChatId)) {
-          // move active chat to top
           const idx = chats.findIndex(c => c.id === currentChatId);
           if (idx > -1) {
             const [active] = chats.splice(idx, 1);
@@ -583,7 +640,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (!chats.length) {
         createNewChat();
-      } else {
+      } else if (userId) {
         saveToWorker(userId, chats).catch(() => {});
       }
     }
