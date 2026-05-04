@@ -18,7 +18,7 @@ if (!userId) {
 
 let chats = [];
 let currentIndex = null;
-let currentModel = localStorage.getItem("chat_model") || "gpt-5.4-mini";
+let currentModel = localStorage.getItem("chat_model") || "gpt-5.5";
 
 document.addEventListener("DOMContentLoaded", () => {
   const chatListEl = document.getElementById("chatList");
