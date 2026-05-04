@@ -524,7 +524,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const data = await res.json();
-      const answer = data?.choices?.[0]?.message?.content || "No response";
+      const answer =
+  data?.output_text ||
+  (data?.output && data.output[0]?.content && data.output[0].content[0]?.text) ||
+  "No response";
 
       chat.messages[chat.messages.length - 1] = {
         role: "assistant",
@@ -578,7 +581,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const data = await res.json();
-      const answer = data?.choices?.[0]?.message?.content || "No response";
+      const answer =
+  data?.output_text ||
+  (data?.output && data.output[0]?.content && data.output[0].content[0]?.text) ||
+  "No response";
 
       chat.messages[chat.messages.length - 1] = {
         role: "assistant",
