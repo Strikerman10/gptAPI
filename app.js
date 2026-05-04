@@ -19,7 +19,7 @@ if (!userId) {
 
 let chats = [];
 let currentIndex = null;
-let currentModel = localStorage.getItem("chat_model") || "gpt-5.1-codex-mini";
+let currentModel = localStorage.getItem("chat_model") || "gpt-5-chat-latest";
 
 document.addEventListener("DOMContentLoaded", () => {
   // DOM elements
