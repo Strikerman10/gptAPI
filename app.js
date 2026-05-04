@@ -4,10 +4,9 @@
 const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
 
 // Temporary user ID: will be asked once then stored in localStorage
-let userId = localStorage.getItem("chat_user_id");
-if (!userId) {
-  userId = prompt("Enter a username to identify your chats:", "");
-  localStorage.setItem("chat_user_id", userId);
+// simple deterministic ID (example only)
+let userId = prompt("Enter your permanent username:", "");
+localStorage.setItem("chat_user_id", userId.trim().toLowerCase());
    // 👇 Immediately try loading chats for this new user
   (async () => {
     await loadChatsFromWorker();
