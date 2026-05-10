@@ -468,11 +468,15 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         }
 
-        refreshBtn.onclick = () => {
-          chat.messages.splice(idx, 1);
-          renderMessages();
-          sendMessageRetry(originalPrompt);
-        };
+       refreshBtn.onclick = () => {
+  // Remove the assistant message only
+  chat.messages.splice(idx, 1);
+
+  // If the previous message is the matching user prompt, keep it
+  // and resend from the existing chat history
+  renderMessages();
+  sendMessageRetry();
+};
 
         div.appendChild(refreshBtn);
       }
@@ -548,62 +552,59 @@ document.addEventListener("DOMContentLoaded", () => {
     renderChatList();
   }
 
-  async function sendMessageRetry(promptText) {
-    if (!promptText) return;
-    if (currentIndex === null) createNewChat();
-    const chat = chats[currentIndex];
+ async function sendMessageRetry() {
+  if (currentIndex === null) createNewChat();
+  const chat = chats[currentIndex];
 
-    const userMessage = { role: "user", content: promptText, time: formatDateTime() };
-    chat.messages.push(userMessage);
+  // Add typing indicator only
+  chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
+  renderMessages();
+  saveChats();
+  saveChatsToWorker();
 
-    chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
-    renderMessages();
-    saveChats();
-    saveChatsToWorker();
+  try {
+    const cleanMessages = chat.messages
+      .filter(m => m.content !== "__TYPING__")
+      .slice(-10);
 
-    try {
-      const cleanMessages = chat.messages
-        .filter(m => m.content !== "__TYPING__")
-        .slice(-10);
+    const res = await fetch(`${WORKER_URL}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: currentModel,
+        messages: cleanMessages,
+      }),
+    });
 
-      const res = await fetch(`${WORKER_URL}/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: currentModel,
-          messages: cleanMessages,
-        }),
-      });
-
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(`Worker returned ${res.status}: ${errText}`);
-      }
-
-      const data = await res.json();
-      const answer =
-  data?.output_text ||
-  (data?.output && data.output[0]?.content && data.output[0].content[0]?.text) ||
-  "No response";
-
-      chat.messages[chat.messages.length - 1] = {
-        role: "assistant",
-        content: answer,
-        time: formatDateTime(),
-      };
-    } catch (e) {
-      chat.messages[chat.messages.length - 1] = {
-        role: "assistant",
-        content: "Error: " + e.message,
-        time: formatDateTime(),
-      };
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`Worker returned ${res.status}: ${errText}`);
     }
 
-    saveChats();
-    saveChatsToWorker();
-    renderMessages();
-    renderChatList();
+    const data = await res.json();
+    const answer =
+      data?.output_text ||
+      (data?.output && data.output[0]?.content && data.output[0].content[0]?.text) ||
+      "No response";
+
+    chat.messages[chat.messages.length - 1] = {
+      role: "assistant",
+      content: answer,
+      time: formatDateTime(),
+    };
+  } catch (e) {
+    chat.messages[chat.messages.length - 1] = {
+      role: "assistant",
+      content: "Error: " + e.message,
+      time: formatDateTime(),
+    };
   }
+
+  saveChats();
+  saveChatsToWorker();
+  renderMessages();
+  renderChatList();
+}
 
   document.getElementById("newChatBtn").addEventListener("click", () => {
     createNewChat();
