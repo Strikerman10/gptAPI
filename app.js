@@ -3,28 +3,61 @@
 // ==========================
 const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
 
+let authToken = localStorage.getItem("auth_token");
+
 // Temporary user ID: will be asked once then stored in localStorage
 let userId = localStorage.getItem("chat_user_id");
-if (!userId) {
-  userId = prompt("Enter a username to identify your chats:", "");
-  localStorage.setItem("chat_user_id", userId);
-  (async () => {
-    await loadChatsFromWorker();
-    loadChats();
-    renderChatList();
-    renderMessages();
-  })();
-}
 
 let chats = [];
 let currentIndex = null;
 let currentModel = localStorage.getItem("chat_model") || "gpt-5.4-mini";
+
+function authHeaders(extra = {}) {
+  return {
+    ...extra,
+    Authorization: `Bearer ${authToken || ""}`
+  };
+}
+
+async function login(password) {
+  const res = await fetch(`${WORKER_URL}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password })
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Login failed");
+  }
+
+  const data = await res.json();
+  authToken = data.token;
+  localStorage.setItem("auth_token", authToken);
+}
+
+function ensureUserId() {
+  if (!userId) {
+    userId = prompt("Enter a username to identify your chats:", "");
+    if (!userId) {
+      alert("You must enter a username to continue");
+      return false;
+    }
+    localStorage.setItem("chat_user_id", userId);
+  }
+  return true;
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   const chatListEl = document.getElementById("chatList");
   const messagesEl = document.getElementById("messages");
   const headerEl = document.getElementById("chatHeader").querySelector("span");
   const inputEl = document.getElementById("input");
+
+  const loginScreen = document.getElementById("loginScreen");
+  const passwordInput = document.getElementById("passwordInput");
+  const loginBtn = document.getElementById("loginBtn");
+  const loginError = document.getElementById("loginError");
 
   function autoResize() {
     inputEl.style.height = "auto";
@@ -263,7 +296,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function loadChats() {
     try {
-      const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`);
+      const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`, {
+        headers: authHeaders()
+      });
       if (res.ok) {
         const workerChats = await res.json();
         if (Array.isArray(workerChats) && workerChats.length) {
@@ -303,11 +338,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function saveChatsToWorker() {
-    if (!userId) return;
+    if (!userId || !authToken) return;
     try {
       const res = await fetch(`${WORKER_URL}/save`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: authHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({ userId, chats }),
       });
       if (!res.ok) console.warn("Worker save failed:", await res.text());
@@ -327,7 +362,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function loadChatsFromWorker() {
     try {
-      const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`);
+      const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`, {
+        headers: authHeaders()
+      });
       if (!res.ok) return;
       const workerChats = await res.json();
       if (Array.isArray(workerChats) && workerChats.length) {
@@ -460,23 +497,11 @@ document.addEventListener("DOMContentLoaded", () => {
           </svg>
         `;
 
-        let originalPrompt = "";
-        for (let j = idx - 1; j >= 0; j--) {
-          if (chat.messages[j].role === "user") {
-            originalPrompt = chat.messages[j].content;
-            break;
-          }
-        }
-
-       refreshBtn.onclick = () => {
-  // Remove the assistant message only
-  chat.messages.splice(idx, 1);
-
-  // If the previous message is the matching user prompt, keep it
-  // and resend from the existing chat history
-  renderMessages();
-  sendMessageRetry();
-};
+        refreshBtn.onclick = () => {
+          chat.messages.splice(idx, 1);
+          renderMessages();
+          sendMessageRetry();
+        };
 
         div.appendChild(refreshBtn);
       }
@@ -515,7 +540,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const res = await fetch(`${WORKER_URL}/chat`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: authHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({
           model: currentModel,
           messages: cleanMessages
@@ -529,9 +554,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const data = await res.json();
       const answer =
-  data?.output_text ||
-  (data?.output && data.output[0]?.content && data.output[0].content[0]?.text) ||
-  "No response";
+        data?.output_text ||
+        (data?.output && data.output[0]?.content && data.output[0].content[0]?.text) ||
+        "No response";
 
       chat.messages[chat.messages.length - 1] = {
         role: "assistant",
@@ -552,138 +577,29 @@ document.addEventListener("DOMContentLoaded", () => {
     renderChatList();
   }
 
- async function sendMessageRetry() {
-  if (currentIndex === null) createNewChat();
-  const chat = chats[currentIndex];
+  async function sendMessageRetry() {
+    if (currentIndex === null) createNewChat();
+    const chat = chats[currentIndex];
 
-  // Add typing indicator only
-  chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
-  renderMessages();
-  saveChats();
-  saveChatsToWorker();
-
-  try {
-    const cleanMessages = chat.messages
-      .filter(m => m.content !== "__TYPING__")
-      .slice(-10);
-
-    const res = await fetch(`${WORKER_URL}/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: currentModel,
-        messages: cleanMessages,
-      }),
-    });
-
-    if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(`Worker returned ${res.status}: ${errText}`);
-    }
-
-    const data = await res.json();
-    const answer =
-      data?.output_text ||
-      (data?.output && data.output[0]?.content && data.output[0].content[0]?.text) ||
-      "No response";
-
-    chat.messages[chat.messages.length - 1] = {
-      role: "assistant",
-      content: answer,
-      time: formatDateTime(),
-    };
-  } catch (e) {
-    chat.messages[chat.messages.length - 1] = {
-      role: "assistant",
-      content: "Error: " + e.message,
-      time: formatDateTime(),
-    };
-  }
-
-  saveChats();
-  saveChatsToWorker();
-  renderMessages();
-  renderChatList();
-}
-
-  document.getElementById("newChatBtn").addEventListener("click", () => {
-    createNewChat();
-    if (window.innerWidth <= 768) closeSidebar();
-  });
-  document.getElementById("sendBtn").addEventListener("click", sendMessage);
-  inputEl.addEventListener("keydown", e => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  });
-
-  paletteSelector.value = currentPalette;
-  const darkIcon  = themeToggleBtn.querySelector(".dark-icon");
-  const lightIcon = themeToggleBtn.querySelector(".light-icon");
-  darkIcon.classList.toggle("hidden", currentMode === "dark");
-  lightIcon.classList.toggle("hidden", currentMode === "light");
-
-  themeToggleBtn.addEventListener("click", () => {
-    currentMode = currentMode === "light" ? "dark" : "light";
-    darkIcon.classList.toggle("hidden", currentMode === "dark");
-    lightIcon.classList.toggle("hidden", currentMode === "light");
-    applyTheme();
-  });
-
-  paletteBtn.addEventListener("click", () => {
-    paletteSelector.classList.toggle("hidden");
-    if (!paletteSelector.classList.contains("hidden")) {
-      paletteSelector.focus();
-    }
-  });
-
-  paletteSelector.addEventListener("change", e => {
-    currentPalette = e.target.value;
-    applyTheme();
-    paletteSelector.classList.add("hidden");
-  });
-
-  (async () => {
-    applyTheme();
-
-    if (!userId) {
-      userId = prompt("Enter a username to identify your chats:", "");
-      if (!userId) {
-        alert("You must enter a username to continue");
-        return;
-      }
-      localStorage.setItem("chat_user_id", userId);
-    }
-
-    let gotFromWorker = false;
-    try {
-      const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`);
-      if (res.ok) {
-        const workerChats = await res.json();
-        if (Array.isArray(workerChats) && workerChats.length) {
-          chats = workerChats;
-          const savedIndex = Number(localStorage.getItem("secure_chat_index"));
-          if (!isNaN(savedIndex) && savedIndex >= 0 && savedIndex < chats.length) {
-            const [activeChat] = chats.splice(savedIndex, 1);
-            chats.unshift(activeChat);
-            currentIndex = 0;
-          } else {
-            currentIndex = 0;
-          }
-          saveChats();
-          gotFromWorker = true;
-        }
-      }
-    } catch (e) {
-      console.warn("Could not load from worker:", e);
-    }
-
-    if (!gotFromWorker) {
-      loadChats();
-    }
-
-    renderChatList();
+    chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
     renderMessages();
-  })();
-});
+    saveChats();
+    saveChatsToWorker();
+
+    try {
+      const cleanMessages = chat.messages
+        .filter(m => m.content !== "__TYPING__")
+        .slice(-10);
+
+      const res = await fetch(`${WORKER_URL}/chat`, {
+        method: "POST",
+        headers: authHeaders({ "Content-Type": "application/json" }),
+        body: JSON.stringify({
+          model: currentModel,
+          messages: cleanMessages,
+        }),
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`Worker returned ${res.status}: ${
