@@ -400,6 +400,52 @@ main-content {
 }
 
 /* ===========================
+  Code Copy Button
+   =========================== */
+
+.code-block-wrapper {
+  position: relative;
+  margin: 6px 0;
+}
+
+.copy-code-btn {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  padding: 6px 7px;
+  font-size: 12px;
+  border: none;
+  border-radius: 10px;
+  background: var(--color-1);
+  color: var(--primary-contrast);
+  cursor: pointer;
+  z-index: 2;
+}
+
+.code-block-wrapper pre {
+  margin: 0;
+  padding: 10px 12px 12px;
+  padding-top: 20px; /* smaller gap */
+  border-radius: 12px;
+  background: var(--color-1);
+  border: 1px solid var(--border);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.code-block-wrapper code {
+  font-family: monospace;
+  color: var(--text);
+}
+
+.code-language {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+/* ===========================
    Input Area
    =========================== */
 .input-area {
@@ -895,5 +941,3 @@ body.theme-amoled .btn {
   justify-content: center;
   padding-right: 0;
 }
-
-
