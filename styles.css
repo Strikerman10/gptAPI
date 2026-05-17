@@ -357,25 +357,33 @@ main-content {
    Assistant Retry Refresh Button
    =========================== */
 .refresh-button {
-  display: inline-flex;
+  position: absolute;
+  bottom: 16px;               /* a bit higher up so it "floats" */
+  left: 16px;
+  width: 32px;                /* control size */
+  height: 32px;               /* control size */
+  background: var(--color-6); /* your chosen theme color */
+  border: none;
+  border-radius: 50%;         /* makes it perfectly circular */
+  color: #fff;                /* white icon for contrast */
+  font-size: 20px;            /* make the refresh icon larger */
+  display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 7px 12px;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.03);
-  color: #444;
+  justify-content: center;
   cursor: pointer;
-  font-size: 13px;
-  line-height: 1;
-  transition: background 0.15s ease, transform 0.1s ease, border-color 0.15s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* floating effect */
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .refresh-button:hover {
-  background: rgba(0, 0, 0, 0.06);
-  border-color: rgba(0, 0, 0, 0.18);
+  background: var(--color-7);                      /* hover color */
+  transform: scale(1.1) rotate(90deg);            /* hover interaction */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);      /* stronger shadow on hover */
 }
 
+.refresh-button svg {
+  pointer-events: none; /* click goes to button */
+}
 
 /* ===========================
    Input Area
