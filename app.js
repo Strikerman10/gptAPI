@@ -66,6 +66,49 @@ document.addEventListener("DOMContentLoaded", () => {
   const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon");
   const chevronIcon   = toggleSidebarBtn.querySelector(".show-icon");
 
+function escapeHTML(str) {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function renderMessageContent(content) {
+  const parts = content.split(/```([\s\S]*?)```/g);
+  let html = "";
+
+  for (let i = 0; i < parts.length; i++) {
+    if (i % 2 === 0) {
+      // normal text
+      html += `<div class="msg-paragraph">${escapeHTML(parts[i]).replace(/\n/g, "<br>")}</div>`;
+    } else {
+      // code block
+      let code = parts[i].trim();
+
+      // remove optional language line like "js\n"
+      const firstLineBreak = code.indexOf("\n");
+      let language = "";
+      if (firstLineBreak !== -1) {
+        const possibleLang = code.slice(0, firstLineBreak).trim();
+        if (/^[a-zA-Z0-9_-]+$/.test(possibleLang)) {
+          language = possibleLang;
+          code = code.slice(firstLineBreak + 1);
+        }
+      }
+
+      html += `
+        <div class="code-block-wrapper" data-code="${encodeURIComponent(code)}">
+          <button class="copy-code-btn" type="button">Copy</button>
+          ${language ? `<div class="code-language">${language}</div>` : ""}
+          <pre><code>${escapeHTML(code)}</code></pre>
+        </div>
+      `;
+    }
+  }
+
+  return html;
+}
+  
   function openSidebar() {
     if (window.innerWidth <= 768) {
       sidebarEl.classList.add("open");
@@ -442,8 +485,12 @@ function renderMessages() {
         </div>
       `;
     } else {
-      textDiv.textContent = msg.content;
-    }
+  if (msg.role === "assistant") {
+    textDiv.innerHTML = renderMessageContent(msg.content);
+  } else {
+    textDiv.textContent = msg.content;
+  }
+}
 
     const timeDiv = document.createElement("div");
     timeDiv.className = "msg-time";
@@ -542,6 +589,25 @@ function renderMessages() {
     messagesEl.appendChild(wrapper);
   });
 
+    messagesEl.querySelectorAll(".copy-code-btn").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const wrapper = btn.closest(".code-block-wrapper");
+      const code = decodeURIComponent(wrapper.dataset.code);
+
+      try {
+        await navigator.clipboard.writeText(code);
+        const oldText = btn.textContent;
+        btn.textContent = "Copied!";
+        setTimeout(() => {
+          btn.textContent = oldText;
+        }, 1200);
+      } catch (err) {
+        console.warn("Copy failed:", err);
+        alert("Could not copy code.");
+      }
+    });
+  });
+  
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
