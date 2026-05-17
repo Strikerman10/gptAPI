@@ -21,7 +21,7 @@ html, body {
   --color-4: #5a0000; /* dark neutral */
   --color-5: #1a0a0a; /* very dark base */
   --color-6: #008080; /* deep maroon (special actions) */
-  --color-7: #00f3f3; /*Hover over color*/
+  --color-7: #00f3f3; /* Hover over color */
 }
 
 /* ===========================
@@ -356,33 +356,47 @@ main-content {
 /* ===========================
    Assistant Retry Refresh Button
    =========================== */
-.refresh-button {
-  position: absolute;
-  bottom: 16px;               /* a bit higher up so it "floats" */
-  left: 16px;
-  width: 32px;                /* control size */
-  height: 32px;               /* control size */
-  background: var(--color-6); /* your chosen theme color */
-  border: none;
-  border-radius: 50%;         /* makes it perfectly circular */
-  color: #fff;                /* white icon for contrast */
-  font-size: 20px;            /* make the refresh icon larger */
+.message-wrapper {
   display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.message-wrapper.assistant {
+  align-items: flex-start;
+}
+
+.refresh-row {
+  margin-top: 6px;
+  padding-left: 8px;
+}
+
+.refresh-pill {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--color-3);
+  background: var(--color-2);
+  color: var(--primary-contrast);
+  font-size: 14px;
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* floating effect */
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-.refresh-button:hover {
-  background: var(--color-7);                      /* hover color */
-  transform: scale(1.1) rotate(90deg);            /* hover interaction */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);      /* stronger shadow on hover */
+.refresh-pill:hover {
+  background: var(--color-3);
+  border-color: var(--color-4);
 }
 
-.refresh-button svg {
-  pointer-events: none; /* click goes to button */
+.refresh-pill:active {
+  transform: scale(0.98);
+}
+
+.refresh-pill svg {
+  flex-shrink: 0;
 }
 
 /* ===========================
@@ -881,6 +895,5 @@ body.theme-amoled .btn {
   justify-content: center;
   padding-right: 0;
 }
-
 
 
