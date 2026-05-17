@@ -446,45 +446,43 @@ document.addEventListener("DOMContentLoaded", () => {
       textDiv.appendChild(timeDiv);
       div.appendChild(textDiv);
 
-if (msg.role === "assistant" && msg.content !== "__TYPING__") {
-  const messageWrapper = document.createElement("div");
-  messageWrapper.className = "assistant-message-wrapper";
+      if (msg.role === "assistant" && msg.content !== "__TYPING__") {
+        const refreshBtn = document.createElement("button");
+        refreshBtn.title = "Retry this user prompt";
+        refreshBtn.className = "refresh-button";
+        refreshBtn.innerHTML = `
+          <svg viewBox="0 0 24 24" width="16" height="16"
+               fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+        `;
 
-  const div = document.createElement("div");
-  div.className = "assistant-response";
-  div.innerHTML = msg.content;
+        let originalPrompt = "";
+        for (let j = idx - 1; j >= 0; j--) {
+          if (chat.messages[j].role === "user") {
+            originalPrompt = chat.messages[j].content;
+            break;
+          }
+        }
 
-  const refreshBtn = document.createElement("button");
-  refreshBtn.title = "Retry this user prompt";
-  refreshBtn.className = "refresh-button";
-  refreshBtn.innerHTML = `
-    <svg viewBox="0 0 24 24" width="16" height="16"
-         fill="none" stroke="currentColor" stroke-width="2"
-         stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="23 4 23 10 17 10"></polyline>
-      <polyline points="1 20 1 14 7 14"></polyline>
-      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-    </svg>
-    <span>Refresh</span>
-  `;
+       refreshBtn.onclick = () => {
+  // Remove the assistant message only
+  chat.messages.splice(idx, 1);
 
-  refreshBtn.onclick = () => {
-    chat.messages.splice(idx, 1);
-    renderMessages();
-    sendMessageRetry();
-  };
+  // If the previous message is the matching user prompt, keep it
+  // and resend from the existing chat history
+  renderMessages();
+  sendMessageRetry();
+};
 
-  const refreshWrap = document.createElement("div");
-  refreshWrap.className = "refresh-pill-container";
-  refreshWrap.appendChild(refreshBtn);
+        div.appendChild(refreshBtn);
+      }
 
-  messageWrapper.appendChild(div);
-  messageWrapper.appendChild(refreshWrap);
-
-  messagesEl.appendChild(messageWrapper);
-} else {
-  messagesEl.appendChild(div);
-}
+      messagesEl.appendChild(div);
+    });
 
     messagesEl.scrollTop = messagesEl.scrollHeight;
   }
@@ -554,7 +552,7 @@ if (msg.role === "assistant" && msg.content !== "__TYPING__") {
     renderChatList();
   }
 
-async function sendMessageRetry() {
+ async function sendMessageRetry() {
   if (currentIndex === null) createNewChat();
   const chat = chats[currentIndex];
 
