@@ -8,26 +8,26 @@
 html, body {
   height: 100%;
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
 }
 
 /* ===========================
-   🎨 MASTER THEME COLORS
+   THEME VARIABLES
    =========================== */
 :root {
-  --color-1: #e07b7b; /* light accent */
-  --color-2: #b94c4c; /* mid accent */
-  --color-3: #8b0000; /* primary green */
-  --color-4: #5a0000; /* dark neutral */
-  --color-5: #1a0a0a; /* very dark base */
-  --color-6: #008080; /* deep maroon (special actions) */
-  --color-7: #00f3f3; /* Hover over color */
-}
+  --color-1: #e07b7b;
+  --color-2: #b94c4c;
+  --color-3: #8b0000;
+  --color-4: #5a0000;
+  --color-5: #1a0a0a;
+  --color-6: #008080;
+  --color-7: #00f3f3;
 
-/* ===========================
-   Derived Palette (Light)
-   =========================== */
-:root {
   --bg: #fff;
   --surface-1: color-mix(in srgb, var(--color-1) 10%, white 90%);
   --surface-2: color-mix(in srgb, var(--color-1) 15%, white 85%);
@@ -48,17 +48,14 @@ html, body {
   --danger-contrast: #fff;
   --ring: color-mix(in srgb, var(--color-2) 60%, transparent);
   --sidebar-bg: color-mix(in srgb, var(--color-1) 22%, white 78%);
-  --typing-dot-color: #fff; /* white dots on dark backgrounds */
+  --typing-dot-color: #fff;
 }
 
-/* ===========================
-   Derived Palette (Dark Mode)
-   =========================== */
 body.dark-mode {
   --bg: var(--color-5);
   --surface-1: color-mix(in srgb, var(--color-4) 80%, black 20%);
   --surface-2: color-mix(in srgb, var(--color-4) 65%, black 35%);
-  --surface-3: color-mix(in srgb, var(--color-6) 35%, white 65%); 
+  --surface-3: color-mix(in srgb, var(--color-6) 35%, white 65%);
   --surface-hover: color-mix(in srgb, var(--color-4) 50%, black 50%);
   --border: color-mix(in srgb, var(--color-4) 40%, black 60%);
   --text: #f2f2f2;
@@ -73,12 +70,9 @@ body.dark-mode {
   --assistant-bubble-text: #fff;
   --ring: color-mix(in srgb, var(--color-2) 70%, transparent);
   --sidebar-bg: var(--surface-2);
-  --typing-dot-color: #fff; /* white dots on dark backgrounds */
+  --typing-dot-color: #fff;
 }
 
-/* ===========================
-   Base Setup
-   =========================== */
 html {
   color-scheme: light;
 }
@@ -87,37 +81,34 @@ body.dark-mode {
   color-scheme: dark;
 }
 
-body {
-  background: var(--bg);
-  color: var(--text);
-}
-
 /* ===========================
    Layout
    =========================== */
 .app-container {
   display: flex;
-  height: 100dvh;
+  height: 100vh;
   width: 100%;
   overflow: hidden;
 }
 
 .sidebar {
   flex: 0 0 30%;
-  min-width: 150px;
+  min-width: 200px;
   max-width: 400px;
-  transition: width 0.3s ease, opacity 0.3s ease;
-  background-color: var(--sidebar-bg);
-  border-right: 1px solid #aaa;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   min-height: 0;
   color: var(--text);
+  transition: width 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
 }
 
-.sidebar.hidden {
-  width: 0;
-  opacity: 0;
+.sidebar.collapsed {
+  width: 60px;
+  min-width: 60px;
+  max-width: 60px;
+  overflow: hidden;
 }
 
 .sidebar-header {
@@ -139,16 +130,21 @@ body {
   fill: currentColor;
 }
 
-main-content {
+.main-content,
+.chat-window {
   flex: 1;
   min-width: 0;
-  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-2);
+  border-left: 1px solid var(--border);
   transition: margin-left 0.3s ease;
-  margin-left: 260px;  /* matches expanded sidebar */
+  margin-left: 260px;
 }
 
-/* When sidebar is collapsed */
-.sidebar.collapsed ~ .main-content {
+/* desktop collapsed sidebar shift */
+.sidebar.collapsed ~ .main-content,
+.sidebar.collapsed ~ .chat-window {
   margin-left: 60px;
 }
 
@@ -168,7 +164,6 @@ main-content {
   transform: translateY(-2px);
 }
 
-/* Hover effect only on devices that actually support hover */
 @media (hover: hover) and (pointer: fine) {
   .new-chat:hover {
     background: var(--color-7);
@@ -204,6 +199,11 @@ main-content {
 
 .chat-item:hover {
   background: var(--surface-hover);
+}
+
+.chat-preview {
+  min-width: 0;
+  flex: 1;
 }
 
 .chat-title {
@@ -252,17 +252,9 @@ main-content {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
-.chat-window {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  background: var(--surface-2);
-  border-left: 1px solid var(--border-color, #aaa);
-}
-
 .messages {
   flex: 1;
-  min-height: 0;          /* added: prevents flex child from blowing up */
+  min-height: 0;
   padding: 16px;
   overflow-y: auto;
   display: flex;
@@ -277,63 +269,40 @@ main-content {
   margin-top: 2em;
 }
 
+/* ===========================
+   Messages
+   =========================== */
+.message-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.message-wrapper.assistant {
+  align-items: flex-start;
+}
+
 .message {
   max-width: 85%;
   padding: 0.75rem 1rem;
   border-radius: 1.25rem;
   line-height: 1.4;
-
-  white-space: pre-wrap;          /* preserve line breaks, allow wrapping  */
-  word-break: break-word;         /* legacy support for breaking long chunks */
-  overflow-wrap: anywhere;        /* modern way: break even without spaces  */
-
-  min-width: 0;                   /* lets it shrink inside flex containers */
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  min-width: 0;
   font-size: 0.95rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .message.user {
-  background: var(--color-1);
-  color: var(--primary-contrast);
+  background: linear-gradient(145deg, var(--color-1), var(--color-2));
+  color: var(--user-bubble-text, #000);
   border-bottom-right-radius: 0.3rem;
   align-self: flex-end;
+  animation: fadeSlideInRight 0.35s ease-out;
 }
 
-.message.assistant {
-  background: var(--color-2);
-  color: var(--primary-contrast);
-  border-bottom-left-radius: 0.3rem;
-  align-self: flex-start;
-
-  position: relative;     /* so child can be absolutely positioned */
-  padding-bottom: 48px;   /* make room at bottom for refresh button */
-}
-
-/* === Message Animations & Gradients === */
-
-/* Keyframes */
-@keyframes fadeSlideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-@keyframes fadeSlideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-/* Assistant bubble */
 .message.assistant {
   background: linear-gradient(145deg, var(--color-2), var(--color-3));
   color: var(--primary-contrast);
@@ -344,26 +313,14 @@ main-content {
   animation: fadeSlideInLeft 0.35s ease-out;
 }
 
-/* User bubble */
-.message.user {
-  background: linear-gradient(145deg, var(--color-1), var(--color-2));
-  color: var(--user-bubble-text, #000);
-  border-bottom-right-radius: 0.3rem;
-  align-self: flex-end;
-  animation: fadeSlideInRight 0.35s ease-out;
+@keyframes fadeSlideInLeft {
+  from { opacity: 0; transform: translateX(-15px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
-/* ===========================
-   Assistant Retry Refresh Button
-   =========================== */
-.message-wrapper {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 12px;
-}
-
-.message-wrapper.assistant {
-  align-items: flex-start;
+@keyframes fadeSlideInRight {
+  from { opacity: 0; transform: translateX(15px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .refresh-row {
@@ -399,10 +356,60 @@ main-content {
   flex-shrink: 0;
 }
 
-/* ===========================
-  Code Copy Button
-   =========================== */
+.message .msg-time {
+  display: block;
+  text-align: right;
+  font-size: 0.75rem;
+  margin-top: 4px;
+  color: var(--primary-contrast);
+  opacity: 0.8;
+  white-space: pre-line;
+}
 
+.typing-indicator {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.typing-indicator span {
+  width: 6px;
+  height: 6px;
+  background: var(--typing-dot-color);
+  border-radius: 50%;
+  display: inline-block;
+  animation: bounceWiggle 1.2s infinite, glow 1.5s infinite alternate;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s, 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s, 0.4s;
+}
+
+@keyframes bounceWiggle {
+  0%, 80%, 100% { transform: scale(0) translateX(0); }
+  40% { transform: scale(1) translateX(2px); }
+  60% { transform: scale(0.9) translateX(-2px); }
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 0px var(--typing-dot-color);
+    opacity: 0.6;
+  }
+  to {
+    box-shadow: 0 0 6px var(--typing-dot-color);
+    opacity: 1;
+  }
+}
+
+/* ===========================
+   Code Copy Button
+   =========================== */
 .code-block-wrapper {
   position: relative;
   margin: 6px 0;
@@ -424,8 +431,7 @@ main-content {
 
 .code-block-wrapper pre {
   margin: 0;
-  padding: 10px 12px 12px;
-  padding-top: 20px; /* smaller gap */
+  padding: 20px 12px 12px;
   border-radius: 12px;
   background: var(--color-1);
   border: 1px solid var(--border);
@@ -445,12 +451,13 @@ main-content {
   font-size: 12px;
   color: var(--text-muted);
 }
+
 /* ===========================
    Input Area
    =========================== */
 .input-area {
   display: flex;
-  align-items: flex-end;   /* align at the bottom of the tallest element */
+  align-items: flex-end;
   gap: 8px;
   padding: 12px;
   border-top: 1px solid var(--border);
@@ -483,9 +490,8 @@ main-content {
   color: var(--primary-contrast);
   cursor: pointer;
   transition: background 0.25s ease, transform 0.1s ease-in-out;
-
-  border: none;         /* 🔥 remove grey border */
-  outline: none;        /* 🔥 remove focus outline (optional) */
+  border: none;
+  outline: none;
 }
 
 .send-btn:hover,
@@ -493,6 +499,7 @@ main-content {
   background: var(--color-7);
   transform: translateY(-2px);
 }
+
 /* ===========================
    Header Area
    =========================== */
@@ -511,7 +518,7 @@ main-content {
   font-weight: 600;
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 20;
 }
 
 .chat-header .chat-title {
@@ -532,15 +539,6 @@ main-content {
   flex-shrink: 0;
 }
 
-.header-controls button {
-  width: 32px;
-  height: 32px;
-  flex-shrink: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .chat-header button,
 .header-controls button,
 #themeBtn,
@@ -559,7 +557,6 @@ main-content {
   transition: background-color 0.2s, transform 0.1s;
 }
 
-/* Active block works on ALL devices when you click/tap */
 .chat-header button:active,
 .header-controls button:active,
 #themeBtn:active,
@@ -569,7 +566,6 @@ main-content {
   transform: translateY(-2px);
 }
 
-/* Hover block only applies if the device actually supports hover (like a mouse) */
 @media (hover: hover) and (pointer: fine) {
   .chat-header button:hover,
   .header-controls button:hover,
@@ -594,23 +590,7 @@ main-content {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.message .msg-time {
-  display: block;                 /* line break under the text */
-  text-align: right;              /* push it to the right edge of the bubble */
-  font-size: 0.75rem;             /* smaller font */
-  margin-top: 4px;                /* space between text and time */
-  color: var(--primary-contrast); /* use primary contrast color */
-  opacity: 0.8;   /* a touch lighter so it feels like metadata */
-  white-space: pre-line; /* ✅ needed to render the newline as a break */
-}
 
-#toggleSidebarBtn .icon {
-  opacity: 1;
-  transition: opacity 0.2s ease;
-}
-#toggleSidebarBtn .hidden {
-  opacity: 0;
-}
 /* ===========================
    Palette Dropdown
    =========================== */
@@ -637,31 +617,15 @@ main-content {
   display: none;
 }
 
-/* Default AMOLED theme (white-on-black) */
-body.theme-amoled {
-  background-color: var(--color-5);
-  color: #ffffff;
-}
-
-/* Header area, background = var(--color-3) */
-body.theme-amoled header {
-  background-color: var(--color-3);
-  color: #000000; /* black text */
-}
-
-/* Buttons, background = var(--color-6) */
-body.theme-amoled .btn {
-  background-color: var(--color-6);
-  color: #000000; /* black text */
-}
-
-/* Scroll-to-top button */
+/* ===========================
+   Scroll to Top
+   =========================== */
 .scroll-top-btn {
   position: absolute;
   bottom: 95px;
   right: 20px;
   z-index: 50;
-  display: none; /* hidden by default */
+  display: none;
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -669,23 +633,17 @@ body.theme-amoled .btn {
   cursor: pointer;
   background: var(--color-6);
   color: var(--primary-contrast);
-
-  display: flex;
   align-items: center;
   justify-content: center;
-
-  /* Material FAB style */
   box-shadow: 0 4px 8px rgba(0,0,0,0.25);
   transition: background 0.25s ease, transform 0.2s ease;
 }
 
-/* Active feedback when tapped or clicked – works everywhere */
 .scroll-top-btn:active {
   background: var(--color-7);
   transform: translateY(-2px);
 }
 
-/* Hover effect only on devices that actually support hover */
 @media (hover: hover) and (pointer: fine) {
   .scroll-top-btn:hover {
     background: var(--color-7);
@@ -694,175 +652,90 @@ body.theme-amoled .btn {
 }
 
 .scroll-top-btn svg {
-  stroke: #fff;  /* force arrow to white */
+  stroke: #fff;
 }
 
-/* --- Responsive rules for mobile etc --- */
-@media (max-width: 600px) {
-  /* Adjust size/position for smaller screens if needed */
-  .scroll-top-btn {
-    bottom: 70px;
-    right: 15px;
-    width: 36px;
-    height: 36px;
-    font-size: 18px;
-  }
+/* ===========================
+   Responsive / Mobile
+   =========================== */
+.sidebar-backdrop {
+  display: none;
 }
 
-.input-area textarea {
-  resize: none;           /* remove manual drag handle */
-  max-height: 200px;      /* cap max size */
-  overflow-y: auto;       /* scroll inside if content exceeds max-height */
-}
-
-/* === Sidebar Responsive Drawer (final) === */
-
-/* --- Sidebar: desktop baseline --- */
-.sidebar {
-  flex: 0 0 30%;
-  min-width: 200px;
-  max-width: 400px;
-  transition: width 0.3s ease, opacity 0.3s ease;
-  background: var(--sidebar-bg);
-  border-right: 1px solid var(--surface-1);
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  color: var(--text);
-}
-
-/* === Desktop collapsed (mini) === */
-.sidebar.collapsed {
-  width: 60px;         /* narrow strip */
-  min-width: 60px;
-  max-width: 60px;
-  overflow: hidden;    /* hide any text overflow */
-}
-
-/* --- Mobile override --- */
 @media (max-width: 768px) {
+  .app-container {
+    display: flex;
+    flex-direction: row;
+  }
+
   .sidebar {
     position: fixed;
-    top: 0; left: 0; bottom: 0;
+    top: 0;
+    left: 0;
+    bottom: 0;
     width: 90%;
     max-width: none;
-    background: var(--sidebar-bg);
     transform: translateX(-100%);
-    transition: transform 0.3s ease;
     z-index: 999;
-    box-sizing: border-box;
     flex: none;
   }
 
   .sidebar.open {
     transform: translateX(0);
   }
-}
 
-/* ===========================
-   Responsive
-   =========================== */
-@media (max-width: 768px) {
-  .app-wrapper {
-    display: flex;
-  }
-
-  .sidebar {
-    position: fixed;
-    top: 0; left: 0; bottom: 0;
-    width: 90%;              /* bigger drawer */
-    max-width: none;
-    background: var(--sidebar-bg);
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    z-index: 999;
-    box-sizing: border-box;  /* keep this from the other block */
-  }
-
-  .sidebar.open {
-    transform: translateX(0);
-  }
-
-  .main-content {
-    flex: 1;
-    min-width: 0;
-    box-sizing: border-box;
-     @media (max-width: 768px) {
-  .app-wrapper {
-    display: flex;
-  }
-
-  .sidebar {
-    position: fixed;
-    top: 0; left: 0; bottom: 0;
-    width: 90%;              /* bigger drawer */
-    max-width: none;
-    background: var(--sidebar-bg);
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    z-index: 999;
-    box-sizing: border-box;  /* keep this from the other block */
-  }
-
-  .sidebar.open {
-    transform: translateX(0);
-  }
-
-  .main-content {
-    flex: 1;
-    min-width: 0;
-    box-sizing: border-box;
+  .main-content,
+  .chat-window {
     margin-left: 0;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .chat-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .header-controls {
+    gap: 0.35rem;
+  }
+
+  #toggleSidebarBtn,
+  #toggleThemeBtn,
+  #themeBtn {
+    width: 32px;
+    height: 32px;
   }
 
   .sidebar-backdrop {
     position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
+    inset: 0;
     background: rgba(0,0,0,0.4);
     z-index: 998;
     display: none;
   }
+
   .sidebar-backdrop.visible {
     display: block;
   }
-   /* 📌 Mobile-only delete button */
+
   .delete-btn {
     background: var(--color-6);
     color: #fff;
-    transform: translateY(-50%);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-    border-radius: 50%; /* or 6px for rounded square */
+    border-radius: 50%;
   }
 
   .delete-btn:active {
-    background: var(--color-6);
     transform: translateY(-50%) scale(0.95);
   }
-}
-  }
 
-  .sidebar-backdrop {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.4);
-    z-index: 998;
-    display: none;
-  }
-  .sidebar-backdrop.visible {
-    display: block;
-  }
-   /* 📌 Mobile-only delete button */
-  .delete-btn {
-    background: var(--color-6);
-    color: #fff;
-    transform: translateY(-50%);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-    border-radius: 50%; /* or 6px for rounded square */
-  }
-
-  .delete-btn:active {
-    background: var(--color-6);
-    transform: translateY(-50%) scale(0.95);
+  .scroll-top-btn {
+    bottom: 70px;
+    right: 15px;
+    width: 36px;
+    height: 36px;
   }
 }
 
@@ -872,85 +745,7 @@ body.theme-amoled .btn {
   }
 }
 
-@media (max-width: 768px) {
-  .app-container {
-    height: 100dvh;
-  }
-
-  .chat-window {
-    height: 100%;
-    min-height: 0;
-  }
-
-  .messages {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    padding-bottom: 12px;
-  }
-
-  .input-area {
-    padding-bottom: calc(12px + env(safe-area-inset-bottom));
-  }
-}
-/* ===========================
-   Typing Indicator
-   =========================== */
-.typing-indicator {
-  display: inline-flex;
-  gap: 4px;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.typing-indicator span {
-  width: 6px;
-  height: 6px;
-  background: var(--typing-dot-color);
-  border-radius: 50%;
-  display: inline-block;
-
-  /* Combined scale + wiggle → one transform animation */
-  animation: bounceWiggle 1.2s infinite,
-             glow 1.5s infinite alternate;
-}
-
-/* Stagger all animations for indie-beat effect */
-.typing-indicator span:nth-child(2) {
-  animation-delay: 0.2s, 0.2s;
-}
-.typing-indicator span:nth-child(3) {
-  animation-delay: 0.4s, 0.4s;
-}
-
-/* === Keyframes === */
-
-/* Bounce + Wiggle combined */
-@keyframes bounceWiggle {
-  0%, 80%, 100% {
-    transform: scale(0) translateX(0);
-  }
-  40% {
-    transform: scale(1) translateX(2px);
-  }
-  60% {
-    transform: scale(0.9) translateX(-2px);
-  }
-}
-
-/* Glow pulse (separate, so can stack) */
-@keyframes glow {
-  from {
-    box-shadow: 0 0 0px var(--typing-dot-color);
-    opacity: 0.6;
-  }
-  to {
-    box-shadow: 0 0 6px var(--typing-dot-color);
-    opacity: 1;
-  }
-}
-
-/* Hide text in collapsed mode */
+/* Hide text in collapsed sidebar */
 .sidebar.collapsed .sidebar-header span,
 .sidebar.collapsed .new-chat,
 .sidebar.collapsed .chat-title,
