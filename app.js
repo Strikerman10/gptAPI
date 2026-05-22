@@ -5,16 +5,7 @@ const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
 
 // Temporary user ID: will be asked once then stored in localStorage
 let userId = localStorage.getItem("chat_user_id");
-if (!userId) {
-  userId = prompt("Enter a username to identify your chats:", "");
-  localStorage.setItem("chat_user_id", userId);
-  (async () => {
-    await loadChatsFromWorker();
-    loadChats();
-    renderChatList();
-    renderMessages();
-  })();
-}
+
 
 let chats = [];
 let currentIndex = null;
