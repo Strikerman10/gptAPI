@@ -97,7 +97,7 @@ body {
    =========================== */
 .app-container {
   display: flex;
-  height: 100vh;
+  height: 100dvh;
   width: 100%;
   overflow: hidden;
 }
@@ -872,6 +872,27 @@ body.theme-amoled .btn {
   }
 }
 
+@media (max-width: 768px) {
+  .app-container {
+    height: 100dvh;
+  }
+
+  .chat-window {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .messages {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-bottom: 12px;
+  }
+
+  .input-area {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+}
 /* ===========================
    Typing Indicator
    =========================== */
