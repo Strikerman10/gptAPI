@@ -301,6 +301,7 @@ body.dark-mode {
   border-bottom-right-radius: 0.3rem;
   align-self: flex-end;
   animation: fadeSlideInRight 0.35s ease-out;
+  white-space: pre-wrap;
 }
 
 .message.assistant {
