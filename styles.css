@@ -750,6 +750,10 @@ body.dark-mode {
     width: 36px;
     height: 36px;
   }
+
+  .copy-pill {
+    transform: translateY(-3px);
+  }
 }
 
 @media (max-width: 599.98px) {
