@@ -751,7 +751,7 @@ body.dark-mode {
     height: 36px;
   }
 
-  .copy-pill {
+   .copy-pill {
     transform: translateY(-3px);
   }
 }
