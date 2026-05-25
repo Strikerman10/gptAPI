@@ -139,13 +139,13 @@ body.dark-mode {
   background: var(--surface-2);
   border-left: 1px solid var(--border);
   transition: margin-left 0.3s ease;
-  margin-left: 260px;
+  margin-left: 0px;
 }
 
 /* desktop collapsed sidebar shift */
 .sidebar.collapsed ~ .main-content,
 .sidebar.collapsed ~ .chat-window {
-  margin-left: 60px;
+  margin-left: 0px;
 }
 
 .new-chat {
@@ -275,7 +275,7 @@ body.dark-mode {
 .message-wrapper {
   display: flex;
   flex-direction: column;
-  margin-bottom: 12px;
+  margin-bottom: 4px;
 }
 
 .message-wrapper.assistant {
@@ -287,7 +287,7 @@ body.dark-mode {
   padding: 0.75rem 1rem;
   border-radius: 1.25rem;
   line-height: 1.4;
-  white-space: pre-wrap;
+  white-space: normal;
   word-break: break-word;
   overflow-wrap: anywhere;
   min-width: 0;
@@ -309,7 +309,8 @@ body.dark-mode {
   border-bottom-left-radius: 0.3rem;
   align-self: flex-start;
   position: relative;
-  padding-bottom: 48px;
+  padding-top: 1rem;
+  padding-bottom: 0.25rem; /* or 1rem */
   animation: fadeSlideInLeft 0.35s ease-out;
 }
 
@@ -333,7 +334,7 @@ body.dark-mode {
   align-items: center;
   gap: 6px;
   padding: 8px 14px;
-  border-radius: 999px;
+  border-radius: 10px;
   border: 1px solid var(--color-3);
   background: var(--color-2);
   color: var(--primary-contrast);
@@ -412,18 +413,19 @@ body.dark-mode {
    =========================== */
 .code-block-wrapper {
   position: relative;
-  margin: 6px 0;
+  margin-top: 8px;
+  margin-bottom: 2px 0;
 }
 
 .copy-code-btn {
   position: absolute;
-  top: 4px;
+  top: 27px;
   right: 6px;
   padding: 6px 7px;
   font-size: 12px;
   border: none;
   border-radius: 10px;
-  background: var(--color-1);
+  background: var(--color-3);
   color: var(--primary-contrast);
   cursor: pointer;
   z-index: 2;
@@ -431,7 +433,7 @@ body.dark-mode {
 
 .code-block-wrapper pre {
   margin: 0;
-  padding: 20px 12px 12px;
+  padding: 4px 12px 10px;
   border-radius: 12px;
   background: var(--color-1);
   border: 1px solid var(--border);
@@ -439,18 +441,27 @@ body.dark-mode {
   white-space: pre;
 }
 
+.message p {
+  margin: 0;
+}
+
+.message p:last-child {
+  margin-bottom: 0;
+}
+
+.message pre {
+  margin: 0;
+}
+
+.message .code-block-wrapper {
+  margin: 0;
+}
+
 .code-block-wrapper code {
   font-family: monospace;
   color: var(--text);
 }
 
-.code-language {
-  position: absolute;
-  top: 8px;
-  left: 10px;
-  font-size: 12px;
-  color: var(--text-muted);
-}
 
 /* ===========================
    Input Area
