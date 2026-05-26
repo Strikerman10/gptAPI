@@ -187,15 +187,7 @@ function renderMessageContent(content) {
       "--color-6": "#4e1818",
       "--color-7": "#ac3535"
     },
-    Amber: {
-      "--color-1": "#ffd48a",
-      "--color-2": "#ffb74d",
-      "--color-3": "#996515",
-      "--color-4": "#5a3b0f",
-      "--color-5": "#1a0e05",
-      "--color-6": "#7fd7d0",
-      "--color-7": "#a5e3de"
-    },
+
     Purple: {
       "--color-1": "#e3c6ff",
       "--color-2": "#c19df0",
@@ -223,24 +215,6 @@ function renderMessageContent(content) {
       "--color-6": "#666699",
       "--color-7": "#9494b8"
     },
-    Gray: {
-      "--color-1": "#e0e0e0",
-      "--color-2": "#b0b0b0",
-      "--color-3": "#4a4a4a",
-      "--color-4": "#2c2c2c",
-      "--color-5": "#121212",
-      "--color-6": "#5c5c3d",
-      "--color-7": "#9494b8"
-    },
-    Amoled: {
-      "--color-1": "#eaff00",
-      "--color-2": "#ffea00",
-      "--color-3": "#ffbf00",
-      "--color-4": "#fff7dc",
-      "--color-5": "#000000",
-      "--color-6": "#fff000",
-      "--color-7": "#fff999"
-    }
   };
 
   const neutrals = {
