@@ -1,5 +1,5 @@
 // ==========================
-// CONFIG
+// CONFI
 // ==========================
 const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
 
