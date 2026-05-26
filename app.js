@@ -1,5 +1,5 @@
 // ==========================
-// CONFIGURATION
+// CONFIG
 // ==========================
 const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
 
@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const themeToggleBtn    = document.getElementById("toggleThemeBtn");
   const sidebarEl         = document.querySelector(".sidebar");
   const toggleSidebarBtn  = document.getElementById("toggleSidebarBtn");
+  const modelSelector     = document.getElementById("modelSelector");
 
   const backdropEl = document.createElement("div");
   backdropEl.className = "sidebar-backdrop";
@@ -187,7 +188,6 @@ function renderMessageContent(content) {
       "--color-6": "#4e1818",
       "--color-7": "#ac3535"
     },
-
     Purple: {
       "--color-1": "#e3c6ff",
       "--color-2": "#c19df0",
@@ -420,7 +420,7 @@ function renderMessageContent(content) {
 
 function renderMessages() {
   messagesEl.innerHTML = "";
-  headerEl.textContent = "ChatGPT";
+  headerEl.textContent = "Messages";
 
   if (currentIndex === null || !chats[currentIndex]) {
     messagesEl.innerHTML = `<p class="placeholder">No chats yet. Start a new one!</p>`;
@@ -706,12 +706,18 @@ function renderMessages() {
       sendMessage();
     }
   });
+modelSelector.value = currentModel;
 
-  paletteSelector.value = currentPalette;
-  const darkIcon  = themeToggleBtn.querySelector(".dark-icon");
-  const lightIcon = themeToggleBtn.querySelector(".light-icon");
-  darkIcon.classList.toggle("hidden", currentMode === "dark");
-  lightIcon.classList.toggle("hidden", currentMode === "light");
+modelSelector.addEventListener("change", (e) => {
+  currentModel = e.target.value;
+  localStorage.setItem("chat_model", currentModel);
+});
+
+paletteSelector.value = currentPalette;
+const darkIcon  = themeToggleBtn.querySelector(".dark-icon");
+const lightIcon = themeToggleBtn.querySelector(".light-icon");
+darkIcon.classList.toggle("hidden", currentMode === "dark");
+lightIcon.classList.toggle("hidden", currentMode === "light");
 
   themeToggleBtn.addEventListener("click", () => {
     currentMode = currentMode === "light" ? "dark" : "light";
