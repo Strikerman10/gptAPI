@@ -65,104 +65,102 @@
 
         <select id="modelSelector" class="model-selector" aria-label="Select model">
           <option value="gpt-5.4-mini-2026-03-17">GPT-5.4 Mini $0.75•$4.5</option>
-          <option value="ggpt-5.4-2026-03-05">GPT-5.4 $2.5•$15</option>
+          <option value="gpt-5.4-2026-03-05">GPT-5.4 $2.5•$15</option>
           <option value="gpt-5.5-2026-04-23">GPT-5.5 $5•$30</option>
-          <option value="gpt-5-mini-2025-08-07">GPT-5-Mini $0.25•$2</option>
-          <option value="gpt-5-codex">GPT-5 Codex $1.25•$10</option>
+          <option value="gpt-5-mini">GPT-5-Mini $0.25•$2</option>
           <option value="gpt-5.3-codex">GPT-5.3-codex $1.75•$14</option>
+          <option value="gpt-5.1-codex-max">gpt-5.1-codex-max $1.25•$10</option>
         </select>
       </div>
 
       <div class="chat-list" id="chatList" aria-live="polite"></div>
     </div>
 
-    <!-- Chat Window -->
-    <div class="main-content chat-window" role="main">
-      <!-- Header -->
-      <div class="chat-header" id="chatHeader">
-        <span class="chat-title">Messages</span>
-        <div class="header-controls">
+   <!-- Chat Window -->
+<div class="main-content chat-window" role="main">
+  <!-- Header -->
+  <div class="chat-header" id="chatHeader">
+    <span class="chat-title" id="chatTitle">Messages</span>
+    <div class="header-controls">
+      <!-- put any extra header items here if needed -->
+    </div>
 
-          <!-- Sidebar Toggle -->
-          <button id="toggleSidebarBtn" aria-label="Toggle Sidebar">
-            <!-- Hamburger -->
-            <svg class="icon hide-icon" xmlns="http://www.w3.org/2000/svg" 
-                 viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+    <!-- Sidebar Toggle -->
+    <button id="toggleSidebarBtn" aria-label="Toggle Sidebar">
+      <!-- Hamburger -->
+      <svg class="icon hide-icon" xmlns="http://www.w3.org/2000/svg"
+           viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
 
-            <!-- Chevron left -->
-            <svg class="icon show-icon hidden" xmlns="http://www.w3.org/2000/svg" 
-                 viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
+      <!-- Chevron left -->
+      <svg class="icon show-icon hidden" xmlns="http://www.w3.org/2000/svg"
+           viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
 
-          <!-- Theme Toggle -->
-          <button id="toggleThemeBtn" aria-label="Toggle Light/Dark Mode">
-            <svg class="icon dark-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M21.46 16.54A10.51 10.51 0 1 1 12 1.49a10.34 10.34 0 0 1 2.8.38 8.12 8.12 0 0 0 2.45 15.86 8 8 0 0 0 4.21-1.19z"
-                fill="none" stroke="currentColor" stroke-width="1.9"/>
-            </svg>
-            <svg class="icon light-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340.127 340.127">
-              <path d="M181.401 0h-22.675v56.688h22.675V0zm-139.611 282.306l16.031 16.031 40.09-40.09-16.031-16.031-40.09 40.09zm14.898-123.58H0v22.675h56.688v-22.675zm241.649-100.904L282.306 41.79l-40.09 40.09 16.031 16.031 40.09-40.09zM237.749 265.39l40.747 40.747 16.303-16.303-40.747-40.747-16.303 16.303zm45.69-106.664v22.675h56.688v-22.675H283.439zM170.064 79.363c-50.089 0-90.701 40.611-90.701 90.701s40.611 90.701 90.701 90.701 90.701-40.611 90.701-90.701-40.612-90.701-90.701-90.701zm0 158.726c-37.573 0-68.025-30.453-68.025-68.025s30.452-68.025 68.025-68.025 68.025 30.453 68.025 68.025-30.452 68.025-68.025 68.025zm-11.338 102.038h22.675v-56.688h-22.675v56.688zM91.041 86.098l-40.747-40.77L33.99 61.631l40.747 40.747 16.304-16.28z"
-                fill="currentColor"/>
-            </svg>
-          </button>
+    <!-- Theme Toggle -->
+    <button id="toggleThemeBtn" aria-label="Toggle Light/Dark Mode">
+      <svg class="icon dark-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M21.46 16.54A10.51 10.51 0 1 1 12 1.49a10.34 10.34 0 0 1 2.8.38 8.12 8.12 0 0 0 2.45 15.86 8 8 0 0 0 4.21-1.19z"
+          fill="none" stroke="currentColor" stroke-width="1.9"/>
+      </svg>
+      <svg class="icon light-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340.127 340.127">
+        <path d="M181.401 0h-22.675v56.688h22.675V0zm-139.611 282.306l16.031 16.031 40.09-40.09-16.031-16.031-40.09 40.09zm14.898-123.58H0v22.675h56.688v-22.675zm241.649-100.904L282.306 41.79l-40.09 40.09 16.031 16.031 40.09-40.09zM237.749 265.39l40.747 40.747 16.303-16.303-40.747-40.747-16.303 16.303zm45.69-106.664v22.675h56.688v-22.675H283.439zM170.064 79.363c-50.089 0-90.701 40.611-90.701 90.701s40.611 90.701 90.701 90.701 90.701-40.611 90.701-90.701-40.612-90.701-90.701-90.701zm0 158.726c-37.573 0-68.025-30.453-68.025-68.025s30.452-68.025 68.025-68.025 68.025 30.453 68.025 68.025-30.452 68.025-68.025 68.025zm-11.338 102.038h22.675v-56.688h-22.675v56.688zM91.041 86.098l-40.747-40.77L33.99 61.631l40.747 40.747 16.304-16.28z"
+          fill="currentColor"/>
+      </svg>
+    </button>
 
-          <!-- Palette Selector -->
-          <div class="theme-dropdown">
-            <button id="themeBtn" aria-label="Change Theme">
-              <svg xmlns="http://www.w3.org/2000/svg" 
-                   viewBox="0 0 24 24" 
-                   width="22" height="22" 
-                   fill="currentColor">
-                <path d="M12 2C6.48 2 2 6.04 2 11c0 3.74 2.55 6.84 6 7.87V22l4.03-2.41c.63.09 
-                         1.28.14 1.97.14 5.52 0 10-4.04 10-9s-4.48-9-10-9zM6.5 13c-.83 0-1.5-.67-1.5-1.5S5.67 10
-                         6.5 10s1.5.67 1.5 1.5S7.33 13 6.5 13zm3-4C8.67 9 8 8.33 8 7.5S8.67 6 
-                         9.5 6s1.5.67 1.5 1.5S10.33 9 9.5 9zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 6
-                         14.5 6s1.5.67 1.5 1.5S15.33 9 14.5 9zm2 4c-.83 0-1.5-.67-1.5-1.5S15.67 10 
-                         16.5 10s1.5.67 1.5 1.5S17.33 13 16.5 13z"/>
-              </svg>
-            </button>
-            <select id="paletteSelector" aria-label="Select color palette" class="hidden">
-              <option value="Green">Green</option>
-              <option value="Blue">Blue</option>
-              <option value="Purple">Purple</option>
-              <option value="Red">Red</option>
-              <option value="Teal">Teal</option>
-            </select>
-          </div>
-          
-        </div>
-      </div>
-
-      <!-- Messages -->
-      <div class="messages" id="messages" aria-live="polite"></div>
-
-      <!-- Scroll-to-Top Button -->
-      <button id="scrollTopBtn" class="scroll-top-btn" title="Scroll to top">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" 
-             fill="none" stroke="currentColor" stroke-width="2"
-             stroke-linecap="round" stroke-linejoin="round"
-             width="20" height="20">
-          <polyline points="18 15 12 9 6 15"/>
+    <!-- Palette Selector -->
+    <div class="theme-dropdown">
+      <button id="themeBtn" aria-label="Change Theme">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 24 24"
+             width="22" height="22"
+             fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.04 2 11c0 3.74 2.55 6.84 6 7.87V22l4.03-2.41c.63.09
+                   1.28.14 1.97.14 5.52 0 10-4.04 10-9s-4.48-9-10-9zM6.5 13c-.83 0-1.5-.67-1.5-1.5S5.67 10
+                   6.5 10s1.5.67 1.5 1.5S7.33 13 6.5 13zm3-4C8.67 9 8 8.33 8 7.5S8.67 6
+                   9.5 6s1.5.67 1.5 1.5S10.33 9 9.5 9zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 6
+                   14.5 6s1.5.67 1.5 1.5S15.33 9 14.5 9zm2 4c-.83 0-1.5-.67-1.5-1.5S15.67 10
+                   16.5 10s1.5.67 1.5 1.5S17.33 13 16.5 13z"/>
         </svg>
       </button>
- 
-      <!-- Input -->
-      <div class="input-area">
-        <textarea id="input" placeholder="Type your message..."></textarea>
-        <button class="send-btn" id="sendBtn" type="submit">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20"
-            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 12L4 4L6 12M20 12L4 20L6 12M20 12H6"/>
-          </svg>
-        </button>
-      </div>
+      <select id="paletteSelector" aria-label="Select color palette" class="hidden">
+        <option value="Green">Green</option>
+        <option value="Blue">Blue</option>
+        <option value="Purple">Purple</option>
+        <option value="Red">Red</option>
+        <option value="Teal">Teal</option>
+      </select>
     </div>
   </div>
 
+  <!-- Messages -->
+  <div class="messages" id="messages" aria-live="polite"></div>
+
+  <!-- Scroll-to-Top Button -->
+  <button id="scrollTopBtn" class="scroll-top-btn" title="Scroll to top">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+         fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round"
+         width="20" height="20">
+      <polyline points="18 15 12 9 6 15"/>
+    </svg>
+  </button>
+
+  <!-- Input -->
+  <div class="input-area">
+    <textarea id="input" placeholder="Type your message..."></textarea>
+    <button class="send-btn" id="sendBtn" type="submit">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20"
+        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 12L4 4L6 12M20 12L4 20L6 12M20 12H6"/>
+      </svg>
+    </button>
+  </div>
+</div>
   <script src="app.js" defer></script>
 </body>
 </html>
