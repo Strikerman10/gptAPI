@@ -80,27 +80,21 @@
 <div class="main-content chat-window" role="main">
   <!-- Header -->
   <div class="chat-header" id="chatHeader">
-    <span class="chat-title" id="chatTitle">Messages</span>
-    <div class="header-controls">
-      <!-- put any extra header items here if needed -->
-    </div>
+  <span class="chat-title" id="chatTitle">Messages</span>
 
-    <!-- Sidebar Toggle -->
+  <div class="header-controls">
+     <!-- Sidebar Toggle -->
     <button id="toggleSidebarBtn" aria-label="Toggle Sidebar">
-      <!-- Hamburger -->
-      <svg class="icon hide-icon" xmlns="http://www.w3.org/2000/svg"
-           viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor">
+       <!-- Hamburger -->
+      <svg class="icon hide-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
       </svg>
-
-      <!-- Chevron left -->
-      <svg class="icon show-icon hidden" xmlns="http://www.w3.org/2000/svg"
-           viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor">
+        <!-- Chevron left -->
+      <svg class="icon show-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
       </svg>
     </button>
-
-    <!-- Theme Toggle -->
+ <!-- Theme Toggle -->
     <button id="toggleThemeBtn" aria-label="Toggle Light/Dark Mode">
       <svg class="icon dark-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <path d="M21.46 16.54A10.51 10.51 0 1 1 12 1.49a10.34 10.34 0 0 1 2.8.38 8.12 8.12 0 0 0 2.45 15.86 8 8 0 0 0 4.21-1.19z"
@@ -111,8 +105,7 @@
           fill="currentColor"/>
       </svg>
     </button>
-
-    <!-- Palette Selector -->
+  <!-- Palette Selector -->
     <div class="theme-dropdown">
       <button id="themeBtn" aria-label="Change Theme">
         <svg xmlns="http://www.w3.org/2000/svg"
@@ -127,6 +120,7 @@
                    16.5 10s1.5.67 1.5 1.5S17.33 13 16.5 13z"/>
         </svg>
       </button>
+
       <select id="paletteSelector" aria-label="Select color palette" class="hidden">
         <option value="Green">Green</option>
         <option value="Blue">Blue</option>
@@ -136,6 +130,7 @@
       </select>
     </div>
   </div>
+</div>
 
   <!-- Messages -->
   <div class="messages" id="messages" aria-live="polite"></div>
