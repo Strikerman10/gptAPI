@@ -588,7 +588,8 @@ body.dark-mode {
 .chat-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 12px;
   height: 60px;
   padding: 0.5rem 1rem;
   background: linear-gradient(
@@ -607,18 +608,18 @@ body.dark-mode {
   font-weight: 600;
   font-size: 16px;
   color: #fff;
-  flex: 1;
   min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex: 1;
 }
-
 .header-controls {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 .chat-header button,
@@ -678,7 +679,9 @@ body.dark-mode {
    =========================== */
 .theme-dropdown {
   position: relative;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 #paletteSelector {
