@@ -9,12 +9,12 @@ let userId = localStorage.getItem("chat_user_id");
 
 let chats = [];
 let currentIndex = null;
-let currentModel = localStorage.getItem("chat_model") || "gpt-5.4-mini";
+let currentModel = localStorage.getItem("chat_model") || "gpt-5.4-mini-2026-03-17";
 
 document.addEventListener("DOMContentLoaded", () => {
   const chatListEl = document.getElementById("chatList");
   const messagesEl = document.getElementById("messages");
-  const headerEl = document.getElementById("chatHeader").querySelector("span");
+  const chatTitleEl = document.getElementById("chatTitle");
   const inputEl = document.getElementById("input");
 
   function autoResize() {
@@ -235,15 +235,6 @@ function renderMessageContent(content) {
       "--border": "hsl(0 0% 30%)",
       "--text": "hsl(0 0% 92%)",
       "--text-muted": "hsl(0 0% 70%)"
-    },
-    amoled: {
-      "--bg": "#000000",
-      "--surface-1": "#000000",
-      "--surface-2": "#0a0a0a",
-      "--surface-hover": "#111111",
-      "--border": "#222222",
-      "--text": "#000000",
-      "--text-muted": "#333333"
     }
   };
 
@@ -253,7 +244,7 @@ function renderMessageContent(content) {
   function applyTheme() {
     const root = document.documentElement;
     const palette = palettes[currentPalette];
-    const neutralSet = currentPalette === "Amoled" ? neutrals.amoled : neutrals[currentMode];
+   const neutralSet = neutrals[currentMode];
 
     for (const [key, value] of Object.entries(palette)) {
       root.style.setProperty(key, value);
@@ -420,7 +411,7 @@ function renderMessageContent(content) {
 
 function renderMessages() {
   messagesEl.innerHTML = "";
-  headerEl.textContent = "Messages";
+  chatTitleEl.textContent = "Messages";
 
   if (currentIndex === null || !chats[currentIndex]) {
     messagesEl.innerHTML = `<p class="placeholder">No chats yet. Start a new one!</p>`;
@@ -449,13 +440,11 @@ function renderMessages() {
           <span></span><span></span><span></span>
         </div>
       `;
+    } else if (msg.role === "assistant") {
+      textDiv.innerHTML = renderMessageContent(msg.content);
     } else {
-  if (msg.role === "assistant") {
-    textDiv.innerHTML = renderMessageContent(msg.content);
-  } else {
-    textDiv.textContent = msg.content;
-  }
-}
+      textDiv.textContent = msg.content;
+    }
 
     const timeDiv = document.createElement("div");
     timeDiv.className = "msg-time";
@@ -466,14 +455,6 @@ function renderMessages() {
     wrapper.appendChild(div);
 
     if (msg.role === "assistant" && msg.content !== "__TYPING__") {
-      let originalPrompt = "";
-      for (let j = idx - 1; j >= 0; j--) {
-        if (chat.messages[j].role === "user") {
-          originalPrompt = chat.messages[j].content;
-          break;
-        }
-      }
-
       const refreshRow = document.createElement("div");
       refreshRow.className = "refresh-row";
 
@@ -493,10 +474,7 @@ function renderMessages() {
       `;
 
       refreshBtn.addEventListener("click", async () => {
-        // Remove the current assistant response
         chat.messages.splice(idx, 1);
-
-        // Re-add typing indicator
         chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
 
         saveChats();
@@ -554,7 +532,7 @@ function renderMessages() {
     messagesEl.appendChild(wrapper);
   });
 
-    messagesEl.querySelectorAll(".copy-code-btn").forEach(btn => {
+  messagesEl.querySelectorAll(".copy-code-btn").forEach(btn => {
     btn.addEventListener("click", async () => {
       const wrapper = btn.closest(".code-block-wrapper");
       const code = decodeURIComponent(wrapper.dataset.code);
@@ -572,7 +550,7 @@ function renderMessages() {
       }
     });
   });
-  
+
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
