@@ -887,3 +887,9 @@ body.dark-mode {
   justify-content: center;
   padding-right: 0;
 }
+
+@media (min-width: 1024px) {
+  .sidebar.collapsed {
+    display: none !important;
+  }
+}
