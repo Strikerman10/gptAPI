@@ -1068,3 +1068,10 @@ body.dark-mode {
   padding: 0;
   border-radius: 0;
 }
+
+/* Dark mode: make theme option text black */
+body.dark-mode #paletteSheet .sheet-option,
+body.dark-mode #paletteSheet .sheet-option .theme-label,
+body.dark-mode #paletteSheet .sheet-option span:not(.swatch) {
+  color: #000 !important;
+}
