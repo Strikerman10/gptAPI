@@ -20,31 +20,6 @@
       cursor: pointer;
     }
 
-    /* 🎨 Palette dropdown positioning */
-    .theme-dropdown {
-      position: relative;
-      display: inline-block;
-    }
-   
-    #themeBtn svg {
-      width: 22px;
-      height: 22px;
-      fill: #fff; /* force white so it doesn’t disappear */
-    }
-    #paletteSelector {
-      position: absolute;
-      top: 110%;
-      right: 0;
-      z-index: 1000;
-      font-size: 14px;
-      border: 1px solid var(--border, #ccc);
-      border-radius: 6px;
-      padding: 0.25rem 0.5rem;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    }
-    #paletteSelector.hidden {
-      display: none;
-    }
   </style>
 </head>
 <body>
@@ -105,32 +80,53 @@
           fill="currentColor"/>
       </svg>
     </button>
-  <!-- Palette Selector -->
-    <div class="theme-dropdown">
-      <button id="themeBtn" aria-label="Change Theme">
-        <svg xmlns="http://www.w3.org/2000/svg"
-             viewBox="0 0 24 24"
-             width="22" height="22"
-             fill="currentColor">
-          <path d="M12 2C6.48 2 2 6.04 2 11c0 3.74 2.55 6.84 6 7.87V22l4.03-2.41c.63.09
-                   1.28.14 1.97.14 5.52 0 10-4.04 10-9s-4.48-9-10-9zM6.5 13c-.83 0-1.5-.67-1.5-1.5S5.67 10
-                   6.5 10s1.5.67 1.5 1.5S7.33 13 6.5 13zm3-4C8.67 9 8 8.33 8 7.5S8.67 6
-                   9.5 6s1.5.67 1.5 1.5S10.33 9 9.5 9zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 6
-                   14.5 6s1.5.67 1.5 1.5S15.33 9 14.5 9zm2 4c-.83 0-1.5-.67-1.5-1.5S15.67 10
-                   16.5 10s1.5.67 1.5 1.5S17.33 13 16.5 13z"/>
-        </svg>
-      </button>
-
-      <select id="paletteSelector" aria-label="Select color palette" class="hidden">
-        <option value="Green">Green</option>
-        <option value="Blue">Blue</option>
-        <option value="Purple">Purple</option>
-        <option value="Red">Red</option>
-        <option value="Teal">Teal</option>
-      </select>
-    </div>
-  </div>
+ <!-- Palette Selector -->
+<div class="theme-dropdown">
+  <button id="themeBtn" class="theme-btn" aria-label="Change Theme" aria-expanded="false" aria-controls="paletteSheet">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         viewBox="0 0 24 24"
+         width="22" height="22"
+         fill="currentColor" aria-hidden="true">
+      <path d="M12 2C6.48 2 2 6.04 2 11c0 3.74 2.55 6.84 6 7.87V22l4.03-2.41c.63.09
+               1.28.14 1.97.14 5.52 0 10-4.04 10-9s-4.48-9-10-9zM6.5 13c-.83 0-1.5-.67-1.5-1.5S5.67 10
+               6.5 10s1.5.67 1.5 1.5S7.33 13 6.5 13zm3-4C8.67 9 8 8.33 8 7.5S8.67 6
+               9.5 6s1.5.67 1.5 1.5S10.33 9 9.5 9zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 6
+               14.5 6s1.5.67 1.5 1.5S15.33 9 14.5 9zm2 4c-.83 0-1.5-.67-1.5-1.5S15.67 10
+               16.5 10s1.5.67 1.5 1.5S17.33 13 16.5 13z"/>
+    </svg>
+  </button>
 </div>
+
+<!-- Bottom Sheet -->
+<div id="sheetBackdrop" class="sheet-backdrop hidden"></div>
+
+<section id="paletteSheet" class="palette-sheet hidden" role="dialog" aria-modal="true" aria-labelledby="paletteTitle">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <h3 id="paletteTitle">Choose theme</h3>
+    <button id="closeSheetBtn" class="sheet-close" aria-label="Close theme picker">✕</button>
+  </div>
+
+  <div class="sheet-grid">
+    <button class="sheet-option" data-theme="Green">
+      <span class="swatch" style="--sw:#22c55e;"></span><span class="theme-label">Green</span>
+    </button>
+    <button class="sheet-option" data-theme="Blue">
+      <span class="swatch" style="--sw:#3b82f6;"></span><span class="theme-label">Blue</span>
+    </button>
+    <button class="sheet-option" data-theme="Purple">
+      <span class="swatch" style="--sw:#a855f7;"></span><span class="theme-label">Purple</span>
+    </button>
+    <button class="sheet-option" data-theme="Red">
+      <span class="swatch" style="--sw:#ef4444;"></span><span class="theme-label">Red</span>
+    </button>
+    <button class="sheet-option" data-theme="Teal">
+      <span class="swatch" style="--sw:#14b8a6;"></span><span class="theme-label">Teal</span>
+    </button>
+  </div>
+</section>
+  </div>
+  </div>
 
   <!-- Messages -->
   <div class="messages" id="messages" aria-live="polite"></div>
@@ -165,6 +161,8 @@
       </svg>
     </button>
   </div>
+</div>
+</div>
 </div>
   <script src="app.js" defer></script>
 </body>
