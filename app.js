@@ -24,7 +24,6 @@ document.addEventListener("DOMContentLoaded", () => {
   inputEl.addEventListener("input", autoResize);
   autoResize();
 
-  const paletteSelector   = document.getElementById("paletteSelector");
   const themeToggleBtn    = document.getElementById("toggleThemeBtn");
   const sidebarEl         = document.querySelector(".sidebar");
   const toggleSidebarBtn  = document.getElementById("toggleSidebarBtn");
@@ -35,6 +34,10 @@ document.addEventListener("DOMContentLoaded", () => {
   document.body.appendChild(backdropEl);
 
   const paletteBtn = document.getElementById("themeBtn");
+  const paletteSheet = document.getElementById("paletteSheet");
+  const sheetBackdrop = document.getElementById("sheetBackdrop");
+  const closeSheetBtn = document.getElementById("closeSheetBtn");
+  const paletteOptions = document.querySelectorAll(".sheet-option");
 
   const scrollTopBtn = document.getElementById("scrollTopBtn");
   const scrollBottomBtn = document.getElementById("scrollBottomBtn");
@@ -257,7 +260,7 @@ function renderMessageContent(content) {
 
   function applyTheme() {
     const root = document.documentElement;
-    const palette = palettes[currentPalette];
+    const palette = palettes[currentPalette] || palettes.Red;
    const neutralSet = neutrals[currentMode];
 
     for (const [key, value] of Object.entries(palette)) {
@@ -705,31 +708,61 @@ modelSelector.addEventListener("change", (e) => {
   localStorage.setItem("chat_model", currentModel);
 });
 
-paletteSelector.value = currentPalette;
 const darkIcon  = themeToggleBtn.querySelector(".dark-icon");
 const lightIcon = themeToggleBtn.querySelector(".light-icon");
 darkIcon.classList.toggle("hidden", currentMode === "dark");
 lightIcon.classList.toggle("hidden", currentMode === "light");
 
-  themeToggleBtn.addEventListener("click", () => {
-    currentMode = currentMode === "light" ? "dark" : "light";
-    darkIcon.classList.toggle("hidden", currentMode === "dark");
-    lightIcon.classList.toggle("hidden", currentMode === "light");
-    applyTheme();
+themeToggleBtn.addEventListener("click", () => {
+  currentMode = currentMode === "light" ? "dark" : "light";
+  darkIcon.classList.toggle("hidden", currentMode === "dark");
+  lightIcon.classList.toggle("hidden", currentMode === "light");
+  applyTheme();
+});
+
+// Bottom sheet open/close
+function openPaletteSheet() {
+  paletteSheet.classList.remove("hidden");
+  sheetBackdrop.classList.remove("hidden");
+
+  requestAnimationFrame(() => {
+    paletteSheet.classList.add("show");
+    sheetBackdrop.classList.add("show");
   });
 
-  paletteBtn.addEventListener("click", () => {
-    paletteSelector.classList.toggle("hidden");
-    if (!paletteSelector.classList.contains("hidden")) {
-      paletteSelector.focus();
-    }
-  });
+  paletteBtn.setAttribute("aria-expanded", "true");
+  document.body.style.overflow = "hidden";
+}
 
-  paletteSelector.addEventListener("change", e => {
-    currentPalette = e.target.value;
+function closePaletteSheet() {
+  paletteSheet.classList.remove("show");
+  sheetBackdrop.classList.remove("show");
+  paletteBtn.setAttribute("aria-expanded", "false");
+  document.body.style.overflow = "";
+
+  setTimeout(() => {
+    paletteSheet.classList.add("hidden");
+    sheetBackdrop.classList.add("hidden");
+  }, 220);
+}
+
+paletteBtn.addEventListener("click", openPaletteSheet);
+closeSheetBtn.addEventListener("click", closePaletteSheet);
+sheetBackdrop.addEventListener("click", closePaletteSheet);
+
+paletteOptions.forEach(btn => {
+  btn.addEventListener("click", () => {
+    currentPalette = btn.dataset.theme; // Green/Blue/Purple/Red/Teal
     applyTheme();
-    paletteSelector.classList.add("hidden");
+    closePaletteSheet();
   });
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && paletteSheet.classList.contains("show")) {
+    closePaletteSheet();
+  }
+});
 
   (async () => {
     applyTheme();
