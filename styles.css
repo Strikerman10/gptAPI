@@ -394,12 +394,12 @@ body.dark-mode {
   to { opacity: 1; transform: translateX(0); }
 }
 
-.refresh-row {
+.reload-row {
   margin-top: 6px;
   padding-left: 8px;
 }
 
-.refresh-pill {
+.reload-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -410,21 +410,21 @@ body.dark-mode {
   color: var(--primary-contrast);
   font-size: 14px;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   transform: translateX(-8px);
 }
 
-.refresh-pill:hover {
+.reload-pill:hover {
   background: var(--color-7);
   border-color: var(--color-4);
 }
 
-.refresh-pill:active {
+.reload-pill:active {
   transform: scale(0.98);
 }
 
-.refresh-pill svg {
+.reload-pill svg {
   flex-shrink: 0;
 }
 
@@ -574,6 +574,8 @@ body.dark-mode {
   transition: background 0.25s ease, transform 0.1s ease-in-out;
   border: none;
   outline: none;
+  position: relative;
+  bottom: 6px; /* moves it up */
 }
 
 .send-btn:hover,
@@ -708,7 +710,7 @@ body.dark-mode {
 .scroll-top-btn {
   position: absolute;
   bottom: 95px;
-  right: 20px;
+  right: 12px;
   z-index: 50;
   display: none;
   width: 40px;
@@ -737,6 +739,44 @@ body.dark-mode {
 }
 
 .scroll-top-btn svg {
+  stroke: #fff;
+}
+
+/* ===========================
+   Scroll to Bottom
+   =========================== */
+.scroll-bottom-btn {
+  position: absolute;
+  top: 70px;
+  right: 12px;
+  z-index: 50;
+  display: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  background: var(--color-6);
+  color: var(--primary-contrast);
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+  transition: background 0.25s ease, transform 0.2s ease;
+}
+
+.scroll-bottom-btn:active {
+  background: var(--color-7);
+  transform: translateY(-2px);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .scroll-bottom-btn:hover {
+    background: var(--color-7);
+    transform: translateY(-2px);
+  }
+}
+
+.scroll-bottom-btn svg {
   stroke: #fff;
 }
 
