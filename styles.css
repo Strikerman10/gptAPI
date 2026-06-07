@@ -1081,3 +1081,17 @@ body.dark-mode .message .code-block-wrapper + p,
 body.dark-mode .message p {
   color: #000;
 }
+
+.send-btn,
+.reload-pill {
+  border: none !important;
+  outline: none;
+}
+
+.send-btn:focus,
+.send-btn:focus-visible,
+.reload-pill:focus,
+.reload-pill:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 2px transparent; /* keeps focus from drawing a ring */
+}
