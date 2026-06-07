@@ -1076,6 +1076,12 @@ body.dark-mode #paletteSheet .sheet-option span:not(.swatch) {
   color: #000 !important;
 }
 
+/* Dark mode: make code/copy reply text black */
+body.dark-mode .code-block-wrapper pre,
+body.dark-mode .code-block-wrapper code {
+  color: #000 !important;
+}
+
 /* If any paragraph text appears inside same reply bubble */
 body.dark-mode .message .code-block-wrapper + p,
 body.dark-mode .message p {
