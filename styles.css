@@ -1075,3 +1075,9 @@ body.dark-mode #paletteSheet .sheet-option .theme-label,
 body.dark-mode #paletteSheet .sheet-option span:not(.swatch) {
   color: #000 !important;
 }
+
+/* If any paragraph text appears inside same reply bubble */
+body.dark-mode .message .code-block-wrapper + p,
+body.dark-mode .message p {
+  color: #000;
+}
