@@ -571,8 +571,8 @@ body.dark-mode {
   background: var(--color-6);
   color: var(--primary-contrast);
   cursor: pointer;
-  transition: background 0.25s ease, transform 0.1s ease-in-out;
-  border: none;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+  transition: background 0.25s ease, transform 0.2s ease;
   outline: none;
   position: relative;
   bottom: 6px; /* moves it up */
