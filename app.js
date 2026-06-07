@@ -1,7 +1,7 @@
 // ==========================
 // CONFIG
 // ==========================
-const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
+const WORKER_URL = "https://gpt-test.barney-willis2.workers.dev";
 
 // Temporary user ID: will be asked once then stored in localStorage
 let userId = localStorage.getItem("chat_user_id");
@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const paletteBtn = document.getElementById("themeBtn");
 
   const scrollTopBtn = document.getElementById("scrollTopBtn");
+  const scrollBottomBtn = document.getElementById("scrollBottomBtn");
   const inputArea    = document.querySelector(".input-area");
   const textarea     = inputArea.querySelector("textarea");
 
@@ -48,12 +49,25 @@ document.addEventListener("DOMContentLoaded", () => {
   textarea.addEventListener("input", updateScrollBtnPosition);
   window.addEventListener("resize", updateScrollBtnPosition);
 
-  messagesEl.addEventListener("scroll", () => {
-    scrollTopBtn.style.display = messagesEl.scrollTop > 200 ? "flex" : "none";
-  });
-  scrollTopBtn.addEventListener("click", () => {
-    messagesEl.scrollTo({ top: 0, behavior: "smooth" });
-  });
+ messagesEl.addEventListener("scroll", () => {
+  const threshold = 200;
+
+  // Show top button only after scrolling down
+  scrollTopBtn.style.display = messagesEl.scrollTop > threshold ? "flex" : "none";
+
+  // Show bottom button only when near top
+  scrollBottomBtn.style.display = messagesEl.scrollTop <= threshold ? "flex" : "none";
+});
+
+scrollTopBtn.addEventListener("click", () => {
+  messagesEl.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+scrollBottomBtn.addEventListener("click", () => {
+  messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: "smooth" });
+});
+
+  messagesEl.dispatchEvent(new Event("scroll"));
 
   const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon");
   const chevronIcon   = toggleSidebarBtn.querySelector(".show-icon");
@@ -455,14 +469,14 @@ function renderMessages() {
     wrapper.appendChild(div);
 
     if (msg.role === "assistant" && msg.content !== "__TYPING__") {
-      const refreshRow = document.createElement("div");
-      refreshRow.className = "refresh-row";
+      const reloadRow = document.createElement("div");
+      reloadRow.className = "reload-row";
 
-      const refreshBtn = document.createElement("button");
-      refreshBtn.type = "button";
-      refreshBtn.className = "refresh-pill";
-      refreshBtn.title = "Retry this response";
-      refreshBtn.innerHTML = `
+      const reloadBtn = document.createElement("button");
+      reloadBtn.type = "button";
+      reloadBtn.className = "reload-pill";
+      reloadBtn.title = "Retry this response";
+      reloadBtn.innerHTML = `
         <svg viewBox="0 0 24 24" width="16" height="16"
              fill="none" stroke="currentColor" stroke-width="2"
              stroke-linecap="round" stroke-linejoin="round">
@@ -470,10 +484,10 @@ function renderMessages() {
           <polyline points="1 20 1 14 7 14"></polyline>
           <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
         </svg>
-        <span>Refresh</span>
+        <span>Reload</span>
       `;
 
-      refreshBtn.addEventListener("click", async () => {
+      reloadBtn.addEventListener("click", async () => {
         chat.messages.splice(idx, 1);
         chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
 
@@ -525,8 +539,8 @@ function renderMessages() {
         renderChatList();
       });
 
-      refreshRow.appendChild(refreshBtn);
-      wrapper.appendChild(refreshRow);
+      reloadRow.appendChild(reloadBtn);
+      wrapper.appendChild(reloadRow);
     }
 
     messagesEl.appendChild(wrapper);
