@@ -1,7 +1,7 @@
 // ==========================
 // CONFIG
 // ==========================
-const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
+const WORKER_URL = "https://gpt-test.barney-willis2.workers.dev";
 
 // Temporary user ID: will be asked once then stored in localStorage
 let userId = localStorage.getItem("chat_user_id");
@@ -244,15 +244,15 @@ function renderMessageContent(content) {
       "--color-6": "#666699",
       "--color-7": "#9494b8"
     },
-   Orange: {
-  "--color-1": "#FFD9B3",
-  "--color-2": "#FFB870",
-  "--color-3": "#F28C28",
-  "--color-4": "#C96A1B",
-  "--color-5": "#8A4513",
-  "--color-6": "#800000",
-  "--color-7": "#F30000"
-},
+    Orange: {
+      "--color-1": "#FFD9B3",
+      "--color-2": "#FFB870",
+      "--color-3": "#F28C28",
+      "--color-4": "#C96A1B",
+      "--color-5": "#8A4513",
+      "--color-6": "#800000",
+      "--color-7": "#F30000"
+    },
   };
 
   const neutrals = {
@@ -484,10 +484,22 @@ function renderMessages() {
       textDiv.textContent = msg.content;
     }
 
+      const metaDiv = document.createElement("div");
+    metaDiv.className = "msg-meta";
+
     const timeDiv = document.createElement("div");
     timeDiv.className = "msg-time";
     timeDiv.textContent = msg.time || "";
-    textDiv.appendChild(timeDiv);
+    metaDiv.appendChild(timeDiv);
+
+    if (msg.model && msg.content !== "__TYPING__") {
+      const modelDiv = document.createElement("div");
+      modelDiv.className = "msg-model";
+      modelDiv.textContent = msg.model;
+      metaDiv.appendChild(modelDiv);
+    }
+
+    textDiv.appendChild(metaDiv);
 
     div.appendChild(textDiv);
     wrapper.appendChild(div);
@@ -542,16 +554,18 @@ function renderMessages() {
           const data = await res.json();
          const answer = extractAnswer(data);
 
-          chat.messages[chat.messages.length - 1] = {
+        chat.messages[chat.messages.length - 1] = {
             role: "assistant",
             content: answer,
             time: formatDateTime(),
+            model: modelSelector.options[modelSelector.selectedIndex].text
           };
         } catch (e) {
           chat.messages[chat.messages.length - 1] = {
             role: "assistant",
             content: "Error: " + e.message,
             time: formatDateTime(),
+            model: modelSelector.options[modelSelector.selectedIndex].text
           };
         }
 
@@ -597,7 +611,7 @@ async function sendMessage() {
   if (currentIndex === null) createNewChat();
   const chat = chats[currentIndex];
 
-  const userMessage = { role: "user", content: text, time: formatDateTime() };
+  const userMessage = { role: "user", content: text, time: formatDateTime(), model: modelSelector.options[modelSelector.selectedIndex].text };
   chat.messages.push(userMessage);
 
   if (chat.title === "New Chat" || !chat.title) {
@@ -619,7 +633,7 @@ async function sendMessage() {
 
     console.log("About to send:", {
       provider: currentProvider,
-      model: currentModel,
+      model: modelSelector.options[modelSelector.selectedIndex].text,
       messages: cleanMessages
     });
 
@@ -651,10 +665,11 @@ async function sendMessage() {
 
     const answer = extractAnswer(data);
 
-    chat.messages[chat.messages.length - 1] = {
+      chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: answer,
-      time: formatDateTime()
+      time: formatDateTime(),
+      model: modelSelector.options[modelSelector.selectedIndex].text
     };
   } catch (e) {
     console.error("sendMessage failed:", e);
@@ -662,7 +677,8 @@ async function sendMessage() {
     chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: "Error: " + e.message,
-      time: formatDateTime()
+      time: formatDateTime(),
+      model: modelSelector.options[modelSelector.selectedIndex].text
     };
   }
 
@@ -720,10 +736,11 @@ async function sendMessage() {
 
     const answer = extractAnswer(data);
 
-    chat.messages[chat.messages.length - 1] = {
+        chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: answer,
       time: formatDateTime(),
+      model: modelSelector.options[modelSelector.selectedIndex].text
     };
   } catch (e) {
     console.error("sendMessageRetry failed:", e);
@@ -732,6 +749,7 @@ async function sendMessage() {
       role: "assistant",
       content: "Error: " + e.message,
       time: formatDateTime(),
+      model: modelSelector.options[modelSelector.selectedIndex].text
     };
   }
 
