@@ -9,6 +9,7 @@ let userId = localStorage.getItem("chat_user_id");
 
 let chats = [];
 let currentIndex = null;
+let currentProvider = localStorage.getItem("chat_provider") || "openai";
 let currentModel = localStorage.getItem("chat_model") || "gpt-5.4-mini-2026-03-17";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -82,6 +83,17 @@ function escapeHTML(str) {
     .replace(/>/g, "&gt;");
 }
 
+function extractAnswer(data) {
+  return (
+    data?.output_text ||
+    data?.output?.[0]?.content?.[0]?.text ||
+    data?.content?.[0]?.text ||
+    data?.detail ||
+    data?.error ||
+    "No response"
+  );
+}
+  
 function renderMessageContent(content) {
   const parts = content.split(/```([\s\S]*?)```/g);
   let html = "";
@@ -516,8 +528,9 @@ function renderMessages() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
+              provider: currentProvider,
               model: currentModel,
-              messages: cleanMessages,
+              messages: cleanMessages
             }),
           });
 
@@ -527,10 +540,7 @@ function renderMessages() {
           }
 
           const data = await res.json();
-          const answer =
-            data?.output_text ||
-            (data?.output && data.output[0]?.content && data.output[0].content[0]?.text) ||
-            "No response";
+         const answer = extractAnswer(data);
 
           chat.messages[chat.messages.length - 1] = {
             role: "assistant",
@@ -580,76 +590,92 @@ function renderMessages() {
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-  async function sendMessage() {
-    const text = inputEl.value.trim();
-    if (!text) return;
-    if (currentIndex === null) createNewChat();
-    const chat = chats[currentIndex];
+async function sendMessage() {
+  const text = inputEl.value.trim();
+  if (!text) return;
 
-    const userMessage = { role: "user", content: text, time: formatDateTime() };
-    chat.messages.push(userMessage);
+  if (currentIndex === null) createNewChat();
+  const chat = chats[currentIndex];
 
-    if (chat.title === "New Chat" || !chat.title) {
-      const firstLine = text.split(/\r?\n/)[0];
-      chat.title = firstLine.length > 40 ? firstLine.slice(0, 40) + "…" : firstLine;
-    }
+  const userMessage = { role: "user", content: text, time: formatDateTime() };
+  chat.messages.push(userMessage);
 
-    chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
-    renderMessages();
-    inputEl.value = "";
-    autoResize();
-    saveChats();
-    saveChatsToWorker();
-
-    try {
-      const cleanMessages = chat.messages
-        .filter(m => m.content !== "__TYPING__")
-        .slice(-10);
-
-      const res = await fetch(`${WORKER_URL}/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: currentModel,
-          messages: cleanMessages
-        }),
-      });
-
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(`Worker returned ${res.status}: ${errText}`);
-      }
-
-      const data = await res.json();
-      const answer =
-  data?.output_text ||
-  (data?.output && data.output[0]?.content && data.output[0].content[0]?.text) ||
-  "No response";
-
-      chat.messages[chat.messages.length - 1] = {
-        role: "assistant",
-        content: answer,
-        time: formatDateTime()
-      };
-    } catch (e) {
-      chat.messages[chat.messages.length - 1] = {
-        role: "assistant",
-        content: "Error: " + e.message,
-        time: formatDateTime()
-      };
-    }
-
-    saveChats();
-    saveChatsToWorker();
-    renderMessages();
-    renderChatList();
+  if (chat.title === "New Chat" || !chat.title) {
+    const firstLine = text.split(/\r?\n/)[0];
+    chat.title = firstLine.length > 40 ? firstLine.slice(0, 40) + "…" : firstLine;
   }
+
+  chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
+  renderMessages();
+  inputEl.value = "";
+  autoResize();
+  saveChats();
+  saveChatsToWorker();
+
+  try {
+    const cleanMessages = chat.messages
+      .filter(m => m.content !== "__TYPING__")
+      .slice(-10);
+
+    console.log("About to send:", {
+      provider: currentProvider,
+      model: currentModel,
+      messages: cleanMessages
+    });
+
+    const res = await fetch(`${WORKER_URL}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        provider: currentProvider,
+        model: currentModel,
+        messages: cleanMessages,
+      }),
+    });
+
+    console.log("HTTP status:", res.status);
+
+    const rawText = await res.text();
+    console.log("Worker raw response:", rawText);
+
+    let data = {};
+    try {
+      data = rawText ? JSON.parse(rawText) : {};
+    } catch (jsonErr) {
+      throw new Error(`Invalid JSON from worker: ${rawText}`);
+    }
+
+    if (!res.ok) {
+      throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
+    }
+
+    const answer = extractAnswer(data);
+
+    chat.messages[chat.messages.length - 1] = {
+      role: "assistant",
+      content: answer,
+      time: formatDateTime()
+    };
+  } catch (e) {
+    console.error("sendMessage failed:", e);
+
+    chat.messages[chat.messages.length - 1] = {
+      role: "assistant",
+      content: "Error: " + e.message,
+      time: formatDateTime()
+    };
+  }
+
+  saveChats();
+  saveChatsToWorker();
+  renderMessages();
+  renderChatList();
+}
 
  async function sendMessageRetry() {
   if (currentIndex === null) createNewChat();
   const chat = chats[currentIndex];
 
-  // Add typing indicator only
   chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
   renderMessages();
   saveChats();
@@ -660,25 +686,39 @@ function renderMessages() {
       .filter(m => m.content !== "__TYPING__")
       .slice(-10);
 
+    console.log("Retry send:", {
+      provider: currentProvider,
+      model: currentModel,
+      messages: cleanMessages
+    });
+
     const res = await fetch(`${WORKER_URL}/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        provider: currentProvider,
         model: currentModel,
-        messages: cleanMessages,
+        messages: cleanMessages
       }),
     });
 
-    if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(`Worker returned ${res.status}: ${errText}`);
+    console.log("Retry status:", res.status);
+
+    const rawText = await res.text();
+    console.log("Retry raw response:", rawText);
+
+    let data = {};
+    try {
+      data = rawText ? JSON.parse(rawText) : {};
+    } catch {
+      throw new Error(`Invalid JSON from worker: ${rawText}`);
     }
 
-    const data = await res.json();
-    const answer =
-      data?.output_text ||
-      (data?.output && data.output[0]?.content && data.output[0].content[0]?.text) ||
-      "No response";
+    if (!res.ok) {
+      throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
+    }
+
+    const answer = extractAnswer(data);
 
     chat.messages[chat.messages.length - 1] = {
       role: "assistant",
@@ -686,6 +726,8 @@ function renderMessages() {
       time: formatDateTime(),
     };
   } catch (e) {
+    console.error("sendMessageRetry failed:", e);
+
     chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: "Error: " + e.message,
@@ -698,7 +740,6 @@ function renderMessages() {
   renderMessages();
   renderChatList();
 }
-
   document.getElementById("newChatBtn").addEventListener("click", () => {
     createNewChat();
     if (window.innerWidth <= 768) closeSidebar();
@@ -710,11 +751,27 @@ function renderMessages() {
       sendMessage();
     }
   });
-modelSelector.value = currentModel;
+modelSelector.value = `${currentProvider}|${currentModel}`;
 
 modelSelector.addEventListener("change", (e) => {
-  currentModel = e.target.value;
+  const value = e.target.value || "";
+  const parts = value.split("|");
+
+  if (parts.length === 2) {
+    currentProvider = parts[0];
+    currentModel = parts[1];
+  } else {
+    currentProvider = "openai";
+    currentModel = value || "gpt-5.4-mini-2026-03-17";
+  }
+
+  localStorage.setItem("chat_provider", currentProvider);
   localStorage.setItem("chat_model", currentModel);
+
+  console.log("Model selection changed:", {
+    currentProvider,
+    currentModel
+  });
 });
 
 const darkIcon  = themeToggleBtn.querySelector(".dark-icon");
