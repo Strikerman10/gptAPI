@@ -1,7 +1,7 @@
 // ==========================
 // CONFIG
 // ==========================
-const WORKER_URL = "https://gpt-test.barney-willis2.workers.dev";
+const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
 
 // Temporary user ID: will be asked once then stored in localStorage
 let userId = localStorage.getItem("chat_user_id");
