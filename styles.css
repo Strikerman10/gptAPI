@@ -158,7 +158,7 @@ body.dark-mode {
 }
 
 .new-chat {
-  flex: 0 0 130px !important;
+  flex: 1 1 0;
   box-sizing: border-box;
   margin: 0;
   padding: 10px 10px;
@@ -174,7 +174,7 @@ body.dark-mode {
 }
 
 .model-selector {
-  flex: 1 1 auto;
+  flex: 1 1 0;
   min-width: 0;
   width: 100%;
   margin: 0;
@@ -221,16 +221,14 @@ body.dark-mode {
   }
 
   .new-chat {
-    width: 90px;
-    flex: 0 0 90px;
-    min-width: 90px;
-    max-width: 90px;
+    flex: 1 1 0;  /* changed */
+    min-width: 0;  /* changed */
     padding: 8px 8px;
     font-size: 12px;
   }
 
   .model-selector {
-    flex: 1 1 auto;
+    flex: 1 1 0;
     min-width: 0;
     padding: 8px 28px 8px 8px;
     font-size: 12px;
@@ -520,7 +518,8 @@ body.dark-mode {
   border-radius: 12px;
   background: var(--color-1);
   border: 1px solid var(--border);
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: auto;
   white-space: pre;
 }
 
@@ -1144,3 +1143,168 @@ body.dark-mode .message p {
   display: block;
   flex: none;
 }
+
+  /* ===========================
+   Model Sheet
+   =========================== */
+
+/* Hide model sheet on desktop entirely */
+#modelSheet,
+#modelSheetBackdrop {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+
+  /* Allow it to exist on mobile - hidden class controls visibility */
+  #modelSheet,
+  #modelSheetBackdrop {
+    display: block !important;
+  }
+
+  /* When hidden class is applied, force hide again */
+  #modelSheet.hidden,
+  #modelSheetBackdrop.hidden {
+    display: none !important;
+  }
+
+  /* Model sheet inherits palette-sheet base styles */
+  #modelSheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1300;
+    background: var(--color-3);
+    color: var(--primary-contrast);
+    border: 1px solid var(--border);
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.35);
+    padding: 10px 14px calc(14px + env(safe-area-inset-bottom));
+    transform: translateY(100%);
+    transition: transform 0.25s ease;
+    max-height: 80vh;
+    overflow: auto;
+  }
+
+  #modelSheet.show {
+    transform: translateY(0);
+  }
+
+  /* Backdrop for model sheet */
+  #modelSheetBackdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1200;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  #modelSheetBackdrop.show {
+    opacity: 1;
+  }
+
+  /* Model sheet list layout */
+  .model-sheet-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem 1.5rem;
+    overflow-y: auto;
+    max-height: 60vh;
+  }
+
+  .model-sheet-option {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    width: 100%;
+    padding: 0.85rem 1rem;
+    background: color-mix(in srgb, var(--color-4) 60%, black 40%);
+    border: 1.5px solid transparent;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    color: var(--primary-contrast);
+    text-align: left;
+  }
+
+  .model-sheet-option:hover {
+    background: color-mix(in srgb, var(--color-4) 80%, black 20%);
+  }
+
+  .model-sheet-option.active {
+    border-color: var(--color-7);
+    background: color-mix(in srgb, var(--color-4) 80%, black 20%);
+  }
+
+  .model-icon {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+    width: 2rem;
+    text-align: center;
+  }
+
+  .model-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 0.15rem;
+  }
+
+  .model-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--primary-contrast);
+  }
+
+  .model-desc {
+    font-size: 0.75rem;
+    opacity: 0.55;
+    line-height: 1.2;
+    color: var(--primary-contrast);
+  }
+
+  .model-check {
+    font-size: 1rem;
+    color: var(--color-7);
+    font-weight: 700;
+    opacity: 0;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+  }
+
+  .model-sheet-option.active .model-check {
+    opacity: 1;
+  }
+
+  .model-group-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 1.0;
+    margin: 0.75rem 0 0.25rem 0.25rem;
+    padding: 0;
+    color: var(--primary-contrast);
+  }
+
+  .model-group-label:first-child {
+    margin-top: 0;
+  }
+
+  .provider-icon {
+    width: 1.4rem;
+    height: 1.4rem;
+    object-fit: contain;
+    display: block;
+  }
+
+   #modelSheet .sheet-close {
+     color: white !important;
+   }
+   
+} /* end @media (max-width: 768px) */
