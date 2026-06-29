@@ -3,12 +3,16 @@
 // ==========================
 const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
 
-let userId = localStorage.getItem("chat_user_id");
+// AUTH STATE
+// We no longer use a plain prompt() for userId.
+// Instead we store a proper auth token and userId from login.
+let authToken = localStorage.getItem("authToken") || null;
+let userId    = localStorage.getItem("userId")    || null;
 
 let chats = [];
 let currentIndex = null;
 let currentProvider = localStorage.getItem("chat_provider") || "openai";
-let currentModel = localStorage.getItem("chat_model") || "gpt-5.4-mini-2026-03-17";
+let currentModel    = localStorage.getItem("chat_model")    || "gpt-5.4-mini-2026-03-17";
 
 // ==========================
 // DOM READY
@@ -27,6 +31,135 @@ document.addEventListener("DOMContentLoaded", () => {
   const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
   const modelSelector    = document.getElementById("modelSelector");
 
+  // ==========================
+  // AUTH MODAL LOGIC
+  // ==========================
+  function showAuthModal() {
+    document.getElementById("authModal").classList.remove("hidden");
+  }
+  
+  function hideAuthModal() {
+    document.getElementById("authModal").classList.add("hidden");
+  }
+  
+  async function initAuth() {
+    // Already logged in — token exists
+    if (authToken && userId) {
+      hideAuthModal();
+      return true;
+    }
+  
+    // Show the modal and wait for the user to log in or register
+    showAuthModal();
+  
+    return new Promise((resolve) => {
+      let mode = "login"; // or "register"
+  
+      const tabLogin    = document.getElementById("tabLogin");
+      const tabRegister = document.getElementById("tabRegister");
+      const submitBtn   = document.getElementById("authSubmitBtn");
+      const errorEl     = document.getElementById("authError");
+      const titleEl     = document.getElementById("authModalTitle");
+      const subtitleEl  = document.getElementById("authModalSubtitle");
+  
+      tabLogin.addEventListener("click", () => {
+        mode = "login";
+        tabLogin.classList.add("active");
+        tabRegister.classList.remove("active");
+        submitBtn.textContent = "Sign In";
+        titleEl.textContent   = "Welcome Back";
+        subtitleEl.textContent = "Sign in to access your chats";
+        errorEl.textContent   = "";
+      });
+  
+      tabRegister.addEventListener("click", () => {
+        mode = "register";
+        tabRegister.classList.add("active");
+        tabLogin.classList.remove("active");
+        submitBtn.textContent  = "Create Account";
+        titleEl.textContent    = "Create Account";
+        subtitleEl.textContent = "Register to save your chats";
+        errorEl.textContent    = "";
+      });
+  
+      submitBtn.addEventListener("click", async () => {
+        const username = document.getElementById("authUsername").value.trim();
+        const password = document.getElementById("authPassword").value.trim();
+        errorEl.textContent = "";
+  
+        if (!username || !password) {
+          errorEl.textContent = "Please enter a username and password.";
+          return;
+        }
+  
+        submitBtn.disabled    = true;
+        submitBtn.textContent = "Please wait…";
+  
+        try {
+          const endpoint = mode === "login" ? "/login" : "/register";
+          const res = await fetch(`${WORKER_URL}${endpoint}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+          });
+  
+          const data = await res.json();
+  
+          if (!res.ok) {
+            throw new Error(data.error || "Something went wrong.");
+          }
+  
+          if (mode === "register") {
+            // After register, switch to login automatically
+            errorEl.style.color = "green";
+            errorEl.textContent = "Account created! Signing you in…";
+  
+            // Auto-login after register
+            const loginRes = await fetch(`${WORKER_URL}/login`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username, password }),
+            });
+            const loginData = await loginRes.json();
+            if (!loginRes.ok) throw new Error(loginData.error || "Login failed.");
+  
+            authToken = loginData.token;
+            userId    = loginData.userId;
+          } else {
+            authToken = data.token;
+            userId    = data.userId;
+          }
+  
+          // Persist to localStorage
+          localStorage.setItem("authToken", authToken);
+          localStorage.setItem("userId",    userId);
+  
+          hideAuthModal();
+          resolve(true);
+  
+        } catch (err) {
+          errorEl.style.color = "";
+          errorEl.textContent = err.message;
+          submitBtn.disabled  = false;
+          submitBtn.textContent = mode === "login" ? "Sign In" : "Create Account";
+        }
+      });
+  
+      // Allow Enter key to submit
+      document.getElementById("authPassword").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") submitBtn.click();
+      });
+    });
+  }
+
+function handleUnauthorized() {
+  authToken = null;
+  userId = null;
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("userId");
+  initAuth();
+}
+  
   // ── NEW: Model Sheet elements ──────────────────────────
   const modelSheet         = document.getElementById('modelSheet');
   const modelSheetBackdrop = document.getElementById('modelSheetBackdrop');
@@ -70,11 +203,28 @@ document.addEventListener("DOMContentLoaded", () => {
   textarea.addEventListener("input", updateScrollBtnPosition);
   window.addEventListener("resize", updateScrollBtnPosition);
 
-  messagesEl.addEventListener("scroll", () => {
-    const threshold = 200;
-    scrollTopBtn.style.display    = messagesEl.scrollTop > threshold ? "flex" : "none";
-    scrollBottomBtn.style.display = messagesEl.scrollTop <= threshold ? "flex" : "none";
-  });
+     messagesEl.addEventListener("scroll", () => {
+    const distanceFromTop = messagesEl.scrollTop;
+    const distanceFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
+    const canScroll = messagesEl.scrollHeight > messagesEl.clientHeight;
+
+    if (!canScroll) {
+        scrollTopBtn.style.display    = "none";
+        scrollBottomBtn.style.display = "none";
+    } else if (distanceFromTop <= 50) {
+        // Near the top
+        scrollTopBtn.style.display    = "none";
+        scrollBottomBtn.style.display = "flex";
+    } else if (distanceFromBottom <= 50) {
+        // Near the bottom
+        scrollTopBtn.style.display    = "flex";
+        scrollBottomBtn.style.display = "none";
+    } else {
+        // In the middle - show both
+        scrollTopBtn.style.display    = "flex";
+        scrollBottomBtn.style.display = "flex";
+    }
+});
 
   scrollTopBtn.addEventListener("click", () => {
     messagesEl.scrollTo({ top: 0, behavior: "smooth" });
@@ -83,7 +233,9 @@ document.addEventListener("DOMContentLoaded", () => {
     messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: "smooth" });
   });
 
-  messagesEl.dispatchEvent(new Event("scroll"));
+  setTimeout(() => {
+      messagesEl.dispatchEvent(new Event("scroll"));
+  }, 100);
 
   const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon");
   const chevronIcon   = toggleSidebarBtn.querySelector(".show-icon");
@@ -379,19 +531,23 @@ function renderMessageContent(content) {
     saveChatsToWorker();
   }
 
-  async function saveChatsToWorker() {
-    if (!userId) return;
-    try {
-      const res = await fetch(`${WORKER_URL}/save`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, chats }),
-      });
-      if (!res.ok) console.warn("Worker save failed:", await res.text());
-    } catch (e) {
-      console.warn("Could not reach worker:", e);
+    async function saveChatsToWorker() {
+      if (!userId) return;
+      try {
+        const res = await fetch(`${WORKER_URL}/save`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${authToken}`
+          },
+          body: JSON.stringify({ userId, chats }),
+        });
+        if (res.status === 401) { handleUnauthorized(); return; }
+        if (!res.ok) console.warn("Worker save failed:", await res.text());
+      } catch (e) {
+        console.warn("Could not reach worker:", e);
+      }
     }
-  }
 
   function formatDateTime(date = new Date()) {
     const day = String(date.getDate()).padStart(2, "0");
@@ -402,21 +558,26 @@ function renderMessageContent(content) {
     return `${hours}:${minutes}\n${day}/${month}/${year}`;
   }
 
-  async function loadChatsFromWorker() {
-    try {
-      const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`);
-      if (!res.ok) return;
-      const workerChats = await res.json();
-      if (Array.isArray(workerChats) && workerChats.length) {
-        chats = workerChats;
-        currentIndex = 0;
-        renderChatList();
-        renderMessages();
+    async function loadChatsFromWorker() {
+      try {
+        const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`, {
+          headers: {
+            "Authorization": `Bearer ${authToken}`
+          }
+        });
+        if (res.status === 401) { handleUnauthorized(); return; }
+        if (!res.ok) return;
+        const workerChats = await res.json();
+        if (Array.isArray(workerChats) && workerChats.length) {
+          chats = workerChats;
+          currentIndex = 0;
+          renderChatList();
+          renderMessages();
+        }
+      } catch (e) {
+        console.warn("Could not load chats from worker:", e);
       }
-    } catch (e) {
-      console.warn("Could not load chats from worker:", e);
     }
-  }
 
   function createNewChat() {
     const newChat = { id: Date.now().toString(), title: "New Chat", messages: [], pinned: false };
@@ -798,7 +959,10 @@ async function sendMessage() {
 
     const res = await fetch(`${WORKER_URL}/chat`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${authToken}`
+      },
       body: JSON.stringify({
         provider: currentProvider,
         model: currentModel,
@@ -818,6 +982,7 @@ async function sendMessage() {
       throw new Error(`Invalid JSON from worker: ${rawText}`);
     }
 
+    if (res.status === 401) { handleUnauthorized(); return; }
     if (!res.ok) {
       throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
     }
@@ -1098,18 +1263,19 @@ document.addEventListener("keydown", (e) => {
     applyTheme();
     syncActiveModel(`${currentProvider}|${currentModel}`);
     
-    if (!userId) {
-      userId = prompt("Enter a username to identify your chats:", "");
-      if (!userId) {
-        alert("You must enter a username to continue");
-        return;
-      }
-      localStorage.setItem("chat_user_id", userId);
-    }
+   // NEW — show login modal if not authenticated
+    const authed = await initAuth();
+    if (!authed) return;
 
     let gotFromWorker = false;
     try {
-      const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`);
+      const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`, {
+        headers: {
+          "Authorization": `Bearer ${authToken}`
+        }
+      });
+      
+      if (res.status === 401) { handleUnauthorized(); return; }
       if (res.ok) {
         const workerChats = await res.json();
         if (Array.isArray(workerChats) && workerChats.length) {
