@@ -866,7 +866,7 @@ body.dark-mode {
    Scroll to Top
    =========================== */
 .scroll-top-btn {
-  position: absolute;
+  position: fixed;
   bottom: 95px;
   right: 12px;
   z-index: 50;
@@ -1381,4 +1381,114 @@ body.dark-mode .message p {
 .pin-btn:hover {
   color: var(--primary-contrast);
   background: var(--color-6);
+}
+
+/* ===================== */
+/* AUTH MODAL            */
+/* ===================== */
+.auth-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.auth-modal-overlay.hidden {
+  display: none;
+}
+
+.auth-modal-box {
+  background: var(--surface-1);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.auth-modal-box h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  text-align: center;
+}
+
+.auth-modal-box p {
+  margin: 0;
+  font-size: 0.85rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.15s;
+}
+
+.auth-tab.active {
+  background: var(--color-3);
+  color: #fff;
+  border-color: var(--color-3);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.auth-form input {
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.auth-form input:focus {
+  border-color: var(--color-3);
+}
+
+.auth-error {
+  color: var(--color-7);
+  font-size: 0.8rem;
+  min-height: 1rem;
+  margin: 0;
+  text-align: center;
+}
+
+.auth-submit {
+  padding: 0.7rem;
+  background: var(--color-3);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.auth-submit:hover {
+  background: var(--color-2);
 }
