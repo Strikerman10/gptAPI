@@ -492,10 +492,28 @@ body.dark-mode {
 /* ===========================
    Code Copy Button
    =========================== */
+
+/* Make the message bubble not overflow its container */
+.message {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Make the text container shrink properly */
+.msg-text {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
 .code-block-wrapper {
   position: relative;
   margin-top: 8px;
   margin-bottom: 2px;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .copy-code-btn {
@@ -518,9 +536,22 @@ body.dark-mode {
   border-radius: 12px;
   background: var(--color-1);
   border: 1px solid var(--border);
+  /* This is the key fix - allows scrolling inside the box */
+  /* instead of pushing the box wider                      */
   max-width: 100%;
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: visible;
   white-space: pre;
+  box-sizing: border-box;
+}
+
+.code-block-wrapper code {
+  font-family: monospace;
+  color: var(--text);
+  /* Stop code text from wrapping and breaking the layout */
+  white-space: pre;
+  word-break: normal;
+  overflow-wrap: normal;
 }
 
 .message p {
@@ -537,11 +568,6 @@ body.dark-mode {
 
 .message .code-block-wrapper {
   margin: 0;
-}
-
-.code-block-wrapper code {
-  font-family: monospace;
-  color: var(--text);
 }
 
 
@@ -1308,3 +1334,51 @@ body.dark-mode .message p {
    }
    
 } /* end @media (max-width: 768px) */
+
+/* ===========================
+  Section Headers in Sidebar and Pinned Chats
+   =========================== */
+.chat-section-header {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text);
+  padding: 10px 12px 4px;
+  user-select: none;
+  opacity: 0.6;
+}
+
+/* Pinned chat item highlight */
+.chat-item.pinned {
+  border-left: 3px solid var(--color-4);
+  background-color: var(--surface-hover);
+}
+
+/* Pin button */
+.pin-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-6);
+  padding: 4px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+
+.chat-item:hover .pin-btn {
+  opacity: 1;
+}
+
+/* Always show pin button when active/pinned */
+.pin-btn.active {
+  opacity: 1;
+  color: var(--color-6);
+}
+
+.pin-btn:hover {
+  color: var(--primary-contrast);
+  background: var(--color-6);
+}
