@@ -29,6 +29,31 @@ HEAD - Meta, Title, Styles
 BODY - Main App Container
 ========================== -->
   <body>
+
+  <!-- ===================== -->
+  <!-- AUTH MODAL            -->
+  <!-- ===================== -->
+  <div id="authModal" class="auth-modal-overlay hidden">
+    <div class="auth-modal-box">
+  
+      <h2 id="authModalTitle">Welcome Back</h2>
+      <p id="authModalSubtitle">Sign in to access your chats</p>
+  
+      <div class="auth-tabs">
+        <button id="tabLogin"    class="auth-tab active">Login</button>
+        <button id="tabRegister" class="auth-tab">Register</button>
+      </div>
+  
+      <div class="auth-form">
+        <input id="authUsername" type="text"     placeholder="Username" autocomplete="username" />
+        <input id="authPassword" type="password" placeholder="Password" autocomplete="current-password" />
+        <p id="authError" class="auth-error"></p>
+        <button id="authSubmitBtn" class="auth-submit">Sign In</button>
+      </div>
+
+    </div>
+  </div>
+  
   <div class="app-container">
    
 
@@ -118,26 +143,33 @@ PALETTE / THEME PICKER BUTTON
 (Opens the colour palette bottom sheet)
 ========================== -->
 <div class="theme-dropdown">
-  <button id="themeBtn" class="theme-btn" aria-label="Change Theme" aria-expanded="false" aria-controls="paletteSheet">
- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-  <defs>
-    <clipPath id="wheelClip">
-      <circle cx="12" cy="12" r="10"/>
-    </clipPath>
-  </defs>
+ <button id="themeBtn" class="theme-btn" aria-label="Change Theme" aria-expanded="false" aria-controls="paletteSheet">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+    <defs>
+      <clipPath id="wheelClip">
+        <circle cx="12" cy="12" r="10"/>
+      </clipPath>
+    </defs>
 
-  <g clip-path="url(#wheelClip)">
-    <path d="M12 12 L12 2 A10 10 0 0 1 21.51 9.06 Z" fill="#5e8c61"/>
-    <path d="M12 12 L21.51 9.06 A10 10 0 0 1 17.88 20.09 Z" fill="#2c4f80"/>
-    <path d="M12 12 L17.88 20.09 A10 10 0 0 1 6.12 20.09 Z" fill="#9467bd"/>
-    <path d="M12 12 L6.12 20.09 A10 10 0 0 1 2.49 9.06 Z" fill="#8b0000"/>
-    <path d="M12 12 L2.49 9.06 A10 10 0 0 1 12 2 Z" fill="#006d65"/>
-  </g>
+    <g clip-path="url(#wheelClip)">
+      <!-- Green: 12 o'clock to 2 o'clock -->
+      <path d="M12 12 L12 2 A10 10 0 0 1 20.66 7 Z" fill="#22c55e"/>
+      <!-- Blue: 2 o'clock to 4 o'clock -->
+      <path d="M12 12 L20.66 7 A10 10 0 0 1 20.66 17 Z" fill="#3b82f6"/>
+      <!-- Purple: 4 o'clock to 6 o'clock -->
+      <path d="M12 12 L20.66 17 A10 10 0 0 1 12 22 Z" fill="#a855f7"/>
+      <!-- Red: 6 o'clock to 8 o'clock -->
+      <path d="M12 12 L12 22 A10 10 0 0 1 3.34 17 Z" fill="#ef4444"/>
+      <!-- Teal: 8 o'clock to 10 o'clock -->
+      <path d="M12 12 L3.34 17 A10 10 0 0 1 3.34 7 Z" fill="#14b8a6"/>
+      <!-- Orange: 10 o'clock to 12 o'clock -->
+      <path d="M12 12 L3.34 7 A10 10 0 0 1 12 2 Z" fill="#F28C28"/>
+    </g>
 
-  <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.4"/>
-  <circle cx="12" cy="12" r="2.2" fill="currentColor" opacity="0.14"/>
-</svg>
-  </button>
+    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.4"/>
+    <circle cx="12" cy="12" r="2.2" fill="currentColor" opacity="0.14"/>
+  </svg>
+</button>
 </div>
 
 <!-- ==========================
