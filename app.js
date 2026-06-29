@@ -1,23 +1,42 @@
 // ==========================
-// CONFIG
+// CONFIG & GLOBAL STATE
 // ==========================
 const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
 
-// Temporary user ID: will be asked once then stored in localStorage
 let userId = localStorage.getItem("chat_user_id");
-
 
 let chats = [];
 let currentIndex = null;
 let currentProvider = localStorage.getItem("chat_provider") || "openai";
 let currentModel = localStorage.getItem("chat_model") || "gpt-5.4-mini-2026-03-17";
 
+// ==========================
+// DOM READY
+// ==========================
 document.addEventListener("DOMContentLoaded", () => {
-  const chatListEl = document.getElementById("chatList");
-  const messagesEl = document.getElementById("messages");
-  const chatTitleEl = document.getElementById("chatTitle");
-  const inputEl = document.getElementById("input");
 
+  // ==========================
+  // DOM ELEMENT REFERENCES
+  // ==========================
+  const chatListEl    = document.getElementById("chatList");
+  const messagesEl    = document.getElementById("messages");
+  const chatTitleEl   = document.getElementById("chatTitle");
+  const inputEl       = document.getElementById("input");
+  const themeToggleBtn   = document.getElementById("toggleThemeBtn");
+  const sidebarEl        = document.querySelector(".sidebar");
+  const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
+  const modelSelector    = document.getElementById("modelSelector");
+
+  // ── NEW: Model Sheet elements ──────────────────────────
+  const modelSheet         = document.getElementById('modelSheet');
+  const modelSheetBackdrop = document.getElementById('modelSheetBackdrop');
+  const closeModelSheetBtn = document.getElementById('closeModelSheetBtn');
+  const modelSheetOptions  = document.querySelectorAll('.model-sheet-option');
+  // ───────────────────────────────────────────────────────
+
+  // ==========================
+  // INPUT AUTO RESIZE
+  // ==========================
   function autoResize() {
     inputEl.style.height = "auto";
     inputEl.style.height = Math.min(inputEl.scrollHeight, 200) + "px";
@@ -25,19 +44,14 @@ document.addEventListener("DOMContentLoaded", () => {
   inputEl.addEventListener("input", autoResize);
   autoResize();
 
-  const themeToggleBtn    = document.getElementById("toggleThemeBtn");
-  const sidebarEl         = document.querySelector(".sidebar");
-  const toggleSidebarBtn  = document.getElementById("toggleSidebarBtn");
-  const modelSelector     = document.getElementById("modelSelector");
-
   const backdropEl = document.createElement("div");
   backdropEl.className = "sidebar-backdrop";
   document.body.appendChild(backdropEl);
 
-  const paletteBtn = document.getElementById("themeBtn");
-  const paletteSheet = document.getElementById("paletteSheet");
-  const sheetBackdrop = document.getElementById("sheetBackdrop");
-  const closeSheetBtn = document.getElementById("closeSheetBtn");
+  const paletteBtn     = document.getElementById("themeBtn");
+  const paletteSheet   = document.getElementById("paletteSheet");
+  const sheetBackdrop  = document.getElementById("sheetBackdrop");
+  const closeSheetBtn  = document.getElementById("closeSheetBtn");
   const paletteOptions = document.querySelectorAll(".sheet-option");
 
   const scrollTopBtn = document.getElementById("scrollTopBtn");
@@ -45,6 +59,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const inputArea    = document.querySelector(".input-area");
   const textarea     = inputArea.querySelector("textarea");
 
+  // ==========================
+  // SCROLL BUTTONS
+  // ==========================
   function updateScrollBtnPosition() {
     const inputHeight = inputArea.offsetHeight;
     scrollTopBtn.style.bottom = (inputHeight + 20) + "px";
@@ -53,83 +70,91 @@ document.addEventListener("DOMContentLoaded", () => {
   textarea.addEventListener("input", updateScrollBtnPosition);
   window.addEventListener("resize", updateScrollBtnPosition);
 
- messagesEl.addEventListener("scroll", () => {
-  const threshold = 200;
+  messagesEl.addEventListener("scroll", () => {
+    const threshold = 200;
+    scrollTopBtn.style.display    = messagesEl.scrollTop > threshold ? "flex" : "none";
+    scrollBottomBtn.style.display = messagesEl.scrollTop <= threshold ? "flex" : "none";
+  });
 
-  // Show top button only after scrolling down
-  scrollTopBtn.style.display = messagesEl.scrollTop > threshold ? "flex" : "none";
-
-  // Show bottom button only when near top
-  scrollBottomBtn.style.display = messagesEl.scrollTop <= threshold ? "flex" : "none";
-});
-
-scrollTopBtn.addEventListener("click", () => {
-  messagesEl.scrollTo({ top: 0, behavior: "smooth" });
-});
-
-scrollBottomBtn.addEventListener("click", () => {
-  messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: "smooth" });
-});
+  scrollTopBtn.addEventListener("click", () => {
+    messagesEl.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  scrollBottomBtn.addEventListener("click", () => {
+    messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: "smooth" });
+  });
 
   messagesEl.dispatchEvent(new Event("scroll"));
 
   const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon");
   const chevronIcon   = toggleSidebarBtn.querySelector(".show-icon");
 
-function escapeHTML(str) {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
+  // ==========================
+  // UTILITY FUNCTIONS
+  // ==========================
+  function escapeHTML(str) {
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
 
-function extractAnswer(data) {
-  return (
-    data?.output_text ||
-    data?.output?.[0]?.content?.[0]?.text ||
-    data?.content?.[0]?.text ||
-    data?.detail ||
-    data?.error ||
-    "No response"
-  );
-}
+  function extractAnswer(data) {
+    return (
+      data?.output_text ||
+      data?.output?.[0]?.content?.[0]?.text ||
+      data?.content?.[0]?.text ||
+      data?.detail ||
+      data?.error ||
+      "No response"
+    );
+  }
   
 function renderMessageContent(content) {
-  const parts = content.split(/```([\s\S]*?)```/g);
+  const FENCE = String.fromCharCode(96, 96, 96);
+  const fenceRegex = new RegExp(FENCE + "(\\w*\\n[\\s\\S]*?)\\n" + FENCE, "g");
+  const countRegex = new RegExp(FENCE, "g");
+
+  const tickCount = (content.match(countRegex) || []).length;
+  if (tickCount % 2 !== 0) {
+    content = content + "\n" + FENCE;
+  }
+
+  const parts = content.split(fenceRegex);
   let html = "";
 
   for (let i = 0; i < parts.length; i++) {
     if (i % 2 === 0) {
-      // normal text
-      html += `<div class="msg-paragraph">${escapeHTML(parts[i]).replace(/\n/g, "<br>")}</div>`;
+      const escaped = escapeHTML(parts[i]).replace(/\n/g, "<br>");
+      if (escaped.trim()) {
+        html += `<div class="msg-paragraph">${escaped}</div>`;
+      }
     } else {
-      // code block
       let code = parts[i].trim();
-
-      // remove optional language line like "js\n"
-      const firstLineBreak = code.indexOf("\n");
-      let language = "";
-      if (firstLineBreak !== -1) {
-        const possibleLang = code.slice(0, firstLineBreak).trim();
-        if (/^[a-zA-Z0-9_-]+$/.test(possibleLang)) {
-          language = possibleLang;
-          code = code.slice(firstLineBreak + 1);
+      const firstNewline = code.indexOf("\n");
+      let lang = "";
+      if (firstNewline !== -1) {
+        const firstLine = code.substring(0, firstNewline).trim();
+        if (/^\w+$/.test(firstLine)) {
+          lang = firstLine;
+          code = code.substring(firstNewline + 1);
         }
       }
 
+      const id = "code-" + Math.random().toString(36).substring(2, 9);
       html += `
-        <div class="code-block-wrapper" data-code="${encodeURIComponent(code)}">
-          <button class="copy-code-btn" type="button">Copy</button>
-          ${language ? `<div class="code-language">${language}</div>` : ""}
-          <pre><code>${escapeHTML(code)}</code></pre>
-        </div>
-      `;
+        <div class="code-block-wrapper">
+          <div class="code-lang-label">${lang || "code"}</div>
+          <button class="copy-code-btn" data-target="${id}">Copy</button>
+          <pre><code id="${id}">${escapeHTML(code)}</code></pre>
+        </div>`;
     }
   }
 
   return html;
 }
-  
+// ==========================
+// SIDEBAR - OPEN / CLOSE / TOGGLE
+// ==========================
   function openSidebar() {
     if (window.innerWidth <= 768) {
       sidebarEl.classList.add("open");
@@ -180,6 +205,9 @@ function renderMessageContent(content) {
 
   backdropEl.addEventListener("click", closeSidebar);
 
+// ==========================
+// SIDEBAR - SWIPE TO OPEN / CLOSE (MOBILE)
+// ==========================
   let touchStartX = 0;
   document.addEventListener("touchstart", e => {
     if (window.innerWidth > 768) return;
@@ -198,6 +226,9 @@ function renderMessageContent(content) {
     }
   });
 
+// ==========================
+// THEME - COLOUR PALETTES
+// ==========================
   const palettes = {
     Green: {
       "--color-1": "#94e8b4",
@@ -255,6 +286,9 @@ function renderMessageContent(content) {
     },
   };
 
+// ==========================
+// THEME - LIGHT / DARK NEUTRALS
+// ==========================
   const neutrals = {
     light: {
       "--bg": "hsl(0 0% 99%)",
@@ -279,6 +313,9 @@ function renderMessageContent(content) {
   let currentPalette = localStorage.getItem("palette") || "Red";
   let currentMode = localStorage.getItem("mode") || "light";
 
+// ==========================
+// THEME - APPLY THEME
+// ==========================
   function applyTheme() {
     const root = document.documentElement;
     const palette = palettes[currentPalette] || palettes.Red;
@@ -333,6 +370,9 @@ function renderMessageContent(content) {
     }
   }
 
+// ==========================
+// SAVE CHATS - LOCAL STORAGE & WORKER
+// ==========================
   function saveChats() {
     localStorage.setItem("secure_chat_chats", JSON.stringify(chats));
     localStorage.setItem("secure_chat_index", String(currentIndex));
@@ -379,7 +419,7 @@ function renderMessageContent(content) {
   }
 
   function createNewChat() {
-    const newChat = { id: Date.now().toString(), title: "New Chat", messages: [] };
+    const newChat = { id: Date.now().toString(), title: "New Chat", messages: [], pinned: false };
     chats.unshift(newChat);
     currentIndex = 0;
     saveChats();
@@ -398,54 +438,137 @@ function renderMessageContent(content) {
     renderMessages();
   }
 
-  function renderChatList() {
-    chatListEl.innerHTML = "";
-    chats.forEach((chat, i) => {
-      const item = document.createElement("div");
-      item.className = "chat-item" + (i === currentIndex ? " selected" : "");
+    function togglePin(index) {
+      chats[index].pinned = !chats[index].pinned;
+    
+      // Sort: pinned first, unpinned after — preserve order within each group
+      const pinned   = chats.filter(c => c.pinned);
+      const unpinned = chats.filter(c => !c.pinned);
+      chats = [...pinned, ...unpinned];
+    
+      // Keep currentIndex pointing to the same chat after re-sort
+      currentIndex = chats.findIndex(c => c === chats[0]) ?? 0;
+      // Re-find by id to be safe
+      const currentId = chats[index]?.id;
+      if (currentId) currentIndex = chats.findIndex(c => c.id === currentId);
+    
+      saveChats();
+      renderChatList();
+    }
+  
+function renderChatList() {
+  chatListEl.innerHTML = "";
 
-      function truncate(str, n) {
-        return str.length > n ? str.slice(0, n) + "…" : str;
-      }
+  // Sort: pinned first
+  const pinned   = chats.map((c, i) => ({ chat: c, i })).filter(x => x.chat.pinned);
+  const unpinned = chats.map((c, i) => ({ chat: c, i })).filter(x => !x.chat.pinned);
 
-      const isMobile = window.matchMedia("(max-width: 768px)").matches;
-      const titleLimit = isMobile ? 45 : 70;
-      const subtitleLimit = isMobile ? 40 : 60;
+  function truncate(str, n) {
+    return str.length > n ? str.slice(0, n) + "…" : str;
+  }
 
-      const preview = document.createElement("div");
-      preview.className = "chat-preview";
+  const isMobile = window.matchMedia("(max-width: 768px)").matches;
+  const titleLimit    = isMobile ? 45 : 70;
+  const subtitleLimit = isMobile ? 40 : 60;
 
-      const title = truncate(chat.title || "New Chat", titleLimit);
-      const subtitle = (chat.messages && chat.messages.length > 0)
-        ? truncate(chat.messages[chat.messages.length - 1].content, subtitleLimit)
-        : "";
+  function buildItem({ chat, i }) {
+    const item = document.createElement("div");
+    item.className = "chat-item" + (i === currentIndex ? " selected" : "");
+    if (chat.pinned) item.classList.add("pinned");
+
+    const preview = document.createElement("div");
+    preview.className = "chat-preview";
+
+    const title    = truncate(chat.title || "New Chat", titleLimit);
+    const subtitle = (chat.messages && chat.messages.length > 0)
+      ? truncate(chat.messages[chat.messages.length - 1].content, subtitleLimit)
+      : "";
 
       preview.innerHTML = `
-        <div class="chat-title">${title}</div>
-        <div class="chat-subtitle">${subtitle}</div>
-      `;
+      <div class="chat-title">${title}</div>
+      <div class="chat-subtitle">${subtitle}</div>
+    `;
 
-      const delBtn = document.createElement("button");
-      delBtn.className = "delete-btn";
-      delBtn.setAttribute("aria-label", "Delete chat");
-      delBtn.textContent = "×";
-      delBtn.addEventListener("click", (e) => { e.stopPropagation(); deleteChat(i); });
-
-      item.addEventListener("click", () => {
-        const [chat] = chats.splice(i, 1);
-        chats.unshift(chat);
-        currentIndex = 0;
-        saveChats();
-        renderChatList();
-        renderMessages();
-        if (window.innerWidth <= 768) closeSidebar();
-      });
-
-      item.appendChild(preview);
-      item.appendChild(delBtn);
-      chatListEl.appendChild(item);
+    // Pin button
+    const pinBtn = document.createElement("button");
+    pinBtn.className = "pin-btn" + (chat.pinned ? " active" : "");
+    pinBtn.setAttribute("aria-label", chat.pinned ? "Unpin chat" : "Pin chat");
+    pinBtn.title = chat.pinned ? "Unpin" : "Pin to top";
+    pinBtn.innerHTML = `
+      <svg viewBox="0 0 24 24" width="14" height="14"
+           fill="${chat.pinned ? 'currentColor' : 'none'}"
+           stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="17" x2="12" y2="22"/>
+        <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15
+                 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2
+                 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/>
+      </svg>
+    `;
+    pinBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      togglePin(i);
     });
+
+    // Delete button
+    const delBtn = document.createElement("button");
+    delBtn.className = "delete-btn";
+    delBtn.setAttribute("aria-label", "Delete chat");
+    delBtn.textContent = "×";
+    delBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      deleteChat(i);
+    });
+
+    item.addEventListener("click", () => {
+      const [clicked] = chats.splice(i, 1);
+
+      // Keep pinned chats pinned at top, don't move them
+      if (!clicked.pinned) {
+        // Insert after all pinned chats
+        const firstUnpinned = chats.findIndex(c => !c.pinned);
+        if (firstUnpinned === -1) {
+          chats.push(clicked);
+        } else {
+          chats.splice(firstUnpinned, 0, clicked);
+        }
+        currentIndex = chats.findIndex(c => c.id === clicked.id);
+      } else {
+        // Put pinned back at original spot (top of pinned)
+        chats.unshift(clicked);
+        currentIndex = 0;
+      }
+
+      saveChats();
+      renderChatList();
+      renderMessages();
+      if (window.innerWidth <= 768) closeSidebar();
+    });
+
+    item.appendChild(preview);
+    item.appendChild(pinBtn);
+    item.appendChild(delBtn);
+    chatListEl.appendChild(item);
   }
+
+  // Render pinned section
+  if (pinned.length > 0) {
+    const pinnedHeader = document.createElement("div");
+    pinnedHeader.className = "chat-section-header";
+    pinnedHeader.textContent = "Pinned";
+    chatListEl.appendChild(pinnedHeader);
+    pinned.forEach(buildItem);
+  }
+
+  // Render unpinned section
+  if (unpinned.length > 0) {
+    const allHeader = document.createElement("div");
+    allHeader.className = "chat-section-header";
+    allHeader.textContent = pinned.length > 0 ? "All Chats" : "";
+    if (pinned.length > 0) chatListEl.appendChild(allHeader);
+    unpinned.forEach(buildItem);
+  }
+}
 
 function renderMessages() {
   messagesEl.innerHTML = "";
@@ -461,6 +584,10 @@ function renderMessages() {
     messagesEl.innerHTML = `<p class="placeholder">This chat is empty.</p>`;
     return;
   }
+
+const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
+  return (msg.role === "assistant" && msg.content !== "__TYPING__") ? idx : last;
+}, -1);
 
   chat.messages.forEach((msg, idx) => {
     const wrapper = document.createElement("div");
@@ -504,7 +631,7 @@ function renderMessages() {
     div.appendChild(textDiv);
     wrapper.appendChild(div);
 
-    if (msg.role === "assistant" && msg.content !== "__TYPING__") {
+    if (msg.role === "assistant" && msg.content !== "__TYPING__" && idx === lastAssistantIdx) {
       const reloadRow = document.createElement("div");
       reloadRow.className = "reload-row";
 
@@ -524,56 +651,73 @@ function renderMessages() {
       `;
 
       reloadBtn.addEventListener("click", async () => {
-        chat.messages.splice(idx, 1);
-        chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
+  // Remove the assistant message at this specific index
+  chat.messages.splice(idx, 1);
+  
+  // Insert the typing indicator at the SAME position, not the end
+  chat.messages.splice(idx, 0, { role: "assistant", content: "__TYPING__", time: formatDateTime() });
 
-        saveChats();
-        saveChatsToWorker();
-        renderMessages();
+  saveChats();
+  saveChatsToWorker();
+  renderMessages();
 
-        try {
-          const cleanMessages = chat.messages
-            .filter(m => m.content !== "__TYPING__")
-            .slice(-10);
-
-          const res = await fetch(`${WORKER_URL}/chat`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              provider: currentProvider,
-              model: currentModel,
-              messages: cleanMessages
-            }),
-          });
-
-          if (!res.ok) {
-            const errText = await res.text();
-            throw new Error(`Worker returned ${res.status}: ${errText}`);
-          }
-
-          const data = await res.json();
-         const answer = extractAnswer(data);
-
-        chat.messages[chat.messages.length - 1] = {
-            role: "assistant",
-            content: answer,
-            time: formatDateTime(),
-            model: modelSelector.options[modelSelector.selectedIndex].text
-          };
-        } catch (e) {
-          chat.messages[chat.messages.length - 1] = {
-            role: "assistant",
-            content: "Error: " + e.message,
-            time: formatDateTime(),
-            model: modelSelector.options[modelSelector.selectedIndex].text
-          };
+  try {
+    const cleanMessages = chat.messages
+      .filter(m => m.content !== "__TYPING__")
+      .slice(-10)
+      .reduce((acc, msg) => {
+        if (acc.length > 0 && acc[acc.length - 1].role === msg.role) {
+          acc[acc.length - 1] = msg;
+        } else {
+          acc.push(msg);
         }
+        return acc;
+      }, []);
 
-        saveChats();
-        saveChatsToWorker();
-        renderMessages();
-        renderChatList();
-      });
+    if (cleanMessages.length > 0 && cleanMessages[cleanMessages.length - 1].role !== "user") {
+      cleanMessages.pop();
+    }
+
+    const res = await fetch(`${WORKER_URL}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        provider: currentProvider,
+        model: currentModel,
+        messages: cleanMessages
+      }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`Worker returned ${res.status}: ${errText}`);
+    }
+
+    const data = await res.json();
+    const answer = extractAnswer(data);
+
+    // Replace at the SAME idx position, not the end
+    chat.messages[idx] = {
+      role: "assistant",
+      content: answer,
+      time: formatDateTime(),
+      model: modelSelector.options[modelSelector.selectedIndex].text
+    };
+  } catch (e) {
+    // Replace at the SAME idx position on error too
+    chat.messages[idx] = {
+      role: "assistant",
+      content: "Error: " + e.message,
+      time: formatDateTime(),
+      model: modelSelector.options[modelSelector.selectedIndex].text
+    };
+  }
+
+  saveChats();
+  saveChatsToWorker();
+  renderMessages();
+  renderChatList();
+});
 
       reloadRow.appendChild(reloadBtn);
       wrapper.appendChild(reloadRow);
@@ -584,11 +728,12 @@ function renderMessages() {
 
   messagesEl.querySelectorAll(".copy-code-btn").forEach(btn => {
     btn.addEventListener("click", async () => {
-      const wrapper = btn.closest(".code-block-wrapper");
-      const code = decodeURIComponent(wrapper.dataset.code);
-
+      const targetId = btn.getAttribute("data-target");
+      const codeEl = document.getElementById(targetId);
+      if (!codeEl) return;
+  
       try {
-        await navigator.clipboard.writeText(code);
+        await navigator.clipboard.writeText(codeEl.textContent);
         const oldText = btn.textContent;
         btn.textContent = "Copied!";
         setTimeout(() => {
@@ -600,7 +745,7 @@ function renderMessages() {
       }
     });
   });
-
+  
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
@@ -629,7 +774,21 @@ async function sendMessage() {
   try {
     const cleanMessages = chat.messages
       .filter(m => m.content !== "__TYPING__")
-      .slice(-10);
+      .slice(-10)
+      .reduce((acc, msg) => {
+        // Avoid two consecutive messages from the same role
+        if (acc.length > 0 && acc[acc.length - 1].role === msg.role) {
+          acc[acc.length - 1] = msg; // replace with latest
+        } else {
+          acc.push(msg);
+        }
+        return acc;
+      }, []);
+    
+    // Final safety check - Anthropic requires last message to be user
+    if (cleanMessages.length > 0 && cleanMessages[cleanMessages.length - 1].role !== "user") {
+      cleanMessages.pop();
+    }
 
     console.log("About to send:", {
       provider: currentProvider,
@@ -698,9 +857,23 @@ async function sendMessage() {
   saveChatsToWorker();
 
   try {
-    const cleanMessages = chat.messages
+     const cleanMessages = chat.messages
       .filter(m => m.content !== "__TYPING__")
-      .slice(-10);
+      .slice(-10)
+      .reduce((acc, msg) => {
+        // Avoid two consecutive messages from the same role
+        if (acc.length > 0 && acc[acc.length - 1].role === msg.role) {
+          acc[acc.length - 1] = msg; // replace with latest
+        } else {
+          acc.push(msg);
+        }
+        return acc;
+      }, []);
+    
+    // Final safety check - Anthropic requires last message to be user
+    if (cleanMessages.length > 0 && cleanMessages[cleanMessages.length - 1].role !== "user") {
+      cleanMessages.pop();
+    }
 
     console.log("Retry send:", {
       provider: currentProvider,
@@ -769,6 +942,10 @@ async function sendMessage() {
       sendMessage();
     }
   });
+  
+// ==========================
+// MODEL SELECTOR - DESKTOP DROPDOWN
+// ==========================
 modelSelector.value = `${currentProvider}|${currentModel}`;
 
 modelSelector.addEventListener("change", (e) => {
@@ -790,8 +967,12 @@ modelSelector.addEventListener("change", (e) => {
     currentProvider,
     currentModel
   });
+  syncActiveModel(e.target.value);
 });
 
+// ==========================
+// THEME - LIGHT/DARK TOGGLE BUTTON
+// ==========================
 const darkIcon  = themeToggleBtn.querySelector(".dark-icon");
 const lightIcon = themeToggleBtn.querySelector(".light-icon");
 darkIcon.classList.toggle("hidden", currentMode === "dark");
@@ -804,7 +985,9 @@ themeToggleBtn.addEventListener("click", () => {
   applyTheme();
 });
 
-// Bottom sheet open/close
+// ==========================
+// THEME - PALETTE SHEET (BOTTOM SHEET)
+// ==========================
 function openPaletteSheet() {
   paletteSheet.classList.remove("hidden");
   sheetBackdrop.classList.remove("hidden");
@@ -842,15 +1025,79 @@ paletteOptions.forEach(btn => {
   });
 });
 
+// ==========================
+// MODEL SELECTOR - MOBILE BOTTOM SHEET
+// ==========================
+function openModelSheet() {
+    modelSheet.classList.remove('hidden');
+    modelSheetBackdrop.classList.remove('hidden');
+    requestAnimationFrame(() => {
+    modelSheet.classList.add('show');
+    modelSheetBackdrop.classList.add('show');
+    });
+    document.body.style.overflow = 'hidden';
+    }
+    
+    function closeModelSheet() {
+    modelSheet.classList.remove('show');
+    modelSheetBackdrop.classList.remove('show');
+    document.body.style.overflow = '';
+    setTimeout(() => {
+    modelSheet.classList.add('hidden');
+    modelSheetBackdrop.classList.add('hidden');
+    }, 220);
+    }
+    
+    function syncActiveModel(currentVal) {
+    modelSheetOptions.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.model === currentVal);
+    });
+    }
+    
+   modelSelector.addEventListener('mousedown', (e) => {
+  if (window.innerWidth <= 768) {
+    e.preventDefault();
+    openModelSheet();
+  }
+});
+    closeModelSheetBtn?.addEventListener('click', closeModelSheet);
+    modelSheetBackdrop?.addEventListener('click', closeModelSheet);
+    
+    modelSheetOptions.forEach(btn => {
+    btn.addEventListener('click', () => {
+    const value = btn.dataset.model;
+    const parts = value.split('|');
+    if (parts.length === 2) {
+    currentProvider = parts[0];
+    currentModel = parts[1];
+    } else {
+    currentProvider = 'openai';
+    currentModel = value;
+    }
+    localStorage.setItem('chat_provider', currentProvider);
+    localStorage.setItem('chat_model', currentModel);
+    modelSelector.value = value;
+    modelSheetOptions.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    console.log('Mobile model selected:', { currentProvider, currentModel });
+    setTimeout(closeModelSheet, 180);
+    });
+    });
+
+// ==========================
+// KEYBOARD SHORTCUTS
+// ==========================
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && paletteSheet.classList.contains("show")) {
     closePaletteSheet();
+  if (modelSheet && !modelSheet.classList.contains("hidden")) closeModelSheet();
   }
 });
 
   (async () => {
     applyTheme();
-
+    syncActiveModel(`${currentProvider}|${currentModel}`);
+    
     if (!userId) {
       userId = prompt("Enter a username to identify your chats:", "");
       if (!userId) {
