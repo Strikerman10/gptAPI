@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const sidebarEl        = document.querySelector(".sidebar");
   const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
   const modelSelector    = document.getElementById("modelSelector");
+  const logoutBtn     = document.getElementById("logoutBtn");
 
   // ==========================
   // AUTH MODAL LOGIC
@@ -42,123 +43,166 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("authModal").classList.add("hidden");
   }
   
-  async function initAuth() {
-    // Already logged in — token exists
-    if (authToken && userId) {
-      hideAuthModal();
-      return true;
-    }
+async function initAuth() {
+  if (authToken && userId) {
+    hideAuthModal();
+    return true;
+  }
+
+  showAuthModal();
+
+  // ✅ Clone elements to wipe any old event listeners
+  const oldSubmitBtn = document.getElementById("authSubmitBtn");
+  const submitBtn = oldSubmitBtn.cloneNode(true);
+  oldSubmitBtn.parentNode.replaceChild(submitBtn, oldSubmitBtn);
+
+ // ✅ Reset button state in case it was left disabled from previous login
+  submitBtn.disabled    = false;
+  submitBtn.textContent = "Sign In";
   
-    // Show the modal and wait for the user to log in or register
-    showAuthModal();
-  
-    return new Promise((resolve) => {
-      let mode = "login"; // or "register"
-  
-      const tabLogin    = document.getElementById("tabLogin");
-      const tabRegister = document.getElementById("tabRegister");
-      const submitBtn   = document.getElementById("authSubmitBtn");
-      const errorEl     = document.getElementById("authError");
-      const titleEl     = document.getElementById("authModalTitle");
-      const subtitleEl  = document.getElementById("authModalSubtitle");
-  
-      tabLogin.addEventListener("click", () => {
-        mode = "login";
-        tabLogin.classList.add("active");
-        tabRegister.classList.remove("active");
-        submitBtn.textContent = "Sign In";
-        titleEl.textContent   = "Welcome Back";
-        subtitleEl.textContent = "Sign in to access your chats";
-        errorEl.textContent   = "";
-      });
-  
-      tabRegister.addEventListener("click", () => {
-        mode = "register";
-        tabRegister.classList.add("active");
-        tabLogin.classList.remove("active");
-        submitBtn.textContent  = "Create Account";
-        titleEl.textContent    = "Create Account";
-        subtitleEl.textContent = "Register to save your chats";
-        errorEl.textContent    = "";
-      });
-  
-      submitBtn.addEventListener("click", async () => {
-        const username = document.getElementById("authUsername").value.trim();
-        const password = document.getElementById("authPassword").value.trim();
-        errorEl.textContent = "";
-  
-        if (!username || !password) {
-          errorEl.textContent = "Please enter a username and password.";
-          return;
+  const oldTabLogin = document.getElementById("tabLogin");
+  const tabLogin = oldTabLogin.cloneNode(true);
+  oldTabLogin.parentNode.replaceChild(tabLogin, oldTabLogin);
+
+  const oldTabRegister = document.getElementById("tabRegister");
+  const tabRegister = oldTabRegister.cloneNode(true);
+  oldTabRegister.parentNode.replaceChild(tabRegister, oldTabRegister);
+
+  const oldPasswordEl = document.getElementById("authPassword");
+  const passwordEl = oldPasswordEl.cloneNode(true);
+  oldPasswordEl.parentNode.replaceChild(passwordEl, oldPasswordEl);
+
+  const errorEl   = document.getElementById("authError");
+  const titleEl   = document.getElementById("authModalTitle");
+  const subtitleEl = document.getElementById("authModalSubtitle");
+
+  return new Promise((resolve) => {
+    let mode = "login";
+
+    tabLogin.addEventListener("click", () => {
+      mode = "login";
+      tabLogin.classList.add("active");
+      tabRegister.classList.remove("active");
+      submitBtn.textContent  = "Sign In";
+      titleEl.textContent    = "Welcome Back";
+      subtitleEl.textContent = "Sign in to access your chats";
+      errorEl.textContent    = "";
+    });
+
+    tabRegister.addEventListener("click", () => {
+      mode = "register";
+      tabRegister.classList.add("active");
+      tabLogin.classList.remove("active");
+      submitBtn.textContent  = "Create Account";
+      titleEl.textContent    = "Create Account";
+      subtitleEl.textContent = "Register to save your chats";
+      errorEl.textContent    = "";
+    });
+
+    submitBtn.addEventListener("click", async () => {
+      const username = document.getElementById("authUsername").value.trim();
+      const password = document.getElementById("authPassword").value.trim();
+      errorEl.textContent = "";
+
+      if (!username || !password) {
+        errorEl.textContent = "Please enter a username and password.";
+        return;
+      }
+
+      submitBtn.disabled    = true;
+      submitBtn.textContent = "Please wait…";
+
+      try {
+        const endpoint = mode === "login" ? "/login" : "/register";
+        const res = await fetch(`${WORKER_URL}${endpoint}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Something went wrong.");
         }
-  
-        submitBtn.disabled    = true;
-        submitBtn.textContent = "Please wait…";
-  
-        try {
-          const endpoint = mode === "login" ? "/login" : "/register";
-          const res = await fetch(`${WORKER_URL}${endpoint}`, {
+
+        if (mode === "register") {
+          errorEl.style.color = "green";
+          errorEl.textContent = "Account created! Signing you in…";
+
+          const loginRes = await fetch(`${WORKER_URL}/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password }),
           });
-  
-          const data = await res.json();
-  
-          if (!res.ok) {
-            throw new Error(data.error || "Something went wrong.");
-          }
-  
-          if (mode === "register") {
-            // After register, switch to login automatically
-            errorEl.style.color = "green";
-            errorEl.textContent = "Account created! Signing you in…";
-  
-            // Auto-login after register
-            const loginRes = await fetch(`${WORKER_URL}/login`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ username, password }),
-            });
-            const loginData = await loginRes.json();
-            if (!loginRes.ok) throw new Error(loginData.error || "Login failed.");
-  
-            authToken = loginData.token;
-            userId    = loginData.userId;
-          } else {
-            authToken = data.token;
-            userId    = data.userId;
-          }
-  
-          // Persist to localStorage
-          localStorage.setItem("authToken", authToken);
-          localStorage.setItem("userId",    userId);
-  
-          hideAuthModal();
-          resolve(true);
-  
-        } catch (err) {
-          errorEl.style.color = "";
-          errorEl.textContent = err.message;
-          submitBtn.disabled  = false;
-          submitBtn.textContent = mode === "login" ? "Sign In" : "Create Account";
-        }
-      });
-  
-      // Allow Enter key to submit
-      document.getElementById("authPassword").addEventListener("keydown", (e) => {
-        if (e.key === "Enter") submitBtn.click();
-      });
-    });
-  }
+          const loginData = await loginRes.json();
+          if (!loginRes.ok) throw new Error(loginData.error || "Login failed.");
 
-function handleUnauthorized() {
+          authToken = loginData.token;
+          userId    = loginData.userId;
+        } else {
+          authToken = data.token;
+          userId    = data.userId;
+        }
+
+        localStorage.setItem("authToken", authToken);
+        localStorage.setItem("userId",    userId);
+
+        hideAuthModal();
+        resolve(true);
+
+      } catch (err) {
+        errorEl.style.color   = "";
+        errorEl.textContent   = err.message;
+        submitBtn.disabled    = false;
+        submitBtn.textContent = mode === "login" ? "Sign In" : "Create Account";
+      }
+    });
+
+    // ✅ Use cloned passwordEl here, not getElementById
+    passwordEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") submitBtn.click();
+    });
+  });
+}
+
+async function handleUnauthorized() {
   authToken = null;
   userId = null;
   localStorage.removeItem("authToken");
   localStorage.removeItem("userId");
-  initAuth();
+  await initAuth();
 }
+
+// ==========================
+// LOGOUT BUTTON
+// ==========================
+logoutBtn.addEventListener("click", () => {
+  authToken    = null;
+  userId       = null;
+  chats        = [];
+  currentIndex = null;
+
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("secure_chat_chats");
+  localStorage.removeItem("secure_chat_index");
+
+  document.getElementById("messages").innerHTML    = "";
+  document.getElementById("chatList").innerHTML    = "";
+  document.getElementById("chatTitle").textContent = "Messages";
+
+  // Reset modal to clean login state
+  document.getElementById("authModalTitle").textContent    = "Welcome Back";
+  document.getElementById("authModalSubtitle").textContent = "Sign in to access your chats";
+  document.getElementById("authError").textContent         = "";
+  document.getElementById("authUsername").value            = "";
+  document.getElementById("authPassword").value            = "";
+  document.getElementById("tabLogin").classList.add("active");
+  document.getElementById("tabRegister").classList.remove("active");
+
+  initAuth();
+});
   
   // ── NEW: Model Sheet elements ──────────────────────────
   const modelSheet         = document.getElementById('modelSheet');
@@ -487,40 +531,50 @@ function renderMessageContent(content) {
     localStorage.setItem("mode", currentMode);
   }
 
-  async function loadChats() {
-    try {
-      const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`);
-      if (res.ok) {
-        const workerChats = await res.json();
-        if (Array.isArray(workerChats) && workerChats.length) {
-          chats = workerChats;
-          currentIndex = 0;
-          localStorage.setItem("secure_chat_chats", JSON.stringify(chats));
-          localStorage.setItem("secure_chat_index", String(currentIndex));
-          return;
-        }
+ async function loadChats() {
+  try {
+    const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`, {
+      headers: {
+        "Authorization": `Bearer ${authToken}`
       }
-    } catch (err) {
-      console.warn("Worker load failed, falling back to local:", err);
+    });
+
+    if (res.status === 401) { 
+      handleUnauthorized(); 
+      return; 
     }
 
-    const raw = localStorage.getItem("secure_chat_chats");
-    const idx = localStorage.getItem("secure_chat_index");
-    if (raw) {
-      try {
-        chats = JSON.parse(raw);
-        currentIndex = idx !== null ? Number(idx) : chats.length ? 0 : null;
-        await saveChatsToWorker();
-      } catch (e) {
-        console.warn("Error parsing local chats:", e);
-        chats = [];
-        createNewChat();
+    if (res.ok) {
+      const workerChats = await res.json();
+      if (Array.isArray(workerChats) && workerChats.length) {
+        chats = workerChats;
+        currentIndex = 0;
+        localStorage.setItem("secure_chat_chats", JSON.stringify(chats));
+        localStorage.setItem("secure_chat_index", String(currentIndex));
+        return;
       }
-    } else {
+    }
+  } catch (err) {
+    console.warn("Worker load failed, falling back to local:", err);
+  }
+
+  const raw = localStorage.getItem("secure_chat_chats");
+  const idx = localStorage.getItem("secure_chat_index");
+  if (raw) {
+    try {
+      chats = JSON.parse(raw);
+      currentIndex = idx !== null ? Number(idx) : chats.length ? 0 : null;
+      await saveChatsToWorker();
+    } catch (e) {
+      console.warn("Error parsing local chats:", e);
       chats = [];
       createNewChat();
     }
+  } else {
+    chats = [];
+    createNewChat();
   }
+}
 
 // ==========================
 // SAVE CHATS - LOCAL STORAGE & WORKER
@@ -542,7 +596,7 @@ function renderMessageContent(content) {
           },
           body: JSON.stringify({ userId, chats }),
         });
-        if (res.status === 401) { handleUnauthorized(); return; }
+        if (res.status === 401) { await handleUnauthorized(); return; }
         if (!res.ok) console.warn("Worker save failed:", await res.text());
       } catch (e) {
         console.warn("Could not reach worker:", e);
@@ -565,7 +619,7 @@ function renderMessageContent(content) {
             "Authorization": `Bearer ${authToken}`
           }
         });
-        if (res.status === 401) { handleUnauthorized(); return; }
+        if (res.status === 401) { await handleUnauthorized(); return; }
         if (!res.ok) return;
         const workerChats = await res.json();
         if (Array.isArray(workerChats) && workerChats.length) {
@@ -839,16 +893,21 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
       cleanMessages.pop();
     }
 
-    const res = await fetch(`${WORKER_URL}/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        provider: currentProvider,
-        model: currentModel,
-        messages: cleanMessages
-      }),
-    });
+      const res = await fetch(`${WORKER_URL}/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${authToken}`
+        },
+        body: JSON.stringify({
+          provider: currentProvider,
+          model: currentModel,
+          messages: cleanMessages
+        }),
+      });
 
+    if (res.status === 401) { await handleUnauthorized(); return; }
+    
     if (!res.ok) {
       const errText = await res.text();
       throw new Error(`Worker returned ${res.status}: ${errText}`);
@@ -970,6 +1029,8 @@ async function sendMessage() {
       }),
     });
 
+    if (res.status === 401) { await handleUnauthorized(); return; }
+    
     console.log("HTTP status:", res.status);
 
     const rawText = await res.text();
@@ -982,7 +1043,7 @@ async function sendMessage() {
       throw new Error(`Invalid JSON from worker: ${rawText}`);
     }
 
-    if (res.status === 401) { handleUnauthorized(); return; }
+    if (res.status === 401) { await handleUnauthorized(); return; }
     if (!res.ok) {
       throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
     }
@@ -1046,9 +1107,12 @@ async function sendMessage() {
       messages: cleanMessages
     });
 
-    const res = await fetch(`${WORKER_URL}/chat`, {
+       const res = await fetch(`${WORKER_URL}/chat`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${authToken}`
+      },
       body: JSON.stringify({
         provider: currentProvider,
         model: currentModel,
@@ -1056,6 +1120,8 @@ async function sendMessage() {
       }),
     });
 
+    if (res.status === 401) { await handleUnauthorized(); return; }
+    
     console.log("Retry status:", res.status);
 
     const rawText = await res.text();
@@ -1275,7 +1341,7 @@ document.addEventListener("keydown", (e) => {
         }
       });
       
-      if (res.status === 401) { handleUnauthorized(); return; }
+      if (res.status === 401) { await handleUnauthorized(); return; }
       if (res.ok) {
         const workerChats = await res.json();
         if (Array.isArray(workerChats) && workerChats.length) {
@@ -1297,7 +1363,7 @@ document.addEventListener("keydown", (e) => {
     }
 
     if (!gotFromWorker) {
-      loadChats();
+      await loadChats();
     }
 
     renderChatList();
