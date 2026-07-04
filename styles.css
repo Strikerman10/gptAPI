@@ -1499,7 +1499,7 @@ body.dark-mode .message p {
   background: none;
   border: none;
   cursor: pointer;
-   background: var(--color-2);
+  background: var(--color-2);
   color: var(--primary-contrast);
   display: flex;
   align-items: center;
