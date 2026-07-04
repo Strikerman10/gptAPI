@@ -1492,7 +1492,6 @@ body.dark-mode .message p {
 .auth-submit:hover {
   background: var(--color-2);
 }
-
 /* ==========================
    LOGOUT BUTTON
    ========================== */
@@ -1500,7 +1499,8 @@ body.dark-mode .message p {
   background: none;
   border: none;
   cursor: pointer;
-  color: currentColor;
+   background: var(--color-2);
+  color: var(--primary-contrast);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1510,6 +1510,84 @@ body.dark-mode .message p {
 }
 
 #logoutBtn:hover {
-  opacity: 0.7;
-  background: var(--surface-hover);
+  background: var(--color-6);
+}
+
+/* ==========================
+   LOGOUT MODAL
+   ========================== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-box {
+  background: #1e1e2e;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 28px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+.modal-title {
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.modal-message {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.modal-btn {
+  padding: 9px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  border: none;
+}
+
+.cancel-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.confirm-btn {
+  background: #e53e3e;
+  color: #ffffff;
+}
+
+.confirm-btn:hover {
+  background: #c53030;
 }
