@@ -6,7 +6,7 @@ HEAD - Meta, Title, Styles
   <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Orion AI Test</title>
+  <title>Orion AI</title>
   <link rel="stylesheet" href="styles.css?v=2">
   <style>
     .icon {
@@ -365,7 +365,7 @@ MODEL SELECTOR BOTTOM SHEET (MOBILE)
 
     <!-- ==========================
      GEMINI MODELS
-     ========================== -->
+     =========================+= -->
       <p class="model-group-label">Google</p>
       <button class="model-sheet-option" data-model="gemini|gemini-3.5-flash">
         <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -448,7 +448,19 @@ MODEL SELECTOR BOTTOM SHEET (MOBILE)
         <span class="model-check">✓</span>
       </button>
     </div>
-  </section>
+     </section>
+    
+<!-- Logout Confirmation Modal -->
+<div id="logoutModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3 class="modal-title">Log Out?</h3>
+    <p class="modal-message">Are you sure you want to log out?</p>
+    <div class="modal-buttons">
+      <button id="modalCancel" class="modal-btn cancel-btn">Cancel</button>
+      <button id="modalConfirm" class="modal-btn confirm-btn">Log Out</button>
+    </div>
+  </div>
+</div>
   <script src="app.js" defer></script>
 </body>
 </html>
