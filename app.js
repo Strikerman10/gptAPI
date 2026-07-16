@@ -12,7 +12,7 @@ let userId    = localStorage.getItem("userId")    || null;
 let chats = [];
 let currentIndex = null;
 let currentProvider = localStorage.getItem("chat_provider") || "openai";
-let currentModel    = localStorage.getItem("chat_model")    || "gpt-5.4-mini-2026-03-17";
+let currentModel    = localStorage.getItem("chat_model")    || "gpt-5.4-2026-03-05";
 
 // ==========================
 // DOM READY
@@ -199,7 +199,7 @@ async function handleUnauthorized() {
 }
 
 // Confirm logout
-modalConfirm.addEventListener("click", () => {
+modalConfirm.addEventListener("click", async () => {
   logoutModal.classList.remove('active');
 
   authToken    = null;
@@ -216,7 +216,6 @@ modalConfirm.addEventListener("click", () => {
   document.getElementById("chatList").innerHTML    = "";
   document.getElementById("chatTitle").textContent = "Messages";
 
-  // Reset modal to clean login state
   document.getElementById("authModalTitle").textContent    = "Welcome Back";
   document.getElementById("authModalSubtitle").textContent = "Sign in to access your chats";
   document.getElementById("authError").textContent         = "";
@@ -225,7 +224,28 @@ modalConfirm.addEventListener("click", () => {
   document.getElementById("tabLogin").classList.add("active");
   document.getElementById("tabRegister").classList.remove("active");
 
-  initAuth();
+  const authed = await initAuth(); // ← await it
+  if (!authed) return;
+
+  // ← re-fetch chats after login
+  try {
+    const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`, {
+      headers: { "Authorization": `Bearer ${authToken}` }
+    });
+    if (res.ok) {
+      const workerChats = await res.json();
+      if (Array.isArray(workerChats) && workerChats.length) {
+        chats = workerChats;
+        currentIndex = 0;
+        saveChats();
+      }
+    }
+  } catch (e) {
+    console.warn("Could not reload chats after login:", e);
+  }
+
+  renderChatList();
+  renderMessages();
 });
   
   // ── NEW: Model Sheet elements ──────────────────────────
@@ -271,7 +291,9 @@ modalConfirm.addEventListener("click", () => {
   textarea.addEventListener("input", updateScrollBtnPosition);
   window.addEventListener("resize", updateScrollBtnPosition);
 
-     messagesEl.addEventListener("scroll", () => {
+let lastScrollTop = 0; // 👈 Add it here
+
+  messagesEl.addEventListener("scroll", () => {
     const distanceFromTop = messagesEl.scrollTop;
     const distanceFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
     const canScroll = messagesEl.scrollHeight > messagesEl.clientHeight;
@@ -288,10 +310,19 @@ modalConfirm.addEventListener("click", () => {
         scrollTopBtn.style.display    = "flex";
         scrollBottomBtn.style.display = "none";
     } else {
-        // In the middle - show both
-        scrollTopBtn.style.display    = "flex";
-        scrollBottomBtn.style.display = "flex";
+        // In the middle - show only one button based on scroll direction
+        const isScrollingUp = messagesEl.scrollTop < lastScrollTop;
+
+        if (isScrollingUp) {
+            scrollTopBtn.style.display    = "none";
+            scrollBottomBtn.style.display = "flex";
+        } else {
+            scrollTopBtn.style.display    = "flex";
+            scrollBottomBtn.style.display = "none";
+        }
     }
+
+    lastScrollTop = messagesEl.scrollTop; // 👈 And this stays at the bottom inside the listener
 });
 
   scrollTopBtn.addEventListener("click", () => {
@@ -1212,7 +1243,7 @@ modelSelector.addEventListener("change", (e) => {
     currentModel = parts[1];
   } else {
     currentProvider = "openai";
-    currentModel = value || "gpt-5.4-mini-2026-03-17";
+    currentModel = value || "gpt-5.4-2026-03-05";
   }
 
   localStorage.setItem("chat_provider", currentProvider);
@@ -1357,6 +1388,8 @@ document.addEventListener("keydown", (e) => {
     const authed = await initAuth();
     if (!authed) return;
 
+    await new Promise(r => setTimeout(r, 150)); // ← small breathing room
+    
     let gotFromWorker = false;
     try {
       const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`, {
