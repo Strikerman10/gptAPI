@@ -32,6 +32,158 @@ document.addEventListener("DOMContentLoaded", () => {
   const modelSelector    = document.getElementById("modelSelector");
   const logoutBtn     = document.getElementById("logoutBtn");
 
+// ============================
+// FILE ATTACHMENTS
+// ============================
+
+const ALLOWED_TYPES = new Set([
+  "image/png", "image/jpeg", "image/gif", "image/webp",
+  "application/pdf", "text/plain", "text/markdown"
+]);
+const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15MB
+
+// Pending attachments for the NEXT message. Each: { r2Key, filename, contentType, previewUrl }
+let pendingAttachments = [];
+
+const fileInputEl = document.getElementById("fileInput");
+const attachBtnEl  = document.getElementById("attachBtn");
+const chipsEl      = document.getElementById("attachmentChips");
+
+attachBtnEl.addEventListener("click", () => fileInputEl.click());
+
+fileInputEl.addEventListener("change", async (e) => {
+  const files = Array.from(e.target.files || []);
+  fileInputEl.value = ""; // reset so same file can be re-picked
+  for (const file of files) {
+    await handleFileSelect(file);
+  }
+});
+
+// ===== DRAG-AND-DROP SUPPORT =====
+const dropZone = document.querySelector(".input-area");
+
+// Prevent the browser from opening dropped files
+["dragenter", "dragover", "dragleave", "drop"].forEach(evt => {
+  dropZone.addEventListener(evt, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  });
+});
+
+// Highlight while dragging over
+["dragenter", "dragover"].forEach(evt => {
+  dropZone.addEventListener(evt, () => dropZone.classList.add("drag-over"));
+});
+["dragleave", "drop"].forEach(evt => {
+  dropZone.addEventListener(evt, () => dropZone.classList.remove("drag-over"));
+});
+
+// Handle the drop — reuse your EXACT same pipeline as the file picker
+dropZone.addEventListener("drop", async (e) => {
+  const files = Array.from(e.dataTransfer?.files || []);
+  for (const file of files) {
+    await handleFileSelect(file);
+  }
+});
+  
+// ===== END DRAG-AND-DROP =====
+  
+async function handleFileSelect(file) {
+  let type = file.type;
+  if (!type && /\.md$/i.test(file.name)) type = "text/markdown";
+  if (!type && /\.txt$/i.test(file.name)) type = "text/plain";
+
+  if (!ALLOWED_TYPES.has(type)) {
+    alert(`Unsupported file type: ${file.name} (${type || "unknown"})`);
+    return;
+  }
+  if (file.size > MAX_FILE_SIZE) {
+    alert(`File too large: ${file.name} (max 15MB)`);
+    return;
+  }
+
+  const tempId = "tmp_" + Math.random().toString(36).slice(2);
+  const previewUrl = type.startsWith("image/") ? URL.createObjectURL(file) : null;
+  const placeholder = {
+    tempId, filename: file.name, contentType: type,
+    previewUrl, r2Key: null, uploading: true
+  };
+  pendingAttachments.push(placeholder);
+  renderChips();
+
+  try {
+    const uploaded = await uploadFile(file);
+    placeholder.r2Key = uploaded.r2Key;
+    placeholder.uploading = false;
+    renderChips();
+  } catch (err) {
+    console.error("Upload failed:", err);
+    alert(`Upload failed for ${file.name}: ${err.message}`);
+    pendingAttachments = pendingAttachments.filter(a => a.tempId !== tempId);
+    renderChips();
+  }
+}
+
+async function uploadFile(file) {
+  const form = new FormData();
+  form.append("file", file);
+
+  const res = await fetch(`${WORKER_URL}/upload`, {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${authToken}` }, // browser sets multipart Content-Type
+    body: form
+  });
+
+  if (res.status === 401) { await handleUnauthorized(); throw new Error("Unauthorized"); }
+
+  const raw = await res.text();
+  let data = {};
+  try { data = raw ? JSON.parse(raw) : {}; }
+  catch { throw new Error(`Invalid JSON from upload: ${raw}`); }
+
+  if (!res.ok) throw new Error(data.error || `Upload returned ${res.status}`);
+
+  return data; // expecting { r2Key, filename, contentType, ... }
+}
+
+function renderChips() {
+  chipsEl.innerHTML = "";
+  pendingAttachments.forEach((att) => {
+    const chip = document.createElement("div");
+    chip.className = "chip" + (att.uploading ? " uploading" : "");
+
+    if (att.previewUrl) {
+      const img = document.createElement("img");
+      img.src = att.previewUrl;
+      chip.appendChild(img);
+    } else {
+      const icon = document.createElement("span");
+      icon.textContent = att.contentType === "application/pdf" ? "📄" : "📝";
+      chip.appendChild(icon);
+    }
+
+    const name = document.createElement("span");
+    name.className = "chip-name";
+    name.textContent = att.uploading ? `${att.filename} (uploading…)` : att.filename;
+    chip.appendChild(name);
+
+    if (!att.uploading) {
+      const remove = document.createElement("button");
+      remove.className = "chip-remove";
+      remove.type = "button";
+      remove.textContent = "✕";
+      remove.addEventListener("click", () => {
+        if (att.previewUrl) URL.revokeObjectURL(att.previewUrl);
+        pendingAttachments = pendingAttachments.filter(a => a !== att);
+        renderChips();
+      });
+      chip.appendChild(remove);
+    }
+
+    chipsEl.appendChild(chip);
+  });
+}
+  
 // ==========================
 // LOGOUT MODAL
 // ==========================
@@ -896,6 +1048,20 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
       metaDiv.appendChild(modelDiv);
     }
 
+    // 📎 Show attachment filenames if present
+    if (Array.isArray(msg.attachments) && msg.attachments.length > 0) {
+      const attachDiv = document.createElement("div");
+      attachDiv.className = "msg-attachments";
+      const names = msg.attachments.map(a => a.filename || "file").join(", ");
+      attachDiv.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" class="attach-icon">
+          <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+        </svg>${escapeHTML(names)}`;
+      metaDiv.appendChild(attachDiv);
+    }
+
     textDiv.appendChild(metaDiv);
 
     div.appendChild(textDiv);
@@ -954,10 +1120,15 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${authToken}`
         },
+        
         body: JSON.stringify({
           provider: currentProvider,
           model: currentModel,
-          messages: cleanMessages
+          messages: cleanMessages.map(m => ({
+            role: m.role,
+            content: m.content,
+            ...(m.attachments ? { attachments: m.attachments } : {})
+          })),
         }),
       });
 
@@ -1026,22 +1197,61 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
 
 async function sendMessage() {
   const text = inputEl.value.trim();
-  if (!text) return;
+
+  // Allow send if there's text OR at least one fully-uploaded attachment
+  const readyAttachments = pendingAttachments.filter(a => !a.uploading && a.r2Key);
+  if (!text && readyAttachments.length === 0) return;
+
+  // Block send if uploads are still in progress
+  if (pendingAttachments.some(a => a.uploading)) {
+    alert("Please wait for attachments to finish uploading.");
+    return;
+  }
+
+  // Block attachments on Gemini (worker rejects them anyway)
+  if (readyAttachments.length > 0 && currentProvider === "gemini") {
+    alert("Gemini doesn't support file/image attachments. Please switch to OpenAI or Anthropic, or remove the attachment.");
+    return;
+  }
 
   if (currentIndex === null) createNewChat();
   const chat = chats[currentIndex];
 
-  const userMessage = { role: "user", content: text, time: formatDateTime(), model: modelSelector.options[modelSelector.selectedIndex].text };
-  chat.messages.push(userMessage);
+  const userMessage = {
+    role: "user",
+    content: text,
+    time: formatDateTime(),
+    model: modelSelector.options[modelSelector.selectedIndex].text
+  };
 
-  if (chat.title === "New Chat" || !chat.title) {
-    const firstLine = text.split(/\r?\n/)[0];
-    chat.title = firstLine.length > 40 ? firstLine.slice(0, 40) + "…" : firstLine;
+  // Attach uploaded files (if any)
+  if (readyAttachments.length > 0) {
+    userMessage.attachments = readyAttachments.map(a => ({
+      r2Key: a.r2Key,
+      filename: a.filename,
+      contentType: a.contentType
+    }));
   }
 
+  chat.messages.push(userMessage);
+
+ if (chat.title === "New Chat" || !chat.title) {
+  if (text) {
+    const firstLine = text.split(/\r?\n/)[0];
+    chat.title = firstLine.length > 40 ? firstLine.slice(0, 40) + "…" : firstLine;
+  } else if (readyAttachments.length > 0) {
+    chat.title = `📎 ${readyAttachments[0].filename}`;  // fallback title
+  }
+}
   chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
   renderMessages();
   inputEl.value = "";
+
+  // Clear attachments now that they're attached to the message
+  pendingAttachments.forEach(a => { if (a.previewUrl) URL.revokeObjectURL(a.previewUrl); });
+  pendingAttachments = [];
+  renderChips();
+
   autoResize();
   saveChats();
   saveChatsToWorker();
@@ -1128,9 +1338,19 @@ async function sendMessage() {
   renderChatList();
 }
 
- async function sendMessageRetry() {
+async function sendMessageRetry() {
   if (currentIndex === null) createNewChat();
   const chat = chats[currentIndex];
+
+  // Check if any recent message has attachments + Gemini is selected
+  const hasAttachments = chat.messages
+    .slice(-10)
+    .some(m => Array.isArray(m.attachments) && m.attachments.length > 0);
+
+  if (hasAttachments && currentProvider === "gemini") {
+    alert("This conversation contains attachments, which Gemini doesn't support. Please switch to OpenAI or Anthropic to retry.");
+    return;
+  }
 
   chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
   renderMessages();
@@ -1167,13 +1387,17 @@ async function sendMessage() {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${authToken}`
-      },
+      }, 
       body: JSON.stringify({
         provider: currentProvider,
         model: currentModel,
-        messages: cleanMessages
+        messages: cleanMessages.map(m => ({
+          role: m.role,
+          content: m.content,
+          ...(m.attachments ? { attachments: m.attachments } : {})
+        })),
       }),
-    });
+  });
 
     if (res.status === 401) { await handleUnauthorized(); return; }
     
