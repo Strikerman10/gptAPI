@@ -440,6 +440,26 @@ body.dark-mode {
   font-style: normal;       /* 👈 removes italic so it matches msg-time */
 }
 
+.msg-attachments {
+  font-size: 0.75rem;
+  color: var(--primary-contrast);
+  opacity: 0.8;
+  white-space: normal;
+  text-align: right;        /* 👈 matches right-aligned stack */
+  word-break: break-word;   /* 👈 wraps long filenames cleanly */
+  max-width: 220px;         /* 👈 prevents super-long names blowing out width */
+  margin-top: 2px;          /* 👈 kept from the old rule — nice spacing */
+  font-weight: 600;         /* 👈 bold */
+}
+
+.msg-attachments .attach-icon {
+  width: 13px;            /* 👈 smaller than the 20px button version */
+  height: 13px;
+  vertical-align: -2px;   /* 👈 nudge down to align with text */
+  margin-right: 4px;      /* 👈 gap between icon and filename */
+  flex-shrink: 0;
+}
+
 .msg-meta {
   display: flex;
   flex-direction: column;   /* 👈 stacks time and model vertically */
@@ -570,21 +590,29 @@ body.dark-mode {
   margin: 0;
 }
 
-
 /* ===========================
    Input Area
    =========================== */
 .input-area {
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;   /* 👈 chips row ON TOP of input row */
   gap: 8px;
   padding: 12px;
   border-top: 1px solid var(--border);
   background: var(--surface-1);
 }
 
+/* The row holding attach + textarea + send */
+.input-row {
+  display: flex;            /* 👈 THIS makes the row lay out horizontally */
+  align-items: flex-end;
+  gap: 8px;
+  width: 100%;
+}
+
 .input-area textarea {
-  flex: 1;
+  flex: 1 1 auto;           /* 👈 stretch to fill the row */
+  min-width: 0;             /* 👈 critical — prevents flex overflow bug */
   min-height: 42px;
   max-height: 200px;
   padding: 10px;
@@ -594,6 +622,32 @@ body.dark-mode {
   resize: none;
   overflow-y: auto;
   font-size: 14px;
+}
+
+/* Attach button */
+.attach-btn {
+  flex-shrink: 0;
+  align-self: flex-end;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-6);              /* 👈 same as send button */
+  color: var(--primary-contrast);         /* 👈 same icon color */
+  border: none;                           /* 👈 send button has no border */
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.25);  /* 👈 same shadow */
+  transition: background 0.25s ease, transform 0.2s ease;
+  outline: none;
+  bottom: 6px;
+  position: relative;
+}
+
+.attach-btn:hover {
+  background: var(--color-7, rgba(0,0,0,0.05));
+  transform: translateY(-2px);
 }
 
 .send-btn {
@@ -612,7 +666,7 @@ body.dark-mode {
   transition: background 0.25s ease, transform 0.2s ease;
   outline: none;
   position: relative;
-  bottom: 6px; /* moves it up */
+  bottom: 6px;
 }
 
 .send-btn:hover,
@@ -1590,4 +1644,57 @@ body.dark-mode .message p {
 
 .confirm-btn:hover {
   background: #c53030;
+}
+
+/* ===========================
+   Attachments
+   =========================== */
+.attachment-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.attachment-chips:empty { display: none; }
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: #eee;
+  max-width: 200px;
+}
+.chip img {
+  width: 32px; height: 32px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.chip .chip-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chip .chip-remove {
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 14px;
+  padding: 0 2px;
+}
+.chip .chip-remove:hover { color: #fff; }
+.chip.uploading { opacity: 0.6; }
+
+.attach-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.input-area.drag-over {
+  outline: 2px dashed var(--color-6, #4a9eff);
+  outline-offset: 4px;
+  background: rgba(74, 158, 255, 0.06);
+  border-radius: 8px;
 }
