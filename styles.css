@@ -366,6 +366,8 @@ body.dark-mode {
   align-self: flex-end;
   animation: fadeSlideInRight 0.35s ease-out;
   white-space: pre-wrap;
+  margin-left: 1rem;
+  max-width: calc(100% - 1rem);
 }
 
 .message.assistant {
@@ -377,6 +379,8 @@ body.dark-mode {
   padding-top: 1rem;
   padding-bottom: 0.25rem; /* or 1rem */
   animation: fadeSlideInLeft 0.35s ease-out;
+  margin-right: 1rem;
+  max-width: calc(100% - 1rem);
 }
 
 @keyframes fadeSlideInLeft {
