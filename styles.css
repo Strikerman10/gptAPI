@@ -603,7 +603,7 @@ body.dark-mode {
   gap: 8px;
   padding: 12px;
   border-top: 1px solid var(--border);
-  background: var(--surface-1);
+  background: var(--ring);
 }
 
 /* The row holding attach + textarea + send */
@@ -1701,4 +1701,112 @@ body.dark-mode .message p {
   outline-offset: 4px;
   background: rgba(74, 158, 255, 0.06);
   border-radius: 8px;
+}
+
+/* ============================================================
+   SIDEBAR FOOTER
+   Keep these pinned to the bottom
+   ============================================================ */
+.sidebar-footer{
+  margin-top:auto;
+  border-top:1px solid var(--border);
+  padding:1.25rem 1rem;
+  background:var(--ring);
+
+  display:flex;
+  align-items:center;
+  gap:.75rem;
+}
+
+.palette-row{
+  display:flex;
+  gap:.5rem;
+  justify-content:flex-start;
+  margin-bottom:0;      /* important: remove vertical spacing */
+}
+
+.footer-actions{
+  display:flex;
+  gap:.5rem;
+  margin-left:auto;     /* pushes theme/logout to right */
+}
+
+.palette-option {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: transform 0.15s, border-color 0.15s;
+}
+
+.palette-option:hover {
+  transform: scale(1.15);
+}
+
+.palette-option.active {
+  border-color: var(--text);
+}
+
+.palette-option[data-palette="Blue"]    { background: #2c4f80; }
+.palette-option[data-palette="Purple"]  { background: #9467bd; }
+.palette-option[data-palette="Green"]   { background: #5e8c61; }
+.palette-option[data-palette="Orange"]  { background: #F28C28; }
+.palette-option[data-palette="Teal"]    { background: #006d65; }
+.palette-option[data-palette="Red"]     { background: #8b0000; }
+
+.footer-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.footer-btn,
+#logoutBtn {
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: background 0.2s, transform 0.1s;
+}
+
+/* Base button/icon color follows theme text */
+.footer-btn,
+#logoutBtn {
+  color: #fff; 
+}
+
+/* Ensure SVG uses button color */
+.footer-btn .icon,
+#logoutBtn .icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: currentColor;          /* safe for filled icons */
+}
+
+/* Hover */
+.footer-btn:hover,
+#logoutBtn:hover {
+  background: var(--action); /* or var(--action) if defined */
+  color: #fff;  
+  transform: translateY(-2px);
+}
+
+/* Base button/icon color follows theme text */
+.footer-btn,
+#logoutBtn {
+  color: ~fff;
+  background: var(--color-6);   /* ✅ added */
+}
+
+.footer-btn:hover,
+#logoutBtn:hover {
+  background: var(--color-7);   /* ✅ changed from var(--action) */
+  color: #fff;
+  transform: translateY(-2px);
 }
