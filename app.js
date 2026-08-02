@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const messagesEl    = document.getElementById("messages");
   const chatTitleEl   = document.getElementById("chatTitle");
   const inputEl       = document.getElementById("input");
-  const themeToggleBtn   = document.getElementById("toggleThemeBtn");
+  const themeToggleBtn = document.getElementById("themeToggle");
   const sidebarEl        = document.querySelector(".sidebar");
   const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
   const modelSelector    = document.getElementById("modelSelector");
@@ -421,12 +421,6 @@ modalConfirm.addEventListener("click", async () => {
   backdropEl.className = "sidebar-backdrop";
   document.body.appendChild(backdropEl);
 
-  const paletteBtn     = document.getElementById("themeBtn");
-  const paletteSheet   = document.getElementById("paletteSheet");
-  const sheetBackdrop  = document.getElementById("sheetBackdrop");
-  const closeSheetBtn  = document.getElementById("closeSheetBtn");
-  const paletteOptions = document.querySelectorAll(".sheet-option");
-
   const scrollTopBtn = document.getElementById("scrollTopBtn");
   const scrollBottomBtn = document.getElementById("scrollBottomBtn");
   const inputArea    = document.querySelector(".input-area");
@@ -634,13 +628,13 @@ function renderMessageContent(content) {
 // ==========================
   const palettes = {
     Green: {
-      "--color-1": "#94e8b4",
-      "--color-2": "#72bda3",
-      "--color-3": "#5e8c61",
-      "--color-4": "#4e6151",
-      "--color-5": "#3b322c",
-      "--color-6": "#800000",
-      "--color-7": "#f30000"
+      "--color-1": "#94e8b4", //message user colour
+      "--color-2": "#72bda3", //message assistant colour
+      "--color-3": "#5e8c61", //Banner
+      "--color-4": "#4e6151", //I think this is the gradient to message user
+      "--color-5": "#3b322c", //I think this is the gradient to message assistant
+      "--color-6": "#800000", //Button colour
+      "--color-7": "#f30000" //hover over button colour
     },
     Blue: {
       "--color-1": "#6da5f8",
@@ -1523,15 +1517,11 @@ function closePaletteSheet() {
   }, 220);
 }
 
-paletteBtn.addEventListener("click", openPaletteSheet);
-closeSheetBtn.addEventListener("click", closePaletteSheet);
-sheetBackdrop.addEventListener("click", closePaletteSheet);
-
-paletteOptions.forEach(btn => {
+// Sidebar footer palette buttons
+document.querySelectorAll(".palette-option").forEach(btn => {
   btn.addEventListener("click", () => {
-    currentPalette = btn.dataset.theme; // Green/Blue/Purple/Red/Teal
+    currentPalette = btn.dataset.palette; // Blue/Purple/Green/etc
     applyTheme();
-    closePaletteSheet();
   });
 });
 
@@ -1598,9 +1588,8 @@ function openModelSheet() {
 // KEYBOARD SHORTCUTS
 // ==========================
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && paletteSheet.classList.contains("show")) {
-    closePaletteSheet();
-  if (modelSheet && !modelSheet.classList.contains("hidden")) closeModelSheet();
+  if (e.key === "Escape") {
+    if (modelSheet && !modelSheet.classList.contains("hidden")) closeModelSheet();
   }
 });
 
