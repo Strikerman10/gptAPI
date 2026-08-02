@@ -132,8 +132,44 @@ REUSABLE SVG ICON SYMBOLS (hidden)
       </div>
 
       <div class="chat-list" id="chatList" aria-live="polite"></div>
-    </div>
-
+    
+    <!-- Sidebar footer: theme + logout -->
+      <div class="sidebar-footer">
+        <div class="palette-row">
+          <button class="palette-option" data-palette="Blue" 	title="Blue" 	aria-label="Blue palette"></button>
+          <button class="palette-option" data-palette="Purple"  title="Purple"  aria-label="Purple palette"></button>
+          <button class="palette-option" data-palette="Green"  	title="Green"  	aria-label="Green palette"></button>
+          <button class="palette-option" data-palette="Orange"  title="Orange"  aria-label="Orange palette"></button>
+          <button class="palette-option" data-palette="Teal"    title="Teal"    aria-label="Teal palette"></button>
+		  <button class="palette-option" data-palette="Red"    	title="Red"    	aria-label="Red palette"></button>
+        </div>
+        	
+	<div class="footer-actions">	  
+	  <!-- Theme Toggle -->
+<button id="themeToggle" class="footer-btn" aria-label="Toggle Light/Dark Mode">
+  <svg class="icon dark-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M21.46 16.54A10.51 10.51 0 1 1 12 1.49a10.34 10.34 0 0 1 2.8.38 8.12 8.12 0 0 0 2.45 15.86 8 8 0 0 0 4.21-1.19z"
+      fill="none" stroke="currentColor" stroke-width="1.9"/>
+  </svg>
+  <svg class="icon light-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340.127 340.127">
+    <path d="M181.401 0h-22.675v56.688h22.675V0zm-139.611 282.306l16.031 16.031 40.09-40.09-16.031-16.031-40.09 40.09zm14.898-123.58H0v22.675h56.688v-22.675zm241.649-100.904L282.306 41.79l-40.09 40.09 16.031 16.031 40.09-40.09zM237.749 265.39l40.747 40.747 16.303-16.303-40.747-40.747-16.303 16.303zm45.69-106.664v22.675h56.688v-22.675H283.439zM170.064 79.363c-50.089 0-90.701 40.611-90.701 90.701s40.611 90.701 90.701 90.701 90.701-40.611 90.701-90.701-40.612-90.701-90.701-90.701zm0 158.726c-37.573 0-68.025-30.453-68.025-68.025s30.452-68.025 68.025-68.025 68.025 30.453 68.025 68.025-30.452 68.025-68.025 68.025zm-11.338 102.038h22.675v-56.688h-22.675v56.688zM91.041 86.098l-40.747-40.77L33.99 61.631l40.747 40.747 16.304-16.28z"
+      fill="currentColor"/>
+  </svg>
+</button>
+	  <!-- Logout Button --> 
+	<button id="logoutBtn" class="footer-btn" aria-label="Logout">
+		<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+		  fill="none" stroke="currentColor" stroke-width="2"
+		  stroke-linecap="round" stroke-linejoin="round">
+		  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+		  <polyline points="16 17 21 12 16 7"/>
+		  <line x1="21" y1="12" x2="9" y2="12"/>
+		</svg>
+	  </button>
+	</div>
+  </div>
+</div>
+	  
 <!-- ==========================
 MAIN CHAT WINDOW
 ========================== -->
@@ -162,101 +198,9 @@ MAIN CHAT WINDOW
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
       </svg>
     </button>
- <!-- Theme Toggle -->
-    <button id="toggleThemeBtn" aria-label="Toggle Light/Dark Mode">
-      <svg class="icon dark-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path d="M21.46 16.54A10.51 10.51 0 1 1 12 1.49a10.34 10.34 0 0 1 2.8.38 8.12 8.12 0 0 0 2.45 15.86 8 8 0 0 0 4.21-1.19z"
-          fill="none" stroke="currentColor" stroke-width="1.9"/>
-      </svg>
-      <svg class="icon light-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340.127 340.127">
-        <path d="M181.401 0h-22.675v56.688h22.675V0zm-139.611 282.306l16.031 16.031 40.09-40.09-16.031-16.031-40.09 40.09zm14.898-123.58H0v22.675h56.688v-22.675zm241.649-100.904L282.306 41.79l-40.09 40.09 16.031 16.031 40.09-40.09zM237.749 265.39l40.747 40.747 16.303-16.303-40.747-40.747-16.303 16.303zm45.69-106.664v22.675h56.688v-22.675H283.439zM170.064 79.363c-50.089 0-90.701 40.611-90.701 90.701s40.611 90.701 90.701 90.701 90.701-40.611 90.701-90.701-40.612-90.701-90.701-90.701zm0 158.726c-37.573 0-68.025-30.453-68.025-68.025s30.452-68.025 68.025-68.025 68.025 30.453 68.025 68.025-30.452 68.025-68.025 68.025zm-11.338 102.038h22.675v-56.688h-22.675v56.688zM91.041 86.098l-40.747-40.77L33.99 61.631l40.747 40.747 16.304-16.28z"
-          fill="currentColor"/>
-      </svg>
-    </button>
-
-<!-- ==========================
-PALETTE / THEME PICKER BUTTON
-(Opens the colour palette bottom sheet)
-========================== -->
-<div class="theme-dropdown">
- <button id="themeBtn" class="theme-btn" aria-label="Change Theme" aria-expanded="false" aria-controls="paletteSheet">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-    <defs>
-      <clipPath id="wheelClip">
-        <circle cx="12" cy="12" r="10"/>
-      </clipPath>
-    </defs>
-
-    <g clip-path="url(#wheelClip)">
-      <!-- Green: 12 o'clock to 2 o'clock -->
-      <path d="M12 12 L12 2 A10 10 0 0 1 20.66 7 Z" fill="#22c55e"/>
-      <!-- Blue: 2 o'clock to 4 o'clock -->
-      <path d="M12 12 L20.66 7 A10 10 0 0 1 20.66 17 Z" fill="#3b82f6"/>
-      <!-- Purple: 4 o'clock to 6 o'clock -->
-      <path d="M12 12 L20.66 17 A10 10 0 0 1 12 22 Z" fill="#a855f7"/>
-      <!-- Red: 6 o'clock to 8 o'clock -->
-      <path d="M12 12 L12 22 A10 10 0 0 1 3.34 17 Z" fill="#ef4444"/>
-      <!-- Teal: 8 o'clock to 10 o'clock -->
-      <path d="M12 12 L3.34 17 A10 10 0 0 1 3.34 7 Z" fill="#14b8a6"/>
-      <!-- Orange: 10 o'clock to 12 o'clock -->
-      <path d="M12 12 L3.34 7 A10 10 0 0 1 12 2 Z" fill="#F28C28"/>
-    </g>
-
-    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.4"/>
-    <circle cx="12" cy="12" r="2.2" fill="currentColor" opacity="0.14"/>
-  </svg>
-</button>
-</div>
-
-<!-- Logout Button -->    
-<button id="logoutBtn" aria-label="Logout">
-    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-      fill="none" stroke="currentColor" stroke-width="2"
-      stroke-linecap="round" stroke-linejoin="round">
-      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-      <polyline points="16 17 21 12 16 7"/>
-      <line x1="21" y1="12" x2="9" y2="12"/>
-    </svg>
-  </button>
-    
-<!-- ==========================
-PALETTE BOTTOM SHEET
-(Colour theme picker, opened by the palette button above)
-========================== -->
-<div id="sheetBackdrop" class="sheet-backdrop hidden"></div>
-
-<section id="paletteSheet" class="palette-sheet hidden" role="dialog" aria-modal="true" aria-labelledby="paletteTitle">
-  <div class="sheet-handle"></div>
-  <div class="sheet-header">
-    <h3 id="paletteTitle">Choose theme</h3>
-    <button id="closeSheetBtn" class="sheet-close" aria-label="Close theme picker">✕</button>
-  </div>
-
-  <div class="sheet-grid">
-    <button class="sheet-option" data-theme="Green">
-      <span class="swatch" style="--sw:#22c55e;"></span><span class="theme-label">Green</span>
-    </button>
-    <button class="sheet-option" data-theme="Blue">
-      <span class="swatch" style="--sw:#3b82f6;"></span><span class="theme-label">Blue</span>
-    </button>
-    <button class="sheet-option" data-theme="Purple">
-      <span class="swatch" style="--sw:#a855f7;"></span><span class="theme-label">Purple</span>
-    </button>
-    <button class="sheet-option" data-theme="Red">
-      <span class="swatch" style="--sw:#ef4444;"></span><span class="theme-label">Red</span>
-    </button>
-    <button class="sheet-option" data-theme="Teal">
-      <span class="swatch" style="--sw:#14b8a6;"></span><span class="theme-label">Teal</span>
-    </button>
-    <button class="sheet-option" data-theme="Orange">
-      <span class="swatch" style="--sw:#F28C28;"></span><span class="theme-label">Orange</span>
-    </button>
-  </div>
-</section>
-  </div>
-  </div>
-
-
+ </div>  
+</div>  
+	
 <!-- ==========================
 MESSAGES AREA
 (Chat messages are injected here by JS)
