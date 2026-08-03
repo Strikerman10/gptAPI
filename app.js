@@ -1,7 +1,7 @@
 // ==========================
 // CONFIG & GLOBAL STATE
 // ==========================
-const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
+const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev;
 
 // AUTH STATE
 // We no longer use a plain prompt() for userId.
@@ -426,64 +426,86 @@ modalConfirm.addEventListener("click", async () => {
   const inputArea    = document.querySelector(".input-area");
   const textarea     = inputArea.querySelector("textarea");
 
-  // ==========================
-  // SCROLL BUTTONS
-  // ==========================
-  function updateScrollBtnPosition() {
-    const inputHeight = inputArea.offsetHeight;
-    scrollTopBtn.style.bottom = (inputHeight + 20) + "px";
-  }
-  updateScrollBtnPosition();
-  textarea.addEventListener("input", updateScrollBtnPosition);
-  window.addEventListener("resize", updateScrollBtnPosition);
+ // ==========================
+// SCROLL BUTTONS
+// ==========================
+function updateScrollBtnPosition() {
+  const inputHeight = inputArea.offsetHeight;
+  const bottom = (inputHeight + 20) + "px";
 
-let lastScrollTop = 0; // 👈 Add it here
+  scrollTopBtn.style.bottom = bottom;
+  scrollBottomBtn.style.bottom = bottom;
+}
 
-  messagesEl.addEventListener("scroll", () => {
-    const distanceFromTop = messagesEl.scrollTop;
-    const distanceFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
-    const canScroll = messagesEl.scrollHeight > messagesEl.clientHeight;
+updateScrollBtnPosition();
 
-    if (!canScroll) {
-        scrollTopBtn.style.display    = "none";
-        scrollBottomBtn.style.display = "none";
-    } else if (distanceFromTop <= 50) {
-        // Near the top
-        scrollTopBtn.style.display    = "none";
-        scrollBottomBtn.style.display = "flex";
-    } else if (distanceFromBottom <= 50) {
-        // Near the bottom
-        scrollTopBtn.style.display    = "flex";
-        scrollBottomBtn.style.display = "none";
-    } else {
-        // In the middle - show only one button based on scroll direction
-        const isScrollingUp = messagesEl.scrollTop < lastScrollTop;
-
-        if (isScrollingUp) {
-            scrollTopBtn.style.display    = "none";
-            scrollBottomBtn.style.display = "flex";
-        } else {
-            scrollTopBtn.style.display    = "flex";
-            scrollBottomBtn.style.display = "none";
-        }
-    }
-
-    lastScrollTop = messagesEl.scrollTop; // 👈 And this stays at the bottom inside the listener
+textarea.addEventListener("input", () => {
+  requestAnimationFrame(updateScrollBtnPosition);
 });
 
-  scrollTopBtn.addEventListener("click", () => {
-    messagesEl.scrollTo({ top: 0, behavior: "smooth" });
-  });
-  scrollBottomBtn.addEventListener("click", () => {
-    messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: "smooth" });
-  });
+window.addEventListener("resize", () => {
+  requestAnimationFrame(updateScrollBtnPosition);
+});
 
-  setTimeout(() => {
-      messagesEl.dispatchEvent(new Event("scroll"));
-  }, 100);
+// Automatically update when input area grows/shrinks
+const inputResizeObserver = new ResizeObserver(() => {
+  requestAnimationFrame(updateScrollBtnPosition);
+});
 
-  const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon");
-  const chevronIcon   = toggleSidebarBtn.querySelector(".show-icon");
+inputResizeObserver.observe(inputArea);
+
+let lastScrollTop = 0;
+
+messagesEl.addEventListener("scroll", () => {
+  updateScrollBtnPosition();
+
+  const distanceFromTop = messagesEl.scrollTop;
+  const distanceFromBottom =
+    messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
+  const canScroll = messagesEl.scrollHeight > messagesEl.clientHeight;
+
+  if (!canScroll) {
+    scrollTopBtn.style.display = "none";
+    scrollBottomBtn.style.display = "none";
+  } else if (distanceFromTop <= 50) {
+    scrollTopBtn.style.display = "none";
+    scrollBottomBtn.style.display = "flex";
+  } else if (distanceFromBottom <= 50) {
+    scrollTopBtn.style.display = "flex";
+    scrollBottomBtn.style.display = "none";
+  } else {
+    const isScrollingUp = messagesEl.scrollTop < lastScrollTop;
+
+    if (isScrollingUp) {
+      scrollTopBtn.style.display = "none";
+      scrollBottomBtn.style.display = "flex";
+    } else {
+      scrollTopBtn.style.display = "flex";
+      scrollBottomBtn.style.display = "none";
+    }
+  }
+
+  lastScrollTop = messagesEl.scrollTop;
+});
+
+scrollTopBtn.addEventListener("click", () => {
+  messagesEl.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+scrollBottomBtn.addEventListener("click", () => {
+  messagesEl.scrollTo({
+    top: messagesEl.scrollHeight,
+    behavior: "smooth"
+  });
+});
+
+setTimeout(() => {
+  updateScrollBtnPosition();
+  messagesEl.dispatchEvent(new Event("scroll"));
+}, 100);
+
+const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon");
+const chevronIcon = toggleSidebarBtn.querySelector(".show-icon");
 
   // ==========================
   // UTILITY FUNCTIONS
@@ -1239,17 +1261,23 @@ async function sendMessage() {
 }
   chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
   renderMessages();
+  
   inputEl.value = "";
-
+  
   // Clear attachments now that they're attached to the message
   pendingAttachments.forEach(a => { if (a.previewUrl) URL.revokeObjectURL(a.previewUrl); });
   pendingAttachments = [];
   renderChips();
-
+  
   autoResize();
+  
+  requestAnimationFrame(() => {
+    updateScrollBtnPosition();
+  });
+  
   saveChats();
   saveChatsToWorker();
-
+  
   try {
     const cleanMessages = chat.messages
       .filter(m => m.content !== "__TYPING__")
