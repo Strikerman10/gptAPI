@@ -1,7 +1,7 @@
 // ==========================
 // CONFIG & GLOBAL STATE
 // ==========================
-const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev;
+const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
 
 // AUTH STATE
 // We no longer use a plain prompt() for userId.
