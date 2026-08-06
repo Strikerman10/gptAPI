@@ -40,7 +40,7 @@ const ALLOWED_TYPES = new Set([
   "image/png", "image/jpeg", "image/gif", "image/webp",
   "application/pdf", "text/plain", "text/markdown"
 ]);
-const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15MB
+const MAX_FILE_SIZE = 8 * 1024 * 1024; // 15MB
 
 // Pending attachments for the NEXT message. Each: { r2Key, filename, contentType, previewUrl }
 let pendingAttachments = [];
@@ -125,25 +125,39 @@ async function handleFileSelect(file) {
 }
 
 async function uploadFile(file) {
+  if (!authToken) {
+    throw new Error("Not logged in or missing auth token");
+  }
+
   const form = new FormData();
   form.append("file", file);
 
   const res = await fetch(`${WORKER_URL}/upload`, {
     method: "POST",
-    headers: { "Authorization": `Bearer ${authToken}` }, // browser sets multipart Content-Type
+    headers: {
+      "Authorization": `Bearer ${authToken}`
+    },
     body: form
   });
 
-  if (res.status === 401) { await handleUnauthorized(); throw new Error("Unauthorized"); }
+  if (res.status === 401) {
+    await handleUnauthorized();
+    throw new Error("Unauthorized");
+  }
 
   const raw = await res.text();
   let data = {};
-  try { data = raw ? JSON.parse(raw) : {}; }
-  catch { throw new Error(`Invalid JSON from upload: ${raw}`); }
+  try {
+    data = raw ? JSON.parse(raw) : {};
+  } catch {
+    throw new Error(`Invalid JSON from upload: ${raw}`);
+  }
 
-  if (!res.ok) throw new Error(data.error || `Upload returned ${res.status}`);
+  if (!res.ok) {
+    throw new Error(data.detail || data.error || `Upload returned ${res.status}`);
+  }
 
-  return data; // expecting { r2Key, filename, contentType, ... }
+  return data;
 }
 
 function renderChips() {
