@@ -1792,7 +1792,7 @@ body.dark-mode .message p {
 /* Hover */
 .footer-btn:hover,
 #logoutBtn:hover {
-  background: var(--action); /* or var(--action) if defined */
+  background: var(--color-6); /* or var(--action) if defined */
   color: #fff;  
   transform: translateY(-2px);
 }
