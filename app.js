@@ -380,7 +380,8 @@ modalConfirm.addEventListener("click", async () => {
 
   document.getElementById("messages").innerHTML    = "";
   document.getElementById("chatList").innerHTML    = "";
-  document.getElementById("chatTitle").textContent = "Messages";
+  const DEFAULT_CHAT_TITLE = "Orion AI Messages";
+  document.getElementById("chatTitle").textContent = DEFAULT_CHAT_TITLE;
 
   document.getElementById("authModalTitle").textContent    = "Welcome Back";
   document.getElementById("authModalSubtitle").textContent = "Sign in to access your chats";
@@ -717,6 +718,15 @@ function renderMessageContent(content) {
       "--color-6": "#800000",
       "--color-7": "#F30000"
     },
+    	Amoled: {
+	  "--color-1": "#1a1a1a",
+	  "--color-2": "#2a2a2a",
+	  "--color-3": "#3a3a3a",
+	  "--color-4": "#111111",
+	  "--color-5": "#000000",
+	  "--color-6": "#362239",
+	  "--color-7": "#266D69" 
+	  },
   };
 
 // ==========================
@@ -764,6 +774,10 @@ function renderMessageContent(content) {
     document.body.classList.toggle("dark-mode", currentMode === "dark" || currentPalette === "Amoled");
     document.body.classList.toggle("amoled-mode", currentPalette === "Amoled");
 
+    document.querySelectorAll(".palette-option").forEach(el => {
+    el.classList.toggle("active", el.dataset.palette === currentPalette);
+  });
+	  
     localStorage.setItem("palette", currentPalette);
     localStorage.setItem("mode", currentMode);
   }
@@ -1024,7 +1038,7 @@ function renderChatList() {
 
 function renderMessages() {
   messagesEl.innerHTML = "";
-  chatTitleEl.textContent = "Messages";
+  chatTitleEl.textContent = "Orion AI Messages";
 
   if (currentIndex === null || !chats[currentIndex]) {
     messagesEl.innerHTML = `<p class="placeholder">No chats yet. Start a new one!</p>`;
