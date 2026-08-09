@@ -127,6 +127,12 @@ body.dark-mode {
   flex-shrink: 0;
 }
 
+html[data-palette="Amoled"] .sidebar-header,
+body.amoled-mode .sidebar-header {
+  background: var(--color-6) !important;
+  background-image: none !important;
+}
+
 .sidebar-icon {
   fill: currentColor;
 }
@@ -578,6 +584,11 @@ body.dark-mode {
   overflow-wrap: normal;
 }
 
+html[data-palette="Amoled"] .code-block-wrapper code,
+body.amoled-mode .code-block-wrapper code {
+  color: var(--primary-text);
+}
+
 .message p {
   margin: 0;
 }
@@ -699,6 +710,12 @@ body.dark-mode {
   position: sticky;
   top: 0;
   z-index: 20;
+}
+
+html[data-palette="Amoled"] .topbar,
+body.amoled-mode .chat-header {
+  background: var(--color-6) !important;
+  background-image: none !important;
 }
 
 .chat-header .chat-title {
@@ -1740,11 +1757,12 @@ body.dark-mode .message p {
 }
 
 .palette-option:hover {
-  transform: scale(1.15);
+  transform: scale(1.25);
 }
 
 .palette-option.active {
   border-color: var(--text);
+  transform: scale(1.15);
 }
 
 .palette-option[data-palette="Blue"]    { background: #2c4f80; }
@@ -1753,6 +1771,7 @@ body.dark-mode .message p {
 .palette-option[data-palette="Orange"]  { background: #F28C28; }
 .palette-option[data-palette="Teal"]    { background: #006d65; }
 .palette-option[data-palette="Red"]     { background: #8b0000; }
+.palette-option[data-palette="Amoled"]  { background: #3a3a3a; }
 
 .footer-actions {
   display: flex;
@@ -1792,7 +1811,7 @@ body.dark-mode .message p {
 /* Hover */
 .footer-btn:hover,
 #logoutBtn:hover {
-  background: var(--color-6); /* or var(--action) if defined */
+  background: var(--action); /* or var(--action) if defined */
   color: #fff;  
   transform: translateY(-2px);
 }
@@ -1809,4 +1828,14 @@ body.dark-mode .message p {
   background: var(--color-7);   /* ✅ changed from var(--action) */
   color: #fff;
   transform: translateY(-2px);
+}
+
+body.amoled-mode .code-block-wrapper pre,
+body.amoled-mode .code-block-wrapper code,
+body.amoled-mode .code-block-wrapper code * {
+  color: #ffd500 !important;
+}
+
+body.amoled-mode .code-block-wrapper pre {
+  border-color: #222;
 }
