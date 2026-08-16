@@ -304,6 +304,8 @@ body.amoled-mode .sidebar-header {
   background: transparent;
   color: var(--surface-3);
   display: flex;
+  position: static;
+  transform: none;
   align-items: center;
   justify-content: center;
   cursor: pointer;
