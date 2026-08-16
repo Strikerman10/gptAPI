@@ -1020,6 +1020,7 @@ function renderChatList() {
 	item.appendChild(preview);
 	item.appendChild(actionsDiv);
 	chatListEl.appendChild(item);
+  }
 
   // Render pinned section
   if (pinned.length > 0) {
