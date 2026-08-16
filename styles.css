@@ -1446,7 +1446,7 @@ body.dark-mode .message p {
 /* Always show pin button when active/pinned */
 .pin-btn.active {
   opacity: 1;
-  color: var(--color-6);
+  color: #FF0005;
 }
 
 .pin-btn:hover {
