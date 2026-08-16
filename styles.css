@@ -296,10 +296,6 @@ body.amoled-mode .sidebar-header {
 }
 
 .delete-btn {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
   width: 32px;
   height: 32px;
   padding: 4px;
@@ -312,6 +308,13 @@ body.amoled-mode .sidebar-header {
   justify-content: center;
   cursor: pointer;
   transition: background-color 0.12s, color 0.12s, transform 0.06s, box-shadow 0.08s;
+}
+
+.chat-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
 }
 
 .chat-item:hover .delete-btn,
