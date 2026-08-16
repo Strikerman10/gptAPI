@@ -1080,13 +1080,13 @@ body.amoled-mode .chat-header {
   }
 
   .delete-btn {
-    background: var(--color-6);
-    color: #fff;
+    /*background: var(--color-6);*/
+    color: var(--color-6);
     border-radius: 50%;
   }
 
   .delete-btn:active {
-    transform: translateY(-50%) scale(0.95);
+    transform: translateY(-50%) scale(1.0);
   }
 
   .scroll-top-btn {
@@ -1450,7 +1450,7 @@ body.dark-mode .message p {
 }
 
 .pin-btn:hover {
-  color: var(--primary-contrast);
+  color: var(--color-7);
   background: var(--color-6);
 }
 
