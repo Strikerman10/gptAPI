@@ -251,6 +251,7 @@ body.amoled-mode .sidebar-header {
   position: relative;
   display: flex;
   justify-content: space-between;
+  width: 100%
   align-items: center;
   padding: 10px;
   padding-right: 64px;
@@ -272,8 +273,9 @@ body.amoled-mode .sidebar-header {
 }
 
 .chat-preview {
-  min-width: 0;
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .chat-title {
@@ -314,7 +316,8 @@ body.amoled-mode .sidebar-header {
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 4px;
+  justify-content: flex-end;
+  gap: 6px;
   flex-shrink: 0;
 }
 
