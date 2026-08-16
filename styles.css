@@ -1083,10 +1083,11 @@ body.amoled-mode .chat-header {
     /*background: var(--color-6);*/
     color: var(--color-6);
     border-radius: 50%;
+    transform: scale(2.0);
   }
 
   .delete-btn:active {
-    transform: translateY(-50%) scale(1.0);
+    transform: translateY(-50%) scale(2.0);
   }
 
   .scroll-top-btn {
