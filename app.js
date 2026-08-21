@@ -32,21 +32,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const modelSelector    = document.getElementById("modelSelector");
   const logoutBtn     = document.getElementById("logoutBtn");
 
-// ============================
-// Resize window for keyboard on Mobile
-// ============================
- if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', () => {
-      document.body.style.height = `${window.visualViewport.height}px`;
-      
-      // Scroll active input into view (optional but recommended)
-      const activeElement = document.activeElement;
-      if (activeElement && (activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT')) {
-        activeElement.scrollIntoView({ block: 'nearest' });
-      }
-    });
-  }
-});
+// ==========================================
+// KEYBOARD ADAPTABILITY (MOBILE)
+// ==========================================
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', () => {
+    // Dynamically size the body to fit the screen above the keyboard
+    document.body.style.height = `${window.visualViewport.height}px`;
+    
+    // Smoothly scroll active input into view
+    const activeEl = document.activeElement;
+    if (activeEl && (activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'INPUT')) {
+      activeEl.scrollIntoView({ block: 'nearest' });
+    }
+  });
+}
 	
 // ============================
 // FILE ATTACHMENTS
