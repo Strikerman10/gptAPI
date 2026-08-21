@@ -33,9 +33,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const logoutBtn     = document.getElementById("logoutBtn");
 
 // ============================
+// Resize window for keyboard on Mobile
+// ============================
+ if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => {
+      document.body.style.height = `${window.visualViewport.height}px`;
+      
+      // Scroll active input into view (optional but recommended)
+      const activeElement = document.activeElement;
+      if (activeElement && (activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT')) {
+        activeElement.scrollIntoView({ block: 'nearest' });
+      }
+    });
+  }
+});
+	
+// ============================
 // FILE ATTACHMENTS
 // ============================
-
 const ALLOWED_TYPES = new Set([
   "image/png", "image/jpeg", "image/gif", "image/webp",
   "application/pdf", "text/plain", "text/markdown"
