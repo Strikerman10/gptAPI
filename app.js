@@ -12,7 +12,7 @@ let userId    = localStorage.getItem("userId")    || null;
 let chats = [];
 let currentIndex = null;
 let currentProvider = localStorage.getItem("chat_provider") || "openai";
-let currentModel    = localStorage.getItem("chat_model")    || "gpt-5.4-2026-03-05";
+let currentModel    = localStorage.getItem("chat_model")    || "gpt-5.5-2026-04-23";
 
 // ==========================
 // DOM READY
@@ -1537,7 +1537,7 @@ modelSelector.addEventListener("change", (e) => {
     currentModel = parts[1];
   } else {
     currentProvider = "openai";
-    currentModel = value || "gpt-5.4-2026-03-05";
+    currentModel = value || "gpt-5.5-2026-04-23";
   }
 
   localStorage.setItem("chat_provider", currentProvider);
