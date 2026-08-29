@@ -14,6 +14,27 @@ let currentIndex = null;
 let currentProvider = localStorage.getItem("chat_provider") || "openai";
 let currentModel    = localStorage.getItem("chat_model")    || "gpt-5.5-2026-04-23";
 
+// Aborts the in-flight chat request, if any. Created at the start of each
+// sendMessage/sendMessageRetry call and replaced on every new send.
+let currentAbortController = null;
+
+/**
+ * Hides the send button and shows the stop button (or vice versa).
+ * Call with true when a request starts, false when it ends (success or error).
+ */
+function setSending(isSending) {
+  const sendBtn = document.getElementById("sendBtn");
+  const stopBtn = document.getElementById("stopBtn");
+  if (!sendBtn || !stopBtn) return;
+  if (isSending) {
+    sendBtn.classList.add("hidden");
+    stopBtn.classList.remove("hidden");
+  } else {
+    sendBtn.classList.remove("hidden");
+    stopBtn.classList.add("hidden");
+  }
+}
+
 // ==========================
 // DOM READY
 // ==========================
@@ -1131,6 +1152,29 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
     div.appendChild(textDiv);
     wrapper.appendChild(div);
 
+    // Show a Stop pill below the thinking dots, styled like the Reload pill.
+    // Only shown for the __TYPING__ placeholder while a request is in flight.
+    if (msg.content === "__TYPING__") {
+      const stopRow = document.createElement("div");
+      stopRow.className = "reload-row";
+
+      const stopPill = document.createElement("button");
+      stopPill.type = "button";
+      stopPill.className = "reload-pill";
+      stopPill.title = "Stop generating";
+      stopPill.innerHTML = `
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+          <rect x="6" y="6" width="12" height="12" rx="2"/>
+        </svg>
+        <span>Stop</span>
+      `;
+      stopPill.addEventListener("click", () => {
+        if (currentAbortController) currentAbortController.abort();
+      });
+      stopRow.appendChild(stopPill);
+      wrapper.appendChild(stopRow);
+    }
+
     if (msg.role === "assistant" && msg.content !== "__TYPING__" && idx === lastAssistantIdx) {
       const reloadRow = document.createElement("div");
       reloadRow.className = "reload-row";
@@ -1153,13 +1197,17 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
       reloadBtn.addEventListener("click", async () => {
   // Remove the assistant message at this specific index
   chat.messages.splice(idx, 1);
-  
+
   // Insert the typing indicator at the SAME position, not the end
   chat.messages.splice(idx, 0, { role: "assistant", content: "__TYPING__", time: formatDateTime() });
 
   saveChats();
   saveChatsToWorker();
   renderMessages();
+
+  // Arm the stop button and create an AbortController for this request.
+  currentAbortController = new AbortController();
+  setSending(true);
 
   try {
     const cleanMessages = chat.messages
@@ -1184,7 +1232,7 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${authToken}`
         },
-        
+
         body: JSON.stringify({
           provider: currentProvider,
           model: currentModel,
@@ -1194,10 +1242,11 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
             ...(m.attachments ? { attachments: m.attachments } : {})
           })),
         }),
+        signal: currentAbortController.signal,
       });
 
     if (res.status === 401) { await handleUnauthorized(); return; }
-    
+
     if (!res.ok) {
       const errText = await res.text();
       throw new Error(`Worker returned ${res.status}: ${errText}`);
@@ -1214,13 +1263,28 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
       model: modelSelector.options[modelSelector.selectedIndex].text
     };
   } catch (e) {
-    // Replace at the SAME idx position on error too
-    chat.messages[idx] = {
-      role: "assistant",
-      content: "Error: " + e.message,
-      time: formatDateTime(),
-      model: modelSelector.options[modelSelector.selectedIndex].text
-    };
+    // AbortError fires when the user taps Stop — keep whatever text the model
+    // had already streamed (empty here, since this is a single non-streaming
+    // response) but don't surface the abort as an error.
+    if (e.name === "AbortError") {
+      chat.messages[idx] = {
+        role: "assistant",
+        content: "⏹ Stopped.",
+        time: formatDateTime(),
+        model: modelSelector.options[modelSelector.selectedIndex].text
+      };
+    } else {
+      // Replace at the SAME idx position on error too
+      chat.messages[idx] = {
+        role: "assistant",
+        content: "Error: " + e.message,
+        time: formatDateTime(),
+        model: modelSelector.options[modelSelector.selectedIndex].text
+      };
+    }
+  } finally {
+    currentAbortController = null;
+    setSending(false);
   }
 
   saveChats();
@@ -1325,7 +1389,11 @@ async function sendMessage() {
   
   saveChats();
   saveChatsToWorker();
-  
+
+  // Arm the stop button and create an AbortController for this request.
+  currentAbortController = new AbortController();
+  setSending(true);
+
   try {
     const cleanMessages = chat.messages
       .filter(m => m.content !== "__TYPING__")
@@ -1339,7 +1407,7 @@ async function sendMessage() {
         }
         return acc;
       }, []);
-    
+
     // Final safety check - Anthropic requires last message to be user
     if (cleanMessages.length > 0 && cleanMessages[cleanMessages.length - 1].role !== "user") {
       cleanMessages.pop();
@@ -1362,10 +1430,11 @@ async function sendMessage() {
         model: currentModel,
         messages: cleanMessages,
       }),
+      signal: currentAbortController.signal,
     });
 
     if (res.status === 401) { await handleUnauthorized(); return; }
-    
+
     console.log("HTTP status:", res.status);
 
     const rawText = await res.text();
@@ -1392,14 +1461,29 @@ async function sendMessage() {
       model: modelSelector.options[modelSelector.selectedIndex].text
     };
   } catch (e) {
-    console.error("sendMessage failed:", e);
+    // AbortError fires when the user taps Stop — keep whatever text the model
+    // had already streamed (which is empty here, since this fetch is a single
+    // non-streaming response) but don't surface the abort as an error.
+    if (e.name === "AbortError") {
+      chat.messages[chat.messages.length - 1] = {
+        role: "assistant",
+        content: "⏹ Stopped.",
+        time: formatDateTime(),
+        model: modelSelector.options[modelSelector.selectedIndex].text
+      };
+    } else {
+      console.error("sendMessage failed:", e);
 
-    chat.messages[chat.messages.length - 1] = {
-      role: "assistant",
-      content: "Error: " + e.message,
-      time: formatDateTime(),
-      model: modelSelector.options[modelSelector.selectedIndex].text
-    };
+      chat.messages[chat.messages.length - 1] = {
+        role: "assistant",
+        content: "Error: " + e.message,
+        time: formatDateTime(),
+        model: modelSelector.options[modelSelector.selectedIndex].text
+      };
+    }
+  } finally {
+    currentAbortController = null;
+    setSending(false);
   }
 
   saveChats();
@@ -1427,6 +1511,10 @@ async function sendMessageRetry() {
   saveChats();
   saveChatsToWorker();
 
+  // Arm the stop button and create an AbortController for this request.
+  currentAbortController = new AbortController();
+  setSending(true);
+
   try {
      const cleanMessages = chat.messages
       .filter(m => m.content !== "__TYPING__")
@@ -1440,7 +1528,7 @@ async function sendMessageRetry() {
         }
         return acc;
       }, []);
-    
+
     // Final safety check - Anthropic requires last message to be user
     if (cleanMessages.length > 0 && cleanMessages[cleanMessages.length - 1].role !== "user") {
       cleanMessages.pop();
@@ -1457,7 +1545,7 @@ async function sendMessageRetry() {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${authToken}`
-      }, 
+      },
       body: JSON.stringify({
         provider: currentProvider,
         model: currentModel,
@@ -1467,10 +1555,11 @@ async function sendMessageRetry() {
           ...(m.attachments ? { attachments: m.attachments } : {})
         })),
       }),
+      signal: currentAbortController.signal,
   });
 
     if (res.status === 401) { await handleUnauthorized(); return; }
-    
+
     console.log("Retry status:", res.status);
 
     const rawText = await res.text();
@@ -1496,14 +1585,29 @@ async function sendMessageRetry() {
       model: modelSelector.options[modelSelector.selectedIndex].text
     };
   } catch (e) {
-    console.error("sendMessageRetry failed:", e);
+    // AbortError fires when the user taps Stop — keep whatever text the model
+    // had already streamed (which is empty here, since this fetch is a single
+    // non-streaming response) but don't surface the abort as an error.
+    if (e.name === "AbortError") {
+      chat.messages[chat.messages.length - 1] = {
+        role: "assistant",
+        content: "⏹ Stopped.",
+        time: formatDateTime(),
+        model: modelSelector.options[modelSelector.selectedIndex].text
+      };
+    } else {
+      console.error("sendMessageRetry failed:", e);
 
-    chat.messages[chat.messages.length - 1] = {
-      role: "assistant",
-      content: "Error: " + e.message,
-      time: formatDateTime(),
-      model: modelSelector.options[modelSelector.selectedIndex].text
-    };
+      chat.messages[chat.messages.length - 1] = {
+        role: "assistant",
+        content: "Error: " + e.message,
+        time: formatDateTime(),
+        model: modelSelector.options[modelSelector.selectedIndex].text
+      };
+    }
+  } finally {
+    currentAbortController = null;
+    setSending(false);
   }
 
   saveChats();
@@ -1516,6 +1620,11 @@ async function sendMessageRetry() {
     if (window.innerWidth <= 768) closeSidebar();
   });
   document.getElementById("sendBtn").addEventListener("click", sendMessage);
+  document.getElementById("stopBtn")?.addEventListener("click", () => {
+    if (currentAbortController) {
+      currentAbortController.abort();
+    }
+  });
   inputEl.addEventListener("keydown", e => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();

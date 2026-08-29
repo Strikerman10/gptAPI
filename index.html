@@ -277,6 +277,14 @@ MESSAGE INPUT AREA
         <path d="M20 12L4 4L6 12M20 12L4 20L6 12M20 12H6"/>
       </svg>
     </button>
+
+    <!-- Stop button: shown only while a request is in flight, hidden at rest -->
+    <button class="send-btn hidden" id="stopBtn" type="button" aria-label="Stop generating">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20"
+        fill="currentColor">
+        <rect x="6" y="6" width="12" height="12" rx="2"/>
+      </svg>
+    </button>
   </div>
 </div>
 
