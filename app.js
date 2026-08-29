@@ -18,6 +18,10 @@ let currentModel    = localStorage.getItem("chat_model")    || "gpt-5.5-2026-04-
 // sendMessage/sendMessageRetry call and replaced on every new send.
 let currentAbortController = null;
 
+// Incremented each time a send/retry starts. Used to ignore stale server
+// responses that arrive after a user has already aborted or sent a new message.
+let currentRequestId = 0;
+
 /**
  * Hides the send button and shows the stop button (or vice versa).
  * Call with true when a request starts, false when it ends (success or error).
@@ -1169,7 +1173,15 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
         <span>Stop</span>
       `;
       stopPill.addEventListener("click", () => {
-        if (currentAbortController) currentAbortController.abort();
+        if (currentAbortController) {
+          // Show "⏹ Stopping..." immediately before the abort fires.
+          const last = chat.messages[chat.messages.length - 1];
+          if (last && last.role === "assistant" && last.content === "__TYPING__") {
+            last.content = "⏹ Stopping…";
+            renderMessages();
+          }
+          currentAbortController.abort();
+        }
       });
       stopRow.appendChild(stopPill);
       wrapper.appendChild(stopRow);
@@ -1206,6 +1218,9 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
   renderMessages();
 
   // Arm the stop button and create an AbortController for this request.
+  // Bumping the request id means any late response from a previous request
+  // is ignored, so a stopped/stuck request can't overwrite the chat.
+  const requestId = ++currentRequestId;
   currentAbortController = new AbortController();
   setSending(true);
 
@@ -1255,6 +1270,9 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
     const data = await res.json();
     const answer = extractAnswer(data);
 
+    // Drop the response if the user has since aborted or sent a new request.
+    if (requestId !== currentRequestId) return;
+
     // Replace at the SAME idx position, not the end
     chat.messages[idx] = {
       role: "assistant",
@@ -1263,6 +1281,9 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
       model: modelSelector.options[modelSelector.selectedIndex].text
     };
   } catch (e) {
+    // Drop late errors the same way.
+    if (requestId !== currentRequestId) return;
+
     // AbortError fires when the user taps Stop — keep whatever text the model
     // had already streamed (empty here, since this is a single non-streaming
     // response) but don't surface the abort as an error.
@@ -1283,8 +1304,10 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
       };
     }
   } finally {
-    currentAbortController = null;
-    setSending(false);
+    if (requestId === currentRequestId) {
+      currentAbortController = null;
+      setSending(false);
+    }
   }
 
   saveChats();
@@ -1391,6 +1414,9 @@ async function sendMessage() {
   saveChatsToWorker();
 
   // Arm the stop button and create an AbortController for this request.
+  // Bumping the request id means any late response from a previous request
+  // is ignored, so a stopped/stuck request can't overwrite the chat.
+  const requestId = ++currentRequestId;
   currentAbortController = new AbortController();
   setSending(true);
 
@@ -1454,6 +1480,9 @@ async function sendMessage() {
 
     const answer = extractAnswer(data);
 
+    // Drop the response if the user has since aborted or sent a new request.
+    if (requestId !== currentRequestId) return;
+
       chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: answer,
@@ -1461,6 +1490,10 @@ async function sendMessage() {
       model: modelSelector.options[modelSelector.selectedIndex].text
     };
   } catch (e) {
+    // Drop late errors the same way: if the user has moved on, don't write
+    // a new error message into the chat.
+    if (requestId !== currentRequestId) return;
+
     // AbortError fires when the user taps Stop — keep whatever text the model
     // had already streamed (which is empty here, since this fetch is a single
     // non-streaming response) but don't surface the abort as an error.
@@ -1482,8 +1515,10 @@ async function sendMessage() {
       };
     }
   } finally {
-    currentAbortController = null;
-    setSending(false);
+    if (requestId === currentRequestId) {
+      currentAbortController = null;
+      setSending(false);
+    }
   }
 
   saveChats();
@@ -1512,6 +1547,9 @@ async function sendMessageRetry() {
   saveChatsToWorker();
 
   // Arm the stop button and create an AbortController for this request.
+  // Bumping the request id means any late response from a previous request
+  // is ignored, so a stopped/stuck request can't overwrite the chat.
+  const requestId = ++currentRequestId;
   currentAbortController = new AbortController();
   setSending(true);
 
@@ -1578,6 +1616,9 @@ async function sendMessageRetry() {
 
     const answer = extractAnswer(data);
 
+    // Drop the response if the user has since aborted or sent a new request.
+    if (requestId !== currentRequestId) return;
+
         chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: answer,
@@ -1585,6 +1626,9 @@ async function sendMessageRetry() {
       model: modelSelector.options[modelSelector.selectedIndex].text
     };
   } catch (e) {
+    // Drop late errors the same way.
+    if (requestId !== currentRequestId) return;
+
     // AbortError fires when the user taps Stop — keep whatever text the model
     // had already streamed (which is empty here, since this fetch is a single
     // non-streaming response) but don't surface the abort as an error.
@@ -1606,8 +1650,10 @@ async function sendMessageRetry() {
       };
     }
   } finally {
-    currentAbortController = null;
-    setSending(false);
+    if (requestId === currentRequestId) {
+      currentAbortController = null;
+      setSending(false);
+    }
   }
 
   saveChats();
@@ -1622,6 +1668,17 @@ async function sendMessageRetry() {
   document.getElementById("sendBtn").addEventListener("click", sendMessage);
   document.getElementById("stopBtn")?.addEventListener("click", () => {
     if (currentAbortController) {
+      // Show "⏹ Stopping..." immediately in the typing message before the
+      // abort fires — this gives instant visual feedback even if the worker
+      // keeps running for a while before the connection actually drops.
+      const chat = chats[currentIndex];
+      if (chat) {
+        const last = chat.messages[chat.messages.length - 1];
+        if (last && last.role === "assistant" && last.content === "__TYPING__") {
+          last.content = "⏹ Stopping…";
+          renderMessages();
+        }
+      }
       currentAbortController.abort();
     }
   });
