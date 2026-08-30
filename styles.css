@@ -444,9 +444,9 @@ body.amoled-mode .sidebar-header {
   gap: 6px;
   padding: 8px 14px;
   border-radius: 10px;
-  border: 1px solid var(--danger);
-  background: var(--danger);
-  color: var(--danger-contrast);
+  border: 1px solid var(--color-3);
+  background: var(--color-6);
+  color: var(--primary-contrast);
   font-size: 14px;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.25s ease;
@@ -455,8 +455,8 @@ body.amoled-mode .sidebar-header {
 }
 
 .stop-pill:hover {
-  background: #c0392b;
-  border-color: #a93226;
+  background: var(--color-7);
+  border-color: var(--color-4);
 }
 
 .stop-pill:active {
@@ -467,17 +467,6 @@ body.amoled-mode .sidebar-header {
 .stop-pill:focus-visible {
   outline: none !important;
   box-shadow: 0 0 0 2px transparent; /* keeps focus from drawing a ring */
-}
-
-body.dark-mode .stop-pill {
-  background: var(--color-4);
-  color: #fff;
-  border-color: var(--color-1);
-}
-
-body.dark-mode .stop-pill:hover {
-  background: var(--color-1);
-  border-color: var(--color-3);
 }
 
 .stop-pill svg {

@@ -1110,13 +1110,6 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
       textDiv.innerHTML = `
         <div class="typing-indicator">
           <span></span><span></span><span></span>
-          <button class="stop-pill" title="Stop generating">
-            <svg viewBox="0 0 24 24" width="16" height="16"
-                 fill="currentColor" stroke="none">
-              <rect x="6" y="6" width="12" height="12" rx="2"></rect>
-            </svg>
-            <span>Stop</span>
-          </button>
         </div>
       `;
     } else if (msg.role === "assistant") {
@@ -1158,6 +1151,27 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
 
     div.appendChild(textDiv);
     wrapper.appendChild(div);
+
+    // Show Stop button while model is thinking (on __TYPING__ message)
+    if (msg.content === "__TYPING__") {
+      const stopRow = document.createElement("div");
+      stopRow.className = "reload-row";
+
+      const stopBtn = document.createElement("button");
+      stopBtn.type = "button";
+      stopBtn.className = "stop-pill";
+      stopBtn.title = "Stop generating";
+      stopBtn.innerHTML = `
+        <svg viewBox="0 0 24 24" width="16" height="16"
+             fill="currentColor" stroke="none">
+          <rect x="6" y="6" width="12" height="12" rx="2"></rect>
+        </svg>
+        <span>Stop</span>
+      `;
+      stopBtn.addEventListener("click", stopGenerating);
+      stopRow.appendChild(stopBtn);
+      wrapper.appendChild(stopRow);
+    }
 
     if (msg.role === "assistant" && msg.content !== "__TYPING__" && idx === lastAssistantIdx) {
       const reloadRow = document.createElement("div");
