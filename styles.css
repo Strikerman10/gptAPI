@@ -438,6 +438,52 @@ body.amoled-mode .sidebar-header {
   flex-shrink: 0;
 }
 
+.stop-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--danger);
+  background: var(--danger);
+  color: var(--danger-contrast);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateX(-8px);
+}
+
+.stop-pill:hover {
+  background: #c0392b;
+  border-color: #a93226;
+}
+
+.stop-pill:active {
+  transform: scale(0.98);
+}
+
+.stop-pill:focus,
+.stop-pill:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 2px transparent; /* keeps focus from drawing a ring */
+}
+
+body.dark-mode .stop-pill {
+  background: var(--color-4);
+  color: #fff;
+  border-color: var(--color-1);
+}
+
+body.dark-mode .stop-pill:hover {
+  background: var(--color-1);
+  border-color: var(--color-3);
+}
+
+.stop-pill svg {
+  flex-shrink: 0;
+}
+
 .message .msg-time {
   display: block;
   text-align: right;
@@ -1203,7 +1249,8 @@ body.dark-mode .message p {
 }
 
 .send-btn,
-.reload-pill {
+.reload-pill,
+.stop-pill {
   border: none !important;
   outline: none;
 }
@@ -1211,7 +1258,9 @@ body.dark-mode .message p {
 .send-btn:focus,
 .send-btn:focus-visible,
 .reload-pill:focus,
-.reload-pill:focus-visible {
+.reload-pill:focus-visible,
+.stop-pill:focus,
+.stop-pill:focus-visible {
   outline: none !important;
   box-shadow: 0 0 0 2px transparent; /* keeps focus from drawing a ring */
 }
