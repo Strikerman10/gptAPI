@@ -1203,6 +1203,9 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
   saveChatsToWorker();
   renderMessages();
 
+  // Create the abort controller so the user can stop a hanging reload
+  activeAbortController = new AbortController();
+
   try {
     const cleanMessages = chat.messages
       .filter(m => m.content !== "__TYPING__")
@@ -1270,6 +1273,7 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
     };
   }
 
+  activeAbortController = null;
   saveChats();
   saveChatsToWorker();
   renderMessages();
