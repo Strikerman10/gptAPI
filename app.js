@@ -2121,39 +2121,99 @@ document.addEventListener("keydown", (e) => {
     const authed = await initAuth();
     if (!authed) return;
 
-    await new Promise(r => setTimeout(r, 150)); // ← small breathing room
-    
-    let gotFromWorker = false;
-    try {
-      const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`, {
-        headers: {
-          "Authorization": `Bearer ${authToken}`
+    // Show cached chats straight away so the list is never blank while the
+    // network wakes up; the Worker copy replaces them once it answers.
+    const cachedRaw = localStorage.getItem("secure_chat_chats");
+    if (cachedRaw) {
+      try {
+        const cached = JSON.parse(cachedRaw);
+        if (Array.isArray(cached) && cached.length) {
+          chats = cached;
+          const cachedIndex = Number(localStorage.getItem("secure_chat_index"));
+          currentIndex = (!isNaN(cachedIndex) && cachedIndex >= 0 && cachedIndex < chats.length) ? cachedIndex : 0;
+          renderChatList();
+          renderMessages();
         }
-      });
-      
-      if (res.status === 401) { await handleUnauthorized(); return; }
-      if (res.ok) {
-        const workerChats = await res.json();
-        if (Array.isArray(workerChats) && workerChats.length) {
-          chats = workerChats;
-          const savedIndex = Number(localStorage.getItem("secure_chat_index"));
-          if (!isNaN(savedIndex) && savedIndex >= 0 && savedIndex < chats.length) {
-            const [activeChat] = chats.splice(savedIndex, 1);
-            chats.unshift(activeChat);
-            currentIndex = 0;
-          } else {
-            currentIndex = 0;
-          }
-          saveChats();
-          gotFromWorker = true;
-        }
-      }
-    } catch (e) {
-      console.warn("Could not load from worker:", e);
+      } catch (e) { /* bad cache; the Worker copy will replace it */ }
     }
 
-    if (!gotFromWorker) {
+    await new Promise(r => setTimeout(r, 150)); // ← small breathing room
+
+    // Puts the active chat first, as the app has always done on load.
+    function applyWorkerChats(workerChats) {
+      chats = workerChats;
+      const savedIndex = Number(localStorage.getItem("secure_chat_index"));
+      if (!isNaN(savedIndex) && savedIndex >= 0 && savedIndex < chats.length) {
+        const [activeChat] = chats.splice(savedIndex, 1);
+        chats.unshift(activeChat);
+      }
+      currentIndex = 0;
+      localStorage.setItem("secure_chat_chats", JSON.stringify(chats));
+      localStorage.setItem("secure_chat_index", String(currentIndex));
+      renderChatList();
+      renderMessages();
+    }
+
+    // One load attempt, retried with backoff on network errors and 5xx.
+    // Returns { chats } on success, { unauthorized: true } on 401, else null.
+    async function fetchWorkerChats(attempts) {
+      for (let i = 0; i < attempts; i++) {
+        try {
+          const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`, {
+            headers: { "Authorization": `Bearer ${authToken}` }
+          });
+          if (res.status === 401) { await handleUnauthorized(); return { unauthorized: true }; }
+          if (res.ok) return { chats: await res.json() };
+          if (res.status < 500) return null; // a 4xx will not fix itself
+        } catch (e) {
+          console.warn("Could not load from worker (attempt " + (i + 1) + "):", e);
+        }
+        if (i < attempts - 1) await new Promise(r => setTimeout(r, 1000 * 2 ** i));
+      }
+      return null;
+    }
+
+    // Worker unreachable at startup: keep trying in the background and swap the
+    // chats in when it answers. Never while a reply is being generated.
+    let reconnecting = false;
+    function reconnectLater() {
+      if (reconnecting) return;
+      reconnecting = true;
+      const attempt = async () => {
+        if (!reconnecting || activeAbortController) return;
+        const result = await fetchWorkerChats(1);
+        if (!result || result.unauthorized) return;
+        reconnecting = false;
+        window.removeEventListener("online", attempt);
+        document.removeEventListener("visibilitychange", onVisible);
+        clearInterval(timer);
+        if (Array.isArray(result.chats) && result.chats.length) applyWorkerChats(result.chats);
+      };
+      const onVisible = () => { if (document.visibilityState === "visible") attempt(); };
+      const timer = setInterval(attempt, 15000);
+      window.addEventListener("online", attempt);
+      document.addEventListener("visibilitychange", onVisible);
+    }
+
+    const result = await fetchWorkerChats(5);
+    if (result && result.unauthorized) return;
+
+    if (result && Array.isArray(result.chats) && result.chats.length) {
+      applyWorkerChats(result.chats);
+      return;
+    }
+
+    if (result) {
+      // Worker reachable but holds no chats: original behaviour.
       await loadChats();
+    } else {
+      // Worker unreachable: use what is cached on this device without pushing
+      // it (or a fresh empty chat) over the saved copy, and retry in the background.
+      if (!chats.length) {
+        chats = [{ id: Date.now().toString(), title: "New Chat", messages: [], pinned: false }];
+        currentIndex = 0;
+      }
+      reconnectLater();
     }
 
     renderChatList();
