@@ -1941,6 +1941,7 @@ body.amoled-mode .code-block-wrapper pre {
 
 .settings-card {
   background: var(--surface-1);
+  border: 1px solid var(--border);
   border-radius: 14px;
   padding: 16px;
   display: flex;
@@ -2070,4 +2071,95 @@ body.amoled-mode .code-block-wrapper pre {
 .settings-icon-btn:disabled {
   opacity: 0.3;
   cursor: default;
+}
+
+/* ============================================================
+   SETTINGS - desktop layout (phones keep the full-screen version)
+   ============================================================ */
+@media (min-width: 769px) {
+  .settings-overlay.active:not(.edit-overlay) {
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(3px);
+  }
+
+  .settings-panel {
+    width: min(920px, 92vw);
+    max-width: none;
+    height: auto;
+    max-height: 88vh;
+    margin: 0;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  }
+
+  .settings-header {
+    padding: 16px 22px;
+  }
+
+  .settings-header h3 {
+    font-size: 1.15rem;
+  }
+
+  /* Left column: appearance, text size, account. Right column: models. */
+  .settings-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    /* The tall models card spans all three rows; the last row absorbs the
+       extra height so the left cards stay packed together. */
+    grid-template-rows: auto auto 1fr;
+    align-items: start;
+    gap: 18px;
+    padding: 22px;
+  }
+
+  .settings-card:nth-child(1),
+  .settings-card:nth-child(2),
+  .settings-card:nth-child(4) {
+    grid-column: 1;
+  }
+
+  .settings-card:nth-child(3) {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+  }
+
+  #settingsModelList {
+    max-height: 52vh;
+    overflow-y: auto;
+    padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  #settingsPaletteRow {
+    gap: 12px;
+  }
+
+  #settingsPaletteRow .palette-option {
+    width: 32px;
+    height: 32px;
+  }
+
+  .settings-btn,
+  .settings-chip {
+    transition: background 0.15s;
+  }
+
+  .settings-icon-btn:hover:not(:disabled) {
+    color: var(--text);
+  }
+
+  .settings-model-row {
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+.settings-header .sheet-close {
+  color: #fff;
 }
