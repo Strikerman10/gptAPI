@@ -2014,6 +2014,9 @@ body.amoled-mode .code-block-wrapper pre {
 .settings-model-group {
   font-weight: 600;
   margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .settings-model-row {
@@ -2151,4 +2154,38 @@ body.amoled-mode .code-block-wrapper pre {
 
 .settings-header .sheet-close {
   color: #fff;
+}
+
+.settings-drag-handle {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  padding: 6px 8px;
+  cursor: grab;
+  /* Stops the page scrolling while a finger drags the handle. */
+  touch-action: none;
+  user-select: none;
+}
+
+.settings-model-row.dragging {
+  background: var(--surface-2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+}
+
+.settings-model-row.dragging .settings-drag-handle {
+  cursor: grabbing;
+}
+
+.settings-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* The check that saves a reorder stands out from the muted pencil. */
+.settings-icon-btn.save-order {
+  color: var(--color-6);
+  font-weight: 700;
+  font-size: 1.2rem;
 }

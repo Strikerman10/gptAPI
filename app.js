@@ -1922,6 +1922,9 @@ function syncSettingsControls() {
   settingsFontValue.textContent = `${Math.round(fontScale * 100)}%`;
 }
 
+// Provider key whose models are being reordered (null = none).
+let reorderingProvider = null;
+
 function renderSettingsModels() {
   document.getElementById("settingsModelsUpdated").textContent = modelsUpdatedAt
     ? `Last updated ${formatTimestamp(modelsUpdatedAt)}`
@@ -1935,15 +1938,34 @@ function renderSettingsModels() {
       .map((model, index) => ({ model, index }))
       .filter(r => r.model.provider === provider.key);
     if (!rows.length) return;
+    const reordering = reorderingProvider === provider.key;
 
     const heading = document.createElement("div");
     heading.className = "settings-model-group";
-    heading.textContent = provider.label;
+    const title = document.createElement("span");
+    title.textContent = provider.label;
+    // Pencil starts reordering this provider; the check saves the order.
+    const toggle = document.createElement("button");
+    toggle.className = "settings-icon-btn";
+    toggle.textContent = reordering ? "✓" : "✎";
+    toggle.classList.toggle("save-order", reordering);
+    toggle.setAttribute("aria-label", reordering ? `Save ${provider.label} order` : `Reorder ${provider.label} models`);
+    toggle.disabled = !reordering && reorderingProvider !== null;
+    toggle.addEventListener("click", () => {
+      if (reordering) saveProviderOrder(provider.key, groupEl);
+      else { reorderingProvider = provider.key; renderSettingsModels(); }
+    });
+    heading.append(title, toggle);
     list.appendChild(heading);
 
-    rows.forEach(({ model, index }, position) => {
+    const groupEl = document.createElement("div");
+    groupEl.className = "settings-model-rows";
+    list.appendChild(groupEl);
+
+    rows.forEach(({ model, index }) => {
       const row = document.createElement("div");
       row.className = "settings-model-row";
+      row.dataset.index = String(index);
 
       const info = document.createElement("div");
       info.className = "settings-model-info";
@@ -1954,52 +1976,76 @@ function renderSettingsModels() {
       id.textContent = model.id;
       info.append(name, id);
 
-      const up = document.createElement("button");
-      up.className = "settings-icon-btn";
-      up.setAttribute("aria-label", `Move ${model.name} up`);
-      up.textContent = "▲";
-      up.disabled = position === 0;
-      up.addEventListener("click", () => moveModel(index, -1));
+      if (reordering) {
+        const handle = document.createElement("button");
+        handle.className = "settings-drag-handle";
+        handle.textContent = "☰";
+        handle.setAttribute("aria-label", `Drag ${model.name}`);
+        handle.addEventListener("pointerdown", e => startRowDrag(e, row, groupEl));
+        row.append(handle, info);
+      } else {
+        const edit = document.createElement("button");
+        edit.className = "settings-icon-btn";
+        edit.setAttribute("aria-label", `Edit ${model.name}`);
+        edit.textContent = "✎";
+        edit.addEventListener("click", () => openModelEditor(index));
 
-      const down = document.createElement("button");
-      down.className = "settings-icon-btn";
-      down.setAttribute("aria-label", `Move ${model.name} down`);
-      down.textContent = "▼";
-      down.disabled = position === rows.length - 1;
-      down.addEventListener("click", () => moveModel(index, 1));
-
-      const edit = document.createElement("button");
-      edit.className = "settings-icon-btn";
-      edit.setAttribute("aria-label", `Edit ${model.name}`);
-      edit.textContent = "✎";
-      edit.addEventListener("click", () => openModelEditor(index));
-
-      const del = document.createElement("button");
-      del.className = "settings-icon-btn";
-      del.setAttribute("aria-label", `Delete ${model.name}`);
-      del.textContent = "🗑";
-      del.addEventListener("click", () => {
-        if (modelCatalog.length === 1) return;
-        modelCatalog = modelCatalog.filter((_, i) => i !== index);
-        commitModelCatalog();
-      });
-
-      row.append(info, up, down, edit, del);
-      list.appendChild(row);
+        const del = document.createElement("button");
+        del.className = "settings-icon-btn";
+        del.setAttribute("aria-label", `Delete ${model.name}`);
+        del.textContent = "🗑";
+        del.addEventListener("click", () => {
+          if (modelCatalog.length === 1) return;
+          modelCatalog = modelCatalog.filter((_, i) => i !== index);
+          commitModelCatalog();
+        });
+        row.append(info, edit, del);
+      }
+      groupEl.appendChild(row);
     });
   });
+
+  document.getElementById("settingsAddModelBtn").disabled = reorderingProvider !== null;
 }
 
-// Swaps with the neighbouring model of the same provider (direction -1 up, +1 down).
-function moveModel(index, direction) {
-  const provider = modelCatalog[index].provider;
-  let target = index + direction;
-  while (target >= 0 && target < modelCatalog.length && modelCatalog[target].provider !== provider) {
-    target += direction;
-  }
-  if (target < 0 || target >= modelCatalog.length) return;
+// Drag a row by its handle (mouse or touch). Neighbours are moved around the
+// dragged row rather than moving the row itself, so the pointer capture on
+// its handle is never lost.
+function startRowDrag(e, row, groupEl) {
+  e.preventDefault();
+  const handle = e.currentTarget;
+  try { handle.setPointerCapture(e.pointerId); } catch (err) { /* synthetic events */ }
+  row.classList.add("dragging");
+
+  const mid = el => { const r = el.getBoundingClientRect(); return r.top + r.height / 2; };
+
+  const onMove = ev => {
+    const y = ev.clientY;
+    let prev = row.previousElementSibling;
+    while (prev && y < mid(prev)) { row.after(prev); prev = row.previousElementSibling; }
+    let next = row.nextElementSibling;
+    while (next && y > mid(next)) { row.before(next); next = row.nextElementSibling; }
+  };
+  const onEnd = () => {
+    row.classList.remove("dragging");
+    handle.removeEventListener("pointermove", onMove);
+    handle.removeEventListener("pointerup", onEnd);
+    handle.removeEventListener("pointercancel", onEnd);
+  };
+  handle.addEventListener("pointermove", onMove);
+  handle.addEventListener("pointerup", onEnd);
+  handle.addEventListener("pointercancel", onEnd);
+}
+
+// Writes the on-screen order of one provider back into the catalog. The
+// provider's models fill the same slots, so other providers keep their place.
+function saveProviderOrder(providerKey, groupEl) {
+  const order = [...groupEl.querySelectorAll(".settings-model-row")].map(r => Number(r.dataset.index));
+  const slots = order.slice().sort((a, b) => a - b);
+  reorderingProvider = null;
+  if (order.every((value, i) => value === slots[i])) { renderSettingsModels(); return; }
   const next = modelCatalog.slice();
-  [next[index], next[target]] = [next[target], next[index]];
+  order.forEach((fromIndex, i) => { next[slots[i]] = modelCatalog[fromIndex]; });
   modelCatalog = next;
   commitModelCatalog();
 }
@@ -2057,6 +2103,7 @@ function saveModelEditor() {
 
 function openSettings() {
   if (Native) { Native.openSettings(); return; }
+  reorderingProvider = null;
   syncSettingsControls();
   renderSettingsModels();
   applyTheme(); // refreshes the active swatch
@@ -2065,6 +2112,7 @@ function openSettings() {
 
 function closeSettings() {
   settingsModal.classList.remove("active");
+  reorderingProvider = null; // an unsaved reorder is discarded
 }
 
 settingsBtn.addEventListener("click", openSettings);
