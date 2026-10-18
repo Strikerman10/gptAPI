@@ -2103,7 +2103,7 @@ body.amoled-mode .code-block-wrapper pre {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
     /* The tall models card spans all three rows; the last row absorbs the
        extra height so the left cards stay packed together. */
-    grid-template-rows: auto auto 1fr;
+    grid-template-rows: auto auto 1fr auto;
     align-items: start;
     gap: 18px;
     padding: 22px;
@@ -2115,13 +2115,19 @@ body.amoled-mode .code-block-wrapper pre {
     grid-column: 1;
   }
 
+  /* The models card matches the height of the left column and scrolls its
+     list inside, so it never spills into the Help card below. */
   .settings-card:nth-child(3) {
     grid-column: 2;
     grid-row: 1 / span 3;
+    align-self: stretch;
+    min-height: 0;
+    overflow: hidden;
   }
 
   #settingsModelList {
-    max-height: 52vh;
+    flex: 1 1 0;
+    min-height: 0;
     overflow-y: auto;
     padding-right: 4px;
     scrollbar-width: thin;
@@ -2188,4 +2194,23 @@ body.amoled-mode .code-block-wrapper pre {
   color: var(--color-6);
   font-weight: 700;
   font-size: 1.2rem;
+}
+
+.settings-help p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  /* Long URLs must wrap instead of widening the card. */
+  overflow-wrap: anywhere;
+}
+
+.settings-help a {
+  color: var(--color-6);
+}
+
+/* Desktop: Help runs full width under both columns. */
+@media (min-width: 769px) {
+  .settings-card.settings-help {
+    grid-column: 1 / -1;
+  }
 }
