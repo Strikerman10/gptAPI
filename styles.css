@@ -2066,3 +2066,8 @@ body.amoled-mode .code-block-wrapper pre {
   width: 28px;
   height: 28px;
 }
+
+.settings-icon-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}

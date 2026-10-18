@@ -1941,7 +1941,7 @@ function renderSettingsModels() {
     heading.textContent = provider.label;
     list.appendChild(heading);
 
-    rows.forEach(({ model, index }) => {
+    rows.forEach(({ model, index }, position) => {
       const row = document.createElement("div");
       row.className = "settings-model-row";
 
@@ -1953,6 +1953,20 @@ function renderSettingsModels() {
       id.className = "settings-model-id";
       id.textContent = model.id;
       info.append(name, id);
+
+      const up = document.createElement("button");
+      up.className = "settings-icon-btn";
+      up.setAttribute("aria-label", `Move ${model.name} up`);
+      up.textContent = "▲";
+      up.disabled = position === 0;
+      up.addEventListener("click", () => moveModel(index, -1));
+
+      const down = document.createElement("button");
+      down.className = "settings-icon-btn";
+      down.setAttribute("aria-label", `Move ${model.name} down`);
+      down.textContent = "▼";
+      down.disabled = position === rows.length - 1;
+      down.addEventListener("click", () => moveModel(index, 1));
 
       const edit = document.createElement("button");
       edit.className = "settings-icon-btn";
@@ -1970,10 +1984,24 @@ function renderSettingsModels() {
         commitModelCatalog();
       });
 
-      row.append(info, edit, del);
+      row.append(info, up, down, edit, del);
       list.appendChild(row);
     });
   });
+}
+
+// Swaps with the neighbouring model of the same provider (direction -1 up, +1 down).
+function moveModel(index, direction) {
+  const provider = modelCatalog[index].provider;
+  let target = index + direction;
+  while (target >= 0 && target < modelCatalog.length && modelCatalog[target].provider !== provider) {
+    target += direction;
+  }
+  if (target < 0 || target >= modelCatalog.length) return;
+  const next = modelCatalog.slice();
+  [next[index], next[target]] = [next[target], next[index]];
+  modelCatalog = next;
+  commitModelCatalog();
 }
 
 // Stamps the edit time, saves, and refreshes every place the list is shown.
