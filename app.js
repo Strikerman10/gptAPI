@@ -23,7 +23,26 @@ let currentModel    = localStorage.getItem("chat_model")    || "gpt-5.5-2026-04-
 const Native = window.OrionNative || null;
 const nativeSettings = (() => {
   if (!Native) return null;
-  try { return JSON.parse(Native.getSettings()); } catch (e) { return null; }
+  let parsed = null;
+  let failure = "";
+  try {
+    parsed = JSON.parse(Native.getSettings());
+    if (parsed && parsed.error) failure = parsed.error;
+  } catch (e) {
+    failure = String(e);
+  }
+  if (failure) {
+    // Make a broken bridge obvious instead of silently using the built-in list.
+    document.addEventListener("DOMContentLoaded", () => {
+      const banner = document.createElement("div");
+      banner.textContent = `Android settings unavailable: ${failure}`;
+      banner.style.cssText = "position:fixed;left:0;right:0;bottom:0;z-index:99999;" +
+        "padding:8px 12px;background:#b00020;color:#fff;font:12px sans-serif";
+      document.body.appendChild(banner);
+    });
+    return null;
+  }
+  return parsed;
 })();
 
 const MODEL_PROVIDERS = [
