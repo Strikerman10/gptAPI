@@ -7,7 +7,7 @@ HEAD - Meta, Title, Styles
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
   <title>Orion AI</title>
-  <link rel="stylesheet" href="styles.css?v=2">
+  <link rel="stylesheet" href="styles.css?v=3">
   <style>
     .icon {
       width: 20px;
@@ -122,68 +122,24 @@ REUSABLE SVG ICON SYMBOLS (hidden)
       <div class="new-chat-row">
         <button class="new-chat" id="newChatBtn">+ New Chat</button>
 
-        <select id="modelSelector" class="model-selector" aria-label="Select model">
-          <option disabled>── OpenAI ──</option> 
-          <option value="openai|gpt-5.6-terra">GPT 5.6 Terra</option>
-		  <option value="openai|gpt-5.5-2026-04-23">GPT 5.5</option>
-          <option value="openai|gpt-5.4-2026-03-05">GPT 5.4</option>
-          <option value="openai|gpt-5.3-codex">GPT 5.3 Codex</option>
-        
-          <option disabled>── Anthropic ──</option>
-          <option value="anthropic|claude-opus-5">Claude Opus 5</option>
-          <option value="anthropic|claude-sonnet-5">Claude Sonnet 5</option>
-          <option value="anthropic|claude-haiku-4-5-20251001">Claude Haiku 4.5</option>
-        
-          <option disabled>── Gemini ──</option>
-          <option value="gemini|gemini-3.5-flash">Gemini 3.5 Flash</option>
-          <option value="gemini|gemini-2.5-flash">Gemini 2.5 Flash</option>
-          <option value="gemini|gemini-3.1-flash-lite">Gemini Flash Lite 3.1</option>
-
-		  <option disabled>── OpenRouter ──</option>
-		  <option value="openrouter|free-model">OpenRouter Free</option>
-        </select>
+        <select id="modelSelector" class="model-selector" aria-label="Select model"></select>
       </div>
 
       <div class="chat-list" id="chatList" aria-live="polite"></div>
     
-    <!-- Sidebar footer: theme + logout -->
+    <!-- Sidebar footer: settings (theme, text size, models and logout live there) -->
       <div class="sidebar-footer">
-        <div class="palette-row">
-          <button class="palette-option" data-palette="Blue" 	title="Blue" 	aria-label="Blue palette"></button>
-          <button class="palette-option" data-palette="Purple"  title="Purple"  aria-label="Purple palette"></button>
-          <button class="palette-option" data-palette="Green"  	title="Green"  	aria-label="Green palette"></button>
-          <button class="palette-option" data-palette="Orange"  title="Orange"  aria-label="Orange palette"></button>
-          <button class="palette-option" data-palette="Teal"    title="Teal"    aria-label="Teal palette"></button>
-		  <button class="palette-option" data-palette="Red"    	title="Red"    	aria-label="Red palette"></button>
-		  <button class="palette-option" data-palette="Amoled"  title="Amoled"  aria-label="Amoled palette"></button>
-        </div>
-        	
-	<div class="footer-actions">	  
-	  <!-- Theme Toggle -->
-<button id="themeToggle" class="footer-btn" aria-label="Toggle Light/Dark Mode">
-  <svg class="icon dark-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-    <path d="M21.46 16.54A10.51 10.51 0 1 1 12 1.49a10.34 10.34 0 0 1 2.8.38 8.12 8.12 0 0 0 2.45 15.86 8 8 0 0 0 4.21-1.19z"
-      fill="none" stroke="currentColor" stroke-width="1.9"/>
-  </svg>
-  <svg class="icon light-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340.127 340.127">
-    <path d="M181.401 0h-22.675v56.688h22.675V0zm-139.611 282.306l16.031 16.031 40.09-40.09-16.031-16.031-40.09 40.09zm14.898-123.58H0v22.675h56.688v-22.675zm241.649-100.904L282.306 41.79l-40.09 40.09 16.031 16.031 40.09-40.09zM237.749 265.39l40.747 40.747 16.303-16.303-40.747-40.747-16.303 16.303zm45.69-106.664v22.675h56.688v-22.675H283.439zM170.064 79.363c-50.089 0-90.701 40.611-90.701 90.701s40.611 90.701 90.701 90.701 90.701-40.611 90.701-90.701-40.612-90.701-90.701-90.701zm0 158.726c-37.573 0-68.025-30.453-68.025-68.025s30.452-68.025 68.025-68.025 68.025 30.453 68.025 68.025-30.452 68.025-68.025 68.025zm-11.338 102.038h22.675v-56.688h-22.675v56.688zM91.041 86.098l-40.747-40.77L33.99 61.631l40.747 40.747 16.304-16.28z"
-      fill="currentColor"/>
-  </svg>
-</button>
-	  <!-- Logout Button --> 
-	<button id="logoutBtn" class="footer-btn" aria-label="Logout">
-		<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-		  fill="none" stroke="currentColor" stroke-width="2"
-		  stroke-linecap="round" stroke-linejoin="round">
-		  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-		  <polyline points="16 17 21 12 16 7"/>
-		  <line x1="21" y1="12" x2="9" y2="12"/>
-		</svg>
-	  </button>
-	</div>
-  </div>
-</div>
-	  
+        <button id="settingsBtn" class="footer-btn" aria-label="Settings">
+          <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
 <!-- ==========================
 MAIN CHAT WINDOW
 ========================== -->
@@ -305,121 +261,79 @@ MODEL SELECTOR BOTTOM SHEET (MOBILE)
     <h3 id="modelTitle">Choose model</h3>
     <button id="closeModelSheetBtn" class="sheet-close" aria-label="Close model picker">✕</button>
   </div>
-  <div class="model-sheet-list">
-
-    <!-- ==========================
-     OPENAI MODELS
-     ========================== -->
-    <p class="model-group-label">OpenAI</p>
-
-	  <button class="model-sheet-option" data-model="openai|gpt-5.6-terra">
-      <svg width="24" height="24" aria-hidden="true"><use href="#chatgptIcon"/></svg>
-      <span class="model-info">
-        <span class="model-name">GPT-5.6 Terra</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-	  
-    <button class="model-sheet-option" data-model="openai|gpt-5.5-2026-04-23">
-      <svg width="24" height="24" aria-hidden="true"><use href="#chatgptIcon"/></svg>
-      <span class="model-info">
-        <span class="model-name">GPT-5.5</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-    <button class="model-sheet-option" data-model="openai|gpt-5.4-2026-03-05">
-      <svg width="24" height="24" aria-hidden="true"><use href="#chatgptIcon"/></svg>
-      <span class="model-info">
-        <span class="model-name">GPT-5.4</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-    <button class="model-sheet-option" data-model="openai|gpt-5.3-codex">
-      <svg width="24" height="24" aria-hidden="true"><use href="#chatgptIcon"/></svg>
-      <span class="model-info">
-        <span class="model-name">GPT-5.3 Codex</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-    <!-- ==========================
-     ANTHROPIC MODELS
-     ========================== -->
-    <p class="model-group-label">Anthropic</p>
-
-    <button class="model-sheet-option" data-model="anthropic|claude-opus-5">
-      <svg width="24" height="24" aria-hidden="true"><use href="#claudeIcon"/></svg>
-      <span class="model-info">
-        <span class="model-name">Claude Opus 5</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-    <button class="model-sheet-option" data-model="anthropic|claude-sonnet-5">
-      <svg width="24" height="24" aria-hidden="true"><use href="#claudeIcon"/></svg>
-      <span class="model-info">
-        <span class="model-name">Claude Sonnet 5</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-    <button class="model-sheet-option" data-model="anthropic|claude-haiku-4-5-20251001">
-      <svg width="24" height="24" aria-hidden="true"><use href="#claudeIcon"/></svg>
-      <span class="model-info">
-        <span class="model-name">Claude Haiku 4.5</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-    <!-- ==========================
-     GEMINI MODELS
-     ========================== -->
-    <p class="model-group-label">Google</p>
-
-    <button class="model-sheet-option" data-model="gemini|gemini-3.5-flash">
-      <svg width="24" height="24" aria-hidden="true"><use href="#geminiIcon"/></svg>
-      <span class="model-info">
-        <span class="model-name">Gemini 3.5 Flash</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-    <button class="model-sheet-option" data-model="gemini|gemini-2.5-flash">
-      <svg width="24" height="24" aria-hidden="true"><use href="#geminiIcon"/></svg>
-      <span class="model-info">
-        <span class="model-name">Gemini 2.5 Flash</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-    <button class="model-sheet-option" data-model="gemini|gemini-3.1-flash-lite">
-      <svg width="24" height="24" aria-hidden="true"><use href="#geminiIcon"/></svg>
-      <span class="model-info">
-        <span class="model-name">Gemini 3.1 Flash Lite</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-	 <!-- ==========================
-     OPENROUTER MODELS
-     ========================== -->
-	<p class="model-group-label">OpenRouter</p>
-	
-	<button class="model-sheet-option" data-model="openrouter|free-model">
-	  <svg width="24" height="24" aria-hidden="true">
-	    <use href="#openrouterIcon"/>
-	  </svg>
-	  <span class="model-info">
-	    <span class="model-name">OpenRouter Free</span>
-	  </span>
-	  <span class="model-check">✓</span>
-	</button>
-
-  </div>
+  <div class="model-sheet-list" id="modelSheetList"></div>
 </section>
     
+<!-- Settings (browser fallback; inside the Android app the native screen opens instead) -->
+<div id="settingsModal" class="settings-overlay" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+  <div class="settings-panel">
+    <div class="settings-header">
+      <h3 id="settingsTitle">Settings</h3>
+      <button id="settingsCloseBtn" class="sheet-close" aria-label="Close settings">✕</button>
+    </div>
+
+    <div class="settings-body">
+      <section class="settings-card">
+        <h4>Appearance</h4>
+        <div class="settings-label">Theme colour</div>
+        <div class="palette-row" id="settingsPaletteRow">
+          <button class="palette-option" data-palette="Blue"   title="Blue"   aria-label="Blue palette"></button>
+          <button class="palette-option" data-palette="Purple" title="Purple" aria-label="Purple palette"></button>
+          <button class="palette-option" data-palette="Green"  title="Green"  aria-label="Green palette"></button>
+          <button class="palette-option" data-palette="Orange" title="Orange" aria-label="Orange palette"></button>
+          <button class="palette-option" data-palette="Teal"   title="Teal"   aria-label="Teal palette"></button>
+          <button class="palette-option" data-palette="Red"    title="Red"    aria-label="Red palette"></button>
+          <button class="palette-option" data-palette="Amoled" title="Amoled" aria-label="Amoled palette"></button>
+        </div>
+        <div class="settings-label">Mode</div>
+        <div class="settings-chips" id="settingsModeChips">
+          <button class="settings-chip" data-mode="light">Light</button>
+          <button class="settings-chip" data-mode="dark">Dark</button>
+        </div>
+      </section>
+
+      <section class="settings-card">
+        <h4>Text size</h4>
+        <input id="settingsFontSlider" type="range" min="0.8" max="1.4" step="0.1" value="1" aria-label="Text size">
+        <div class="settings-hint" id="settingsFontValue">100%</div>
+      </section>
+
+      <section class="settings-card">
+        <h4>Orion AI models</h4>
+        <div class="settings-hint" id="settingsModelsUpdated"></div>
+        <div id="settingsModelList"></div>
+        <div class="settings-actions">
+          <button id="settingsAddModelBtn" class="settings-btn">+ Add model</button>
+          <button id="settingsResetModelsBtn" class="settings-btn danger-text">Reset</button>
+        </div>
+      </section>
+
+      <section class="settings-card">
+        <h4>Account</h4>
+        <button id="settingsLogoutBtn" class="settings-btn">Log out</button>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- Add / edit model -->
+<div id="modelEditModal" class="settings-overlay edit-overlay" role="dialog" aria-modal="true" aria-labelledby="modelEditTitle">
+  <div class="modal-box">
+    <h3 class="modal-title" id="modelEditTitle">Add model</h3>
+    <label class="settings-label" for="modelEditProvider">Provider</label>
+    <select id="modelEditProvider" class="settings-input"></select>
+    <label class="settings-label" for="modelEditId">Model ID</label>
+    <input id="modelEditId" class="settings-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="e.g. claude-opus-5">
+    <label class="settings-label" for="modelEditName">Display name</label>
+    <input id="modelEditName" class="settings-input" type="text" autocomplete="off">
+    <p id="modelEditError" class="auth-error"></p>
+    <div class="modal-buttons">
+      <button id="modelEditCancel" class="modal-btn cancel-btn">Cancel</button>
+      <button id="modelEditSave" class="modal-btn confirm-btn">Save</button>
+    </div>
+  </div>
+</div>
+
 <!-- Logout Confirmation Modal -->
 <div id="logoutModal" class="modal-overlay">
   <div class="modal-box">
@@ -431,6 +345,6 @@ MODEL SELECTOR BOTTOM SHEET (MOBILE)
     </div>
   </div>
 </div>
-  <script src="app.js" defer></script>
+  <script src="app.js?v=2" defer></script>
 </body>
 </html>

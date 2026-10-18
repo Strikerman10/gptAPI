@@ -14,6 +14,62 @@ let currentIndex = null;
 let currentProvider = localStorage.getItem("chat_provider") || "openai";
 let currentModel    = localStorage.getItem("chat_model")    || "gpt-5.5-2026-04-23";
 
+// ==========================
+// ANDROID BRIDGE & MODEL CATALOG
+// ==========================
+// Inside the Android app, window.OrionNative supplies theme, text size and the
+// model list from the native Settings screen. In a normal browser it is absent
+// and the same settings are kept in localStorage and edited in the web dialog.
+const Native = window.OrionNative || null;
+const nativeSettings = (() => {
+  if (!Native) return null;
+  try { return JSON.parse(Native.getSettings()); } catch (e) { return null; }
+})();
+
+const MODEL_PROVIDERS = [
+  { key: "openai",     label: "OpenAI",     icon: "chatgptIcon" },
+  { key: "anthropic",  label: "Anthropic",  icon: "claudeIcon" },
+  { key: "gemini",     label: "Google",     icon: "geminiIcon" },
+  { key: "openrouter", label: "OpenRouter", icon: "openrouterIcon" }
+];
+
+const DEFAULT_MODELS = [
+  { provider: "openai",     id: "gpt-5.6-terra",             name: "GPT-5.6 Terra" },
+  { provider: "openai",     id: "gpt-5.5-2026-04-23",        name: "GPT-5.5" },
+  { provider: "openai",     id: "gpt-5.4-2026-03-05",        name: "GPT-5.4" },
+  { provider: "openai",     id: "gpt-5.3-codex",             name: "GPT-5.3 Codex" },
+  { provider: "anthropic",  id: "claude-opus-5",             name: "Claude Opus 5" },
+  { provider: "anthropic",  id: "claude-sonnet-5",           name: "Claude Sonnet 5" },
+  { provider: "anthropic",  id: "claude-haiku-4-5-20251001", name: "Claude Haiku 4.5" },
+  { provider: "gemini",     id: "gemini-3.5-flash",          name: "Gemini 3.5 Flash" },
+  { provider: "gemini",     id: "gemini-2.5-flash",          name: "Gemini 2.5 Flash" },
+  { provider: "gemini",     id: "gemini-3.1-flash-lite",     name: "Gemini 3.1 Flash Lite" },
+  { provider: "openrouter", id: "free-model",                name: "OpenRouter Free" }
+];
+
+// Keeps only well-formed entries for providers the picker can show.
+function cleanCatalog(list) {
+  if (!Array.isArray(list)) return [];
+  return list.filter(m => m && typeof m.id === "string" && m.id &&
+    typeof m.name === "string" && MODEL_PROVIDERS.some(p => p.key === m.provider));
+}
+
+function loadModelCatalog() {
+  const fromNative = nativeSettings ? cleanCatalog(nativeSettings.models) : [];
+  if (fromNative.length) return fromNative;
+  try {
+    const saved = cleanCatalog(JSON.parse(localStorage.getItem("model_catalog")));
+    if (saved.length) return saved;
+  } catch (e) { /* fall through to defaults */ }
+  return DEFAULT_MODELS.map(m => ({ ...m }));
+}
+
+let modelCatalog = loadModelCatalog();
+// Epoch ms of the last edit to the list; 0 means the built-in list.
+let modelsUpdatedAt = nativeSettings
+  ? Number(nativeSettings.modelsUpdatedAt) || 0
+  : Number(localStorage.getItem("model_catalog_updated")) || 0;
+
 // Controls the in-flight request so the user can stop a hanging model
 let activeAbortController = null;
 
@@ -29,11 +85,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const messagesEl    = document.getElementById("messages");
   const chatTitleEl   = document.getElementById("chatTitle");
   const inputEl       = document.getElementById("input");
-  const themeToggleBtn = document.getElementById("themeToggle");
   const sidebarEl        = document.querySelector(".sidebar");
   const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
   const modelSelector    = document.getElementById("modelSelector");
-  const logoutBtn     = document.getElementById("logoutBtn");
+  const logoutBtn     = document.getElementById("settingsLogoutBtn");
 
 // ==========================================
 // KEYBOARD ADAPTABILITY (MOBILE)
@@ -382,9 +437,10 @@ async function handleUnauthorized() {
   await initAuth();
 }
 
-// Confirm logout
-modalConfirm.addEventListener("click", async () => {
+// Confirm logout (also called when the native Settings screen requests one)
+async function performLogout() {
   logoutModal.classList.remove('active');
+  document.getElementById("settingsModal").classList.remove("active");
 
   authToken    = null;
   userId       = null;
@@ -431,13 +487,14 @@ modalConfirm.addEventListener("click", async () => {
 
   renderChatList();
   renderMessages();
-});
+}
+modalConfirm.addEventListener("click", performLogout);
   
   // ── NEW: Model Sheet elements ──────────────────────────
   const modelSheet         = document.getElementById('modelSheet');
   const modelSheetBackdrop = document.getElementById('modelSheetBackdrop');
   const closeModelSheetBtn = document.getElementById('closeModelSheetBtn');
-  const modelSheetOptions  = document.querySelectorAll('.model-sheet-option');
+  const modelSheetList     = document.getElementById('modelSheetList');
   // ───────────────────────────────────────────────────────
 
   // ==========================
@@ -771,8 +828,15 @@ function renderMessageContent(content) {
     }
   };
 
-  let currentPalette = localStorage.getItem("palette") || "Red";
-  let currentMode = localStorage.getItem("mode") || "light";
+  let currentPalette = (nativeSettings && nativeSettings.palette) || localStorage.getItem("palette") || "Red";
+  let currentMode = nativeSettings
+    ? (nativeSettings.dark ? "dark" : "light")
+    : (localStorage.getItem("mode") || "light");
+  // Material You colours from the Android app; null when a fixed palette is used.
+  const dynamicColors = (nativeSettings && nativeSettings.dynamic && nativeSettings.colors) || null;
+  let fontScale = nativeSettings
+    ? (Number(nativeSettings.fontScale) || 1)
+    : (Number(localStorage.getItem("font_scale")) || 1);
 
 // ==========================
 // THEME - APPLY THEME
@@ -789,15 +853,36 @@ function renderMessageContent(content) {
       root.style.setProperty(key, value);
     }
 
-    document.body.classList.toggle("dark-mode", currentMode === "dark" || currentPalette === "Amoled");
-    document.body.classList.toggle("amoled-mode", currentPalette === "Amoled");
+    const amoled = !dynamicColors && currentPalette === "Amoled";
+    if (dynamicColors) {
+      const dynamicVars = {
+        "--color-1": "c1", "--color-2": "c2", "--color-3": "c3", "--color-4": "c4",
+        "--color-5": "c5", "--color-6": "c6", "--color-7": "c7",
+        "--bg": "bg", "--surface-1": "surface1", "--surface-2": "surface2",
+        "--surface-hover": "surfaceHover", "--border": "border",
+        "--text": "text", "--text-muted": "textMuted"
+      };
+      for (const [cssVar, key] of Object.entries(dynamicVars)) {
+        root.style.setProperty(cssVar, dynamicColors[key]);
+        // body.dark-mode redeclares the neutrals, so set them on body too.
+        if (!cssVar.startsWith("--color-")) document.body.style.setProperty(cssVar, dynamicColors[key]);
+      }
+    }
+    root.style.setProperty("--font-scale", String(fontScale));
+
+    document.body.classList.toggle("dark-mode", currentMode === "dark" || amoled);
+    document.body.classList.toggle("amoled-mode", amoled);
 
     document.querySelectorAll(".palette-option").forEach(el => {
     el.classList.toggle("active", el.dataset.palette === currentPalette);
   });
 	  
-    localStorage.setItem("palette", currentPalette);
-    localStorage.setItem("mode", currentMode);
+    // In the Android app the native Settings screen owns these values.
+    if (!Native) {
+      localStorage.setItem("palette", currentPalette);
+      localStorage.setItem("mode", currentMode);
+      localStorage.setItem("font_scale", String(fontScale));
+    }
   }
 
  async function loadChats() {
@@ -1602,7 +1687,78 @@ async function sendMessageRetry() {
 // ==========================
 // MODEL SELECTOR - DESKTOP DROPDOWN
 // ==========================
-modelSelector.value = `${currentProvider}|${currentModel}`;
+// Rebuilds the dropdown and the mobile sheet from modelCatalog.
+function renderModelUI() {
+  let value = `${currentProvider}|${currentModel}`;
+  if (!modelCatalog.some(m => `${m.provider}|${m.id}` === value)) {
+    // The saved model was removed from the list; fall back to the first one.
+    // First model in the order the picker shows them.
+    const first = MODEL_PROVIDERS.map(p => modelCatalog.find(m => m.provider === p.key)).find(Boolean);
+    currentProvider = first.provider;
+    currentModel = first.id;
+    value = `${currentProvider}|${currentModel}`;
+    localStorage.setItem("chat_provider", currentProvider);
+    localStorage.setItem("chat_model", currentModel);
+  }
+
+  modelSelector.replaceChildren();
+  modelSheetList.replaceChildren();
+
+  MODEL_PROVIDERS.forEach(provider => {
+    const items = modelCatalog.filter(m => m.provider === provider.key);
+    if (!items.length) return;
+
+    const separator = document.createElement("option");
+    separator.disabled = true;
+    separator.textContent = `── ${provider.label} ──`;
+    modelSelector.appendChild(separator);
+
+    const label = document.createElement("p");
+    label.className = "model-group-label";
+    label.textContent = provider.label;
+    modelSheetList.appendChild(label);
+
+    items.forEach(model => {
+      const optionValue = `${model.provider}|${model.id}`;
+
+      const option = document.createElement("option");
+      option.value = optionValue;
+      option.textContent = model.name;
+      modelSelector.appendChild(option);
+
+      const button = document.createElement("button");
+      button.className = "model-sheet-option";
+      button.dataset.model = optionValue;
+
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("width", "24");
+      svg.setAttribute("height", "24");
+      svg.setAttribute("aria-hidden", "true");
+      const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+      use.setAttribute("href", `#${provider.icon}`);
+      svg.appendChild(use);
+
+      const info = document.createElement("span");
+      info.className = "model-info";
+      const nameEl = document.createElement("span");
+      nameEl.className = "model-name";
+      nameEl.textContent = model.name;
+      info.appendChild(nameEl);
+
+      const check = document.createElement("span");
+      check.className = "model-check";
+      check.textContent = "✓";
+
+      button.append(svg, info, check);
+      modelSheetList.appendChild(button);
+    });
+  });
+
+  modelSelector.value = value;
+  syncActiveModel(value);
+}
+
+renderModelUI();
 
 modelSelector.addEventListener("change", (e) => {
   const value = e.target.value || "";
@@ -1624,21 +1780,6 @@ modelSelector.addEventListener("change", (e) => {
     currentModel
   });
   syncActiveModel(e.target.value);
-});
-
-// ==========================
-// THEME - LIGHT/DARK TOGGLE BUTTON
-// ==========================
-const darkIcon  = themeToggleBtn.querySelector(".dark-icon");
-const lightIcon = themeToggleBtn.querySelector(".light-icon");
-darkIcon.classList.toggle("hidden", currentMode === "dark");
-lightIcon.classList.toggle("hidden", currentMode === "light");
-
-themeToggleBtn.addEventListener("click", () => {
-  currentMode = currentMode === "light" ? "dark" : "light";
-  darkIcon.classList.toggle("hidden", currentMode === "dark");
-  lightIcon.classList.toggle("hidden", currentMode === "light");
-  applyTheme();
 });
 
 // ==========================
@@ -1669,7 +1810,7 @@ function closePaletteSheet() {
   }, 220);
 }
 
-// Sidebar footer palette buttons
+// Palette swatches in the web settings dialog
 document.querySelectorAll(".palette-option").forEach(btn => {
   btn.addEventListener("click", () => {
     currentPalette = btn.dataset.palette; // Blue/Purple/Green/etc
@@ -1701,7 +1842,7 @@ function openModelSheet() {
     }
     
     function syncActiveModel(currentVal) {
-    modelSheetOptions.forEach(btn => {
+    modelSheetList.querySelectorAll('.model-sheet-option').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.model === currentVal);
     });
     }
@@ -1715,8 +1856,10 @@ function openModelSheet() {
     closeModelSheetBtn?.addEventListener('click', closeModelSheet);
     modelSheetBackdrop?.addEventListener('click', closeModelSheet);
     
-    modelSheetOptions.forEach(btn => {
-    btn.addEventListener('click', () => {
+    // Delegated, because the options are rebuilt whenever the model list changes.
+    modelSheetList.addEventListener('click', (e) => {
+    const btn = e.target.closest('.model-sheet-option');
+    if (!btn) return;
     const value = btn.dataset.model;
     const parts = value.split('|');
     if (parts.length === 2) {
@@ -1729,25 +1872,203 @@ function openModelSheet() {
     localStorage.setItem('chat_provider', currentProvider);
     localStorage.setItem('chat_model', currentModel);
     modelSelector.value = value;
-    modelSheetOptions.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    syncActiveModel(value);
     console.log('Mobile model selected:', { currentProvider, currentModel });
     setTimeout(closeModelSheet, 180);
     });
+
+// ==========================
+// SETTINGS
+// ==========================
+// In the Android app the settings button opens the native screen. In a browser
+// it opens this dialog, which edits the same things (theme, text size, models).
+const settingsBtn        = document.getElementById("settingsBtn");
+const settingsModal      = document.getElementById("settingsModal");
+const settingsFontSlider = document.getElementById("settingsFontSlider");
+const settingsFontValue  = document.getElementById("settingsFontValue");
+const modelEditModal     = document.getElementById("modelEditModal");
+
+// Which catalog index the edit dialog is changing; -1 means adding.
+let editingModelIndex = -1;
+
+function formatTimestamp(ms) {
+  return new Date(ms).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+}
+
+function syncSettingsControls() {
+  document.querySelectorAll("#settingsModeChips .settings-chip").forEach(chip => {
+    chip.classList.toggle("active", chip.dataset.mode === currentMode);
+  });
+  settingsFontSlider.value = fontScale;
+  settingsFontValue.textContent = `${Math.round(fontScale * 100)}%`;
+}
+
+function renderSettingsModels() {
+  document.getElementById("settingsModelsUpdated").textContent = modelsUpdatedAt
+    ? `Last updated ${formatTimestamp(modelsUpdatedAt)}`
+    : "Using the built-in list";
+
+  const list = document.getElementById("settingsModelList");
+  list.replaceChildren();
+
+  MODEL_PROVIDERS.forEach(provider => {
+    const rows = modelCatalog
+      .map((model, index) => ({ model, index }))
+      .filter(r => r.model.provider === provider.key);
+    if (!rows.length) return;
+
+    const heading = document.createElement("div");
+    heading.className = "settings-model-group";
+    heading.textContent = provider.label;
+    list.appendChild(heading);
+
+    rows.forEach(({ model, index }) => {
+      const row = document.createElement("div");
+      row.className = "settings-model-row";
+
+      const info = document.createElement("div");
+      info.className = "settings-model-info";
+      const name = document.createElement("div");
+      name.textContent = model.name;
+      const id = document.createElement("div");
+      id.className = "settings-model-id";
+      id.textContent = model.id;
+      info.append(name, id);
+
+      const edit = document.createElement("button");
+      edit.className = "settings-icon-btn";
+      edit.setAttribute("aria-label", `Edit ${model.name}`);
+      edit.textContent = "✎";
+      edit.addEventListener("click", () => openModelEditor(index));
+
+      const del = document.createElement("button");
+      del.className = "settings-icon-btn";
+      del.setAttribute("aria-label", `Delete ${model.name}`);
+      del.textContent = "🗑";
+      del.addEventListener("click", () => {
+        if (modelCatalog.length === 1) return;
+        modelCatalog = modelCatalog.filter((_, i) => i !== index);
+        commitModelCatalog();
+      });
+
+      row.append(info, edit, del);
+      list.appendChild(row);
     });
+  });
+}
+
+// Stamps the edit time, saves, and refreshes every place the list is shown.
+function commitModelCatalog() {
+  modelsUpdatedAt = Date.now();
+  localStorage.setItem("model_catalog", JSON.stringify(modelCatalog));
+  localStorage.setItem("model_catalog_updated", String(modelsUpdatedAt));
+  renderModelUI();
+  renderSettingsModels();
+}
+
+function openModelEditor(index) {
+  editingModelIndex = index;
+  const model = index >= 0 ? modelCatalog[index] : null;
+  const providerSelect = document.getElementById("modelEditProvider");
+  providerSelect.replaceChildren();
+  MODEL_PROVIDERS.forEach(p => {
+    const option = document.createElement("option");
+    option.value = p.key;
+    option.textContent = p.label;
+    providerSelect.appendChild(option);
+  });
+  providerSelect.value = model ? model.provider : MODEL_PROVIDERS[0].key;
+  document.getElementById("modelEditId").value = model ? model.id : "";
+  document.getElementById("modelEditName").value = model ? model.name : "";
+  document.getElementById("modelEditError").textContent = "";
+  document.getElementById("modelEditTitle").textContent = model ? "Edit model" : "Add model";
+  modelEditModal.classList.add("active");
+}
+
+function saveModelEditor() {
+  const provider = document.getElementById("modelEditProvider").value;
+  const id = document.getElementById("modelEditId").value.trim();
+  const name = document.getElementById("modelEditName").value.trim();
+  const errorEl = document.getElementById("modelEditError");
+
+  if (!id) { errorEl.textContent = "Model ID is required."; return; }
+  if (!name) { errorEl.textContent = "Display name is required."; return; }
+  if (id.includes("|")) { errorEl.textContent = "Model ID cannot contain '|'."; return; }
+  const clash = modelCatalog.some((m, i) =>
+    i !== editingModelIndex && m.provider === provider && m.id === id);
+  if (clash) { errorEl.textContent = "That model is already in the list."; return; }
+
+  const entry = { provider, id, name };
+  if (editingModelIndex >= 0) {
+    modelCatalog = modelCatalog.map((m, i) => (i === editingModelIndex ? entry : m));
+  } else {
+    modelCatalog = [...modelCatalog, entry];
+  }
+  modelEditModal.classList.remove("active");
+  commitModelCatalog();
+}
+
+function openSettings() {
+  if (Native) { Native.openSettings(); return; }
+  syncSettingsControls();
+  renderSettingsModels();
+  applyTheme(); // refreshes the active swatch
+  settingsModal.classList.add("active");
+}
+
+function closeSettings() {
+  settingsModal.classList.remove("active");
+}
+
+settingsBtn.addEventListener("click", openSettings);
+document.getElementById("settingsCloseBtn").addEventListener("click", closeSettings);
+
+document.querySelectorAll("#settingsModeChips .settings-chip").forEach(chip => {
+  chip.addEventListener("click", () => {
+    currentMode = chip.dataset.mode;
+    applyTheme();
+    syncSettingsControls();
+  });
+});
+
+settingsFontSlider.addEventListener("input", () => {
+  fontScale = Number(settingsFontSlider.value) || 1;
+  applyTheme();
+  syncSettingsControls();
+});
+
+document.getElementById("settingsAddModelBtn").addEventListener("click", () => openModelEditor(-1));
+document.getElementById("settingsResetModelsBtn").addEventListener("click", () => {
+  if (!confirm("Replace your model list with the built-in models?")) return;
+  modelCatalog = DEFAULT_MODELS.map(m => ({ ...m }));
+  commitModelCatalog();
+});
+document.getElementById("modelEditSave").addEventListener("click", saveModelEditor);
+document.getElementById("modelEditCancel").addEventListener("click", () => {
+  modelEditModal.classList.remove("active");
+});
 
 // ==========================
 // KEYBOARD SHORTCUTS
 // ==========================
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
-    if (modelSheet && !modelSheet.classList.contains("hidden")) closeModelSheet();
+    if (modelEditModal.classList.contains("active")) modelEditModal.classList.remove("active");
+    else if (settingsModal.classList.contains("active")) closeSettings();
+    else if (modelSheet && !modelSheet.classList.contains("hidden")) closeModelSheet();
   }
 });
 
   (async () => {
     applyTheme();
     syncActiveModel(`${currentProvider}|${currentModel}`);
+
+    // The native Settings screen asked to log out; do it before anything loads.
+    if (nativeSettings && nativeSettings.logout) {
+      Native.ackLogout();
+      await performLogout();
+      return;
+    }
     
    // NEW — show login modal if not authenticated
     const authed = await initAuth();
