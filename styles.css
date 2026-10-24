@@ -2214,3 +2214,13 @@ body.amoled-mode .code-block-wrapper pre {
     grid-column: 1 / -1;
   }
 }
+
+/* Bigger gap between the Help paragraphs. */
+.settings-card.settings-help {
+  gap: 20px;
+}
+
+.settings-help-title {
+  margin: 0;
+  font-size: 1.1rem;
+}
