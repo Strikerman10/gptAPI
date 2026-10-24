@@ -448,6 +448,20 @@ async function initAuth() {
   });
 }
 
+// The Worker answers {"error":"Unauthorized — please log in"} when the login is
+// no longer valid. A 401 can also be a provider rejecting its API key, passed
+// through by the Worker; that must show its message, not the login box.
+const LOGIN_EXPIRED_RE = /please log in/i;
+
+async function isLoginExpired(res) {
+  if (res.status !== 401) return false;
+  try {
+    return LOGIN_EXPIRED_RE.test(await res.clone().text());
+  } catch (e) {
+    return true; // body unreadable: assume the login is the problem
+  }
+}
+
 async function handleUnauthorized() {
   authToken = null;
   userId = null;
@@ -1346,7 +1360,7 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
         signal: activeAbortController.signal,
       });
 
-    if (res.status === 401) { await handleUnauthorized(); return; }
+    if (await isLoginExpired(res)) { await handleUnauthorized(); return; }
     
     if (!res.ok) {
       const errText = await res.text();
@@ -1528,7 +1542,7 @@ async function sendMessage() {
       signal: activeAbortController.signal,
     });
 
-    if (res.status === 401) { await handleUnauthorized(); return; }
+    if (await isLoginExpired(res)) { await handleUnauthorized(); return; }
 
     console.log("HTTP status:", res.status);
 
@@ -1542,7 +1556,7 @@ async function sendMessage() {
       throw new Error(`Invalid JSON from worker: ${rawText}`);
     }
 
-    if (res.status === 401) { await handleUnauthorized(); return; }
+    if (res.status === 401 && LOGIN_EXPIRED_RE.test(data.error || "")) { await handleUnauthorized(); return; }
     if (!res.ok) {
       throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
     }
@@ -1643,7 +1657,7 @@ async function sendMessageRetry() {
       signal: activeAbortController.signal,
   });
 
-    if (res.status === 401) { await handleUnauthorized(); return; }
+    if (await isLoginExpired(res)) { await handleUnauthorized(); return; }
 
     console.log("Retry status:", res.status);
 
