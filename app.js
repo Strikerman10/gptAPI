@@ -866,6 +866,12 @@ function renderMessageContent(content) {
   ? (nativeSettings.dark ? "dark" : "light")
   : (localStorage.getItem("mode") || "light");
 
+  // Material You colours from the Android app; null when a fixed palette is used.
+  const dynamicColors = (nativeSettings && nativeSettings.dynamic && nativeSettings.colors) || null;
+  let fontScale = nativeSettings
+    ? (Number(nativeSettings.fontScale) || 1)
+    : (Number(localStorage.getItem("font_scale")) || 1);
+
 function syncAndroidStatusBar() {
   if (!window.OrionNative?.setStatusBar) return;
 
@@ -878,11 +884,6 @@ function syncAndroidStatusBar() {
   );
 }
 syncAndroidStatusBar();
-  // Material You colours from the Android app; null when a fixed palette is used.
-  const dynamicColors = (nativeSettings && nativeSettings.dynamic && nativeSettings.colors) || null;
-  let fontScale = nativeSettings
-    ? (Number(nativeSettings.fontScale) || 1)
-    : (Number(localStorage.getItem("font_scale")) || 1);
 
 // ==========================
 // THEME - APPLY THEME
