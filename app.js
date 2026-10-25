@@ -863,8 +863,21 @@ function renderMessageContent(content) {
 
   let currentPalette = (nativeSettings && nativeSettings.palette) || localStorage.getItem("palette") || "Red";
   let currentMode = nativeSettings
-    ? (nativeSettings.dark ? "dark" : "light")
-    : (localStorage.getItem("mode") || "light");
+  ? (nativeSettings.dark ? "dark" : "light")
+  : (localStorage.getItem("mode") || "light");
+
+function syncAndroidStatusBar() {
+  if (!window.OrionNative?.setStatusBar) return;
+
+  const amoled = !dynamicColors && currentPalette === "Amoled";
+  const darkUi = currentMode === "dark" || amoled;
+
+  window.OrionNative.setStatusBar(
+    amoled ? "#000000" : darkUi ? "#141414" : "#ffffff",
+    !darkUi
+  );
+}
+syncAndroidStatusBar();
   // Material You colours from the Android app; null when a fixed palette is used.
   const dynamicColors = (nativeSettings && nativeSettings.dynamic && nativeSettings.colors) || null;
   let fontScale = nativeSettings
@@ -906,6 +919,8 @@ function renderMessageContent(content) {
     document.body.classList.toggle("dark-mode", currentMode === "dark" || amoled);
     document.body.classList.toggle("amoled-mode", amoled);
 
+      syncAndroidStatusBar();
+    
     document.querySelectorAll(".palette-option").forEach(el => {
     el.classList.toggle("active", el.dataset.palette === currentPalette);
   });
