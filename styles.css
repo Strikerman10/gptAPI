@@ -2279,3 +2279,20 @@ body.dark-mode .pin-btn.active {
 body.dark-mode .pin-btn:hover {
   color: var(--color-7);
 }
+
+/* Amoled black (Android Settings toggle): pure black backgrounds in dark mode. */
+body.dark-mode.black-bg {
+  --bg: #000 !important;
+  --surface-1: #0a0a0a !important;
+  --surface-2: #141414 !important;
+  --surface-hover: #1e1e1e !important;
+  --border: #262626 !important;
+  --sidebar-bg: #000 !important;
+}
+
+body.dark-mode.black-bg .main-content,
+body.dark-mode.black-bg .chat-window,
+body.dark-mode.black-bg .input-area,
+body.dark-mode.black-bg .sidebar {
+  background: #000;
+}
