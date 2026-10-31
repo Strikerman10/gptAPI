@@ -2233,12 +2233,13 @@ body.dark-mode {
   --sidebar-bg: #0d0d0d;
 }
 
-body.dark-mode .chat-header,
-body.dark-mode .sidebar-header {
+/* Dynamic colour: header runs from the Android status-bar colour down to --color-3. */
+body.dark-mode.dynamic-colors .chat-header,
+body.dark-mode.dynamic-colors .sidebar-header {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--color-3) 70%, black 30%) 0%,
-    color-mix(in srgb, var(--color-3) 78%, black 22%) 100%
+    color-mix(in srgb, var(--color-3) 94%, black 6%) 0%,
+    var(--color-3) 100%
   );
 }
 
@@ -2253,4 +2254,14 @@ body.dark-mode.amoled-mode .chat-header,
 body.dark-mode.amoled-mode .sidebar-header {
   background: var(--color-6) !important;
   background-image: none !important;
+}
+
+/* No divider lines around the messages area. */
+.main-content,
+.chat-window {
+  border-left-color: transparent;
+}
+
+.input-area {
+  border-top-color: transparent;
 }

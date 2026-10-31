@@ -919,6 +919,7 @@ syncAndroidStatusBar();
 
     document.body.classList.toggle("dark-mode", currentMode === "dark" || amoled);
     document.body.classList.toggle("amoled-mode", amoled);
+    document.body.classList.toggle("dynamic-colors", !!dynamicColors);
 
       syncAndroidStatusBar();
     
