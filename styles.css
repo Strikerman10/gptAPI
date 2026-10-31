@@ -1078,7 +1078,7 @@ body.amoled-mode .chat-header {
     top: 0;
     left: 0;
     bottom: 0;
-    width: 95%;
+    width: 100%;
     max-width: none;
     transform: translateX(-100%);
     z-index: 999;
