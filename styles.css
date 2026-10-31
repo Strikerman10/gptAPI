@@ -2299,5 +2299,5 @@ body.dark-mode.black-bg .sidebar {
 
 /* Delete button: lighter than the theme button colour so it is easy to see. */
 body.dark-mode .delete-btn {
-  color: color-mix(in srgb, var(--color-6) 25%, white 75%);
+  color: color-mix(in srgb, var(--color-6) 45%, white 55%);
 }
