@@ -2309,3 +2309,10 @@ body.dark-mode .delete-btn {
   text-decoration: underline;
   word-break: break-all;
 }
+
+/* Message box: themed border while typing (as in Sulis LLM). */
+.input-area textarea:focus {
+  outline: none;
+  border-color: var(--color-3);
+  box-shadow: none;
+}
