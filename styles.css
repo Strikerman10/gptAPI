@@ -309,7 +309,7 @@ body.amoled-mode .sidebar-header {
   border-radius: 6px;
   border: none;
   background: transparent;
-  color: color-mix(in srgb, var(--color-6) 65%, white 35%);
+  color: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2297,9 +2297,10 @@ body.dark-mode.black-bg .sidebar {
   background: #000;
 }
 
-/* Delete button: lighter than the theme button colour so it is easy to see. */
+/* Delete button: same colour as the pin icon. */
 body.dark-mode .delete-btn {
-  color: color-mix(in srgb, var(--color-6) 45%, white 55%);
+  color: var(--primary);
+  color: hsl(from var(--color-3) h 88% 59%);
 }
 
 /* Links in AI messages */
