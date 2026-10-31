@@ -838,7 +838,7 @@ function renderMessageContent(content) {
       "--color-7": "#9494b8"
     },
     Orange: {
-      "--color-1": "#CF6A1E",
+      "--color-1": "#DB7424",
       "--color-2": "#BE5A14",
       "--color-3": "#A8490C",
       "--color-4": "#7A3308",
