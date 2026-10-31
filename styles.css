@@ -2301,3 +2301,10 @@ body.dark-mode.black-bg .sidebar {
 body.dark-mode .delete-btn {
   color: color-mix(in srgb, var(--color-6) 45%, white 55%);
 }
+
+/* Links in AI messages */
+.msg-paragraph a {
+  color: #8fd0ff;
+  text-decoration: underline;
+  word-break: break-all;
+}

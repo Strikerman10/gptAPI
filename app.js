@@ -651,6 +651,26 @@ const chevronIcon = toggleSidebarBtn.querySelector(".show-icon");
     );
   }
   
+// Turns [label](url) and bare http(s) URLs in already-escaped text into links.
+function linkify(escaped) {
+  const stash = [];
+  const hold = (html) => { stash.push(html); return "\u0000" + (stash.length - 1) + "\u0000"; };
+  const anchor = (url, label) =>
+    `<a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>`;
+
+  let out = escaped.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
+    (m, label, url) => hold(anchor(url, label)));
+
+  out = out.replace(/https?:\/\/[^\s<]*[^\s<.,;:!?)\]]/g, (url) => {
+    // Keep escaped quote/angle entities that trail the URL outside the link.
+    const tail = (url.match(/(?:&quot;|&#39;|&#x27;|&gt;|&lt;)+$/) || [""])[0];
+    const clean = tail ? url.slice(0, -tail.length) : url;
+    return hold(anchor(clean, clean)) + tail;
+  });
+
+  return out.replace(/\u0000(\d+)\u0000/g, (m, i) => stash[Number(i)]);
+}
+
 function renderMessageContent(content) {
   const FENCE = String.fromCharCode(96, 96, 96);
   const fenceRegex = new RegExp(FENCE + "(\\w*\\n[\\s\\S]*?)\\n" + FENCE, "g");
@@ -666,7 +686,7 @@ function renderMessageContent(content) {
 
   for (let i = 0; i < parts.length; i++) {
     if (i % 2 === 0) {
-      const escaped = escapeHTML(parts[i]).replace(/\n/g, "<br>");
+      const escaped = linkify(escapeHTML(parts[i])).replace(/\n/g, "<br>");
       if (escaped.trim()) {
         html += `<div class="msg-paragraph">${escaped}</div>`;
       }
