@@ -309,7 +309,7 @@ body.amoled-mode .sidebar-header {
   border-radius: 6px;
   border: none;
   background: transparent;
-  color: var(--primary);
+  color: var(--surface-3);
   display: flex;
   align-items: center;
   justify-content: center;
