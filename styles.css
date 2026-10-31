@@ -2265,3 +2265,17 @@ body.dark-mode.amoled-mode .sidebar-header {
 .input-area {
   border-top-color: transparent;
 }
+
+/* Pin icon: main colour; in dark mode a bright version of its hue (as in Sulis LLM). */
+body.dark-mode .pin-btn {
+  color: var(--primary);
+  color: hsl(from var(--color-3) h 88% 59%);
+}
+
+body.dark-mode .pin-btn.active {
+  color: #FF0005;
+}
+
+body.dark-mode .pin-btn:hover {
+  color: var(--color-7);
+}
