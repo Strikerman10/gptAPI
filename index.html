@@ -7,7 +7,7 @@ HEAD - Meta, Title, Styles
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
   <title>Sulis Intelligence</title>
-  <link rel="stylesheet" href="styles.css?v=23">
+  <link rel="stylesheet" href="styles.css?v=25">
   <style>
     .icon {
       width: 20px;
@@ -125,7 +125,15 @@ REUSABLE SVG ICON SYMBOLS (hidden)
         <select id="modelSelector" class="model-selector" aria-label="Select model"></select>
       </div>
 
+      <div class="chat-search">
+        <input id="chatSearch" type="search" placeholder="Search chats" aria-label="Search chats" autocomplete="off" />
+      </div>
+
       <div class="chat-list" id="chatList" aria-live="polite"></div>
+
+      <div class="sidebar-footer">
+        <button id="dataBtn" type="button">Data and storage</button>
+      </div>
     
     </div>
 
@@ -365,6 +373,35 @@ MODEL SELECTOR BOTTOM SHEET (MOBILE)
     </div>
   </div>
 </div>
-  <script src="app.js?v=14" defer></script>
+  <script src="app.js?v=16" defer></script>
+<!-- Data and storage -->
+<div id="dataModal" class="auth-modal-overlay hidden">
+  <div class="auth-modal-box">
+    <h3 class="rename-title">Data and storage</h3>
+    <div id="dataStats" class="data-stats"></div>
+    <div class="data-actions">
+      <button id="exportChatsBtn" type="button">Export chats</button>
+      <button id="importChatsBtn" type="button">Import chats</button>
+      <button id="clearChatsBtn" type="button" class="danger">Clear chat history</button>
+    </div>
+    <p id="dataMessage" class="data-message"></p>
+    <input id="importFile" type="file" accept="application/json,.json,text/plain" hidden />
+    <div class="rename-actions">
+      <button id="dataCloseBtn" type="button">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Rename chat -->
+<div id="renameModal" class="auth-modal-overlay hidden">
+  <div class="auth-modal-box">
+    <h3 class="rename-title">Rename chat</h3>
+    <input id="renameInput" class="rename-input" type="text" maxlength="80" />
+    <div class="rename-actions">
+      <button id="renameCancel" type="button">Cancel</button>
+      <button id="renameSave" type="button">Save</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>

@@ -1154,6 +1154,7 @@ body.amoled-mode .chat-header {
 /* Hide text in collapsed sidebar */
 .sidebar.collapsed .sidebar-header span,
 .sidebar.collapsed .new-chat,
+.sidebar.collapsed .chat-search,
 .sidebar.collapsed .model-selector,
 .sidebar.collapsed .chat-item .chat-title,
 .sidebar.collapsed .chat-item .chat-subtitle {
@@ -2315,4 +2316,117 @@ body.dark-mode .delete-btn {
   outline: none;
   border-color: var(--color-3);
   box-shadow: none;
+}
+
+/* Chat search + rename */
+.chat-search {
+  padding: 0 8px 4px;
+}
+
+.chat-search input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  background: var(--surface-1);
+  color: var(--text);
+  font-size: calc(13px * var(--font-scale, 1));
+}
+
+.chat-search input::placeholder {
+  color: var(--text-muted);
+}
+
+.rename-title {
+  margin: 0 0 12px;
+  color: var(--text);
+}
+
+.rename-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1.5px solid var(--color-3);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 1rem;
+  outline: none;
+}
+
+.rename-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.rename-actions button {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  background: var(--color-6);
+  color: var(--primary-contrast);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Data and storage */
+.sidebar-footer {
+  padding: 8px;
+  flex-shrink: 0;
+}
+
+.sidebar-footer button {
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+  background: var(--color-6);
+  color: var(--primary-contrast);
+  font-weight: 500;
+  font-size: calc(12px * var(--font-scale, 1));
+  cursor: pointer;
+}
+
+.sidebar.collapsed .sidebar-footer {
+  display: none;
+}
+
+.data-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.data-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.data-actions button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  background: var(--color-6);
+  color: var(--primary-contrast);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.data-actions button.danger {
+  background: var(--danger);
+  color: var(--danger-contrast);
+}
+
+.data-message {
+  min-height: 1.2em;
+  margin: 10px 0 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
 }

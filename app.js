@@ -101,6 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // DOM ELEMENT REFERENCES
   // ==========================
   const chatListEl    = document.getElementById("chatList");
+  const chatSearchEl  = document.getElementById("chatSearch");
   const messagesEl    = document.getElementById("messages");
   const chatTitleEl   = document.getElementById("chatTitle");
   const inputEl       = document.getElementById("input");
@@ -1114,12 +1115,174 @@ syncAndroidStatusBar();
       renderChatList();
     }
   
+// ==========================
+// DATA AND STORAGE
+// ==========================
+function formatBytes(n) {
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + " MB";
+  if (n >= 1e3) return Math.round(n / 1e3) + " KB";
+  return n + " B";
+}
+
+async function refreshDataStats() {
+  const json = JSON.stringify(chats);
+  const messages = chats.reduce((sum, c) => sum + (c.messages ? c.messages.length : 0), 0);
+  const lines = [
+    `Chats: ${chats.length}`,
+    `Messages: ${messages}`,
+    `Chat data: ${formatBytes(new Blob([json]).size)}`
+  ];
+  try {
+    if (navigator.storage && navigator.storage.estimate) {
+      const est = await navigator.storage.estimate();
+      if (est && est.usage) lines.push(`Browser storage used: ${formatBytes(est.usage)}`);
+    }
+  } catch (_) {}
+  document.getElementById("dataStats").innerHTML = lines.map(l => `<div>${l}</div>`).join("");
+}
+
+function setDataMessage(text) {
+  document.getElementById("dataMessage").textContent = text || "";
+}
+
+function openDataModal() {
+  setDataMessage("");
+  refreshDataStats();
+  document.getElementById("dataModal").classList.remove("hidden");
+}
+
+function closeDataModal() {
+  document.getElementById("dataModal").classList.add("hidden");
+}
+
+function exportChats() {
+  const text = JSON.stringify(chats, null, 2);
+  const name = "sulis-chats.json";
+  if (window.OrionNative && window.OrionNative.exportFile) {
+    window.OrionNative.exportFile(name, text);   // Android file picker
+    return;
+  }
+  const url = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  setDataMessage("Chats exported.");
+}
+
+function importChatsFromText(text) {
+  let data = JSON.parse(text);
+  // Accept this app's array, or the Android app's export ({ chats: { id: chat } }).
+  let incoming = Array.isArray(data) ? data
+    : Array.isArray(data.chats) ? data.chats
+    : data.chats && typeof data.chats === "object" ? Object.values(data.chats)
+    : null;
+  if (!incoming) throw new Error("not a chat export");
+
+  let changed = 0;
+  for (const c of incoming) {
+    if (!c || !c.id || !Array.isArray(c.messages)) continue;
+    const i = chats.findIndex(x => x.id === c.id);
+    if (i === -1) { chats.push({ pinned: false, ...c }); changed++; }
+    else if ((c.updatedAt || 0) > (chats[i].updatedAt || 0)) { chats[i] = { pinned: false, ...c }; changed++; }
+  }
+  if (currentIndex === null && chats.length) currentIndex = 0;
+  saveChats();
+  renderChatList();
+  renderMessages();
+  return changed;
+}
+
+function clearAllChats() {
+  chats = [{ id: Date.now().toString(), title: "New Chat", messages: [], pinned: false }];
+  currentIndex = 0;
+  saveChats();
+  renderChatList();
+  renderMessages();
+}
+
+document.getElementById("dataBtn").addEventListener("click", openDataModal);
+document.getElementById("dataCloseBtn").addEventListener("click", closeDataModal);
+document.getElementById("exportChatsBtn").addEventListener("click", exportChats);
+document.getElementById("importChatsBtn").addEventListener("click", () => document.getElementById("importFile").click());
+document.getElementById("importFile").addEventListener("change", (e) => {
+  const file = e.target.files && e.target.files[0];
+  e.target.value = "";
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const n = importChatsFromText(String(reader.result));
+      setDataMessage(`Imported ${n} chat(s).`);
+      refreshDataStats();
+    } catch (_) {
+      setDataMessage("Import failed: that is not a Sulis chat export.");
+    }
+  };
+  reader.readAsText(file);
+});
+document.getElementById("clearChatsBtn").addEventListener("click", () => {
+  if (!confirm(`Delete all ${chats.length} chats? If chat sync is on, they are also removed from your other devices. Export first if you want a backup.`)) return;
+  clearAllChats();
+  setDataMessage("Chat history cleared.");
+  refreshDataStats();
+});
+
+// ==========================
+// RENAME CHAT
+// ==========================
+let renameTarget = null;
+function openRename(chat) {
+  renameTarget = chat;
+  const input = document.getElementById("renameInput");
+  input.value = chat.title || "";
+  document.getElementById("renameModal").classList.remove("hidden");
+  input.focus();
+  input.select();
+}
+function closeRename() {
+  renameTarget = null;
+  document.getElementById("renameModal").classList.add("hidden");
+}
+function saveRename() {
+  if (renameTarget) {
+    renameTarget.title = document.getElementById("renameInput").value.trim() || "Untitled";
+    saveChats();
+    renderChatList();
+  }
+  closeRename();
+}
+document.getElementById("renameCancel").addEventListener("click", closeRename);
+document.getElementById("renameSave").addEventListener("click", saveRename);
+document.getElementById("renameInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") saveRename();
+  if (e.key === "Escape") closeRename();
+});
+if (chatSearchEl) chatSearchEl.addEventListener("input", () => renderChatList());
+
 function renderChatList() {
   chatListEl.innerHTML = "";
 
   // Sort: pinned first
-  const pinned   = chats.map((c, i) => ({ chat: c, i })).filter(x => x.chat.pinned);
-  const unpinned = chats.map((c, i) => ({ chat: c, i })).filter(x => !x.chat.pinned);
+  // Search box: match the title or any message in the chat.
+  const query = (chatSearchEl ? chatSearchEl.value : "").trim().toLowerCase();
+  const matches = (c) => !query
+    || (c.title || "").toLowerCase().includes(query)
+    || (c.messages || []).some(m => String(m.content || "").toLowerCase().includes(query));
+
+  const pinned   = chats.map((c, i) => ({ chat: c, i })).filter(x => x.chat.pinned && matches(x.chat));
+  const unpinned = chats.map((c, i) => ({ chat: c, i })).filter(x => !x.chat.pinned && matches(x.chat));
+
+  if (query && pinned.length === 0 && unpinned.length === 0) {
+    const none = document.createElement("div");
+    none.className = "chat-section-header";
+    none.textContent = "No matching chats";
+    chatListEl.appendChild(none);
+    return;
+  }
 
   function truncate(str, n) {
     return str.length > n ? str.slice(0, n) + "…" : str;
@@ -1178,7 +1341,21 @@ function renderChatList() {
       deleteChat(i);
     });
 
+    // Long-press (touch) or right-click (mouse) renames the chat.
+    let pressTimer = null;
+    let longPressed = false;
+    const cancelPress = () => { clearTimeout(pressTimer); pressTimer = null; };
+    item.addEventListener("touchstart", () => {
+      longPressed = false;
+      pressTimer = setTimeout(() => { longPressed = true; openRename(chat); }, 600);
+    }, { passive: true });
+    item.addEventListener("touchmove", cancelPress, { passive: true });
+    item.addEventListener("touchend", cancelPress);
+    item.addEventListener("touchcancel", cancelPress);
+    item.addEventListener("contextmenu", (e) => { e.preventDefault(); openRename(chat); });
+
     item.addEventListener("click", () => {
+      if (longPressed) { longPressed = false; return; }
       const [clicked] = chats.splice(i, 1);
 
       // Keep pinned chats pinned at top, don't move them
