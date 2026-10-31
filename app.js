@@ -487,7 +487,7 @@ async function performLogout() {
 
   document.getElementById("messages").innerHTML    = "";
   document.getElementById("chatList").innerHTML    = "";
-  const DEFAULT_CHAT_TITLE = "Orion AI Messages";
+  const DEFAULT_CHAT_TITLE = "Sulis Intelligence Messages";
   document.getElementById("chatTitle").textContent = DEFAULT_CHAT_TITLE;
 
   document.getElementById("authModalTitle").textContent    = "Welcome Back";
@@ -1213,7 +1213,7 @@ function renderChatList() {
 
 function renderMessages() {
   messagesEl.innerHTML = "";
-  chatTitleEl.textContent = "Orion AI Messages";
+  chatTitleEl.textContent = "Sulis Intelligence Messages";
 
   if (currentIndex === null || !chats[currentIndex]) {
     messagesEl.innerHTML = `<p class="placeholder">No chats yet. Start a new one!</p>`;
