@@ -385,6 +385,8 @@ async function initAuth() {
   const passwordEl = oldPasswordEl.cloneNode(true);
   oldPasswordEl.parentNode.replaceChild(passwordEl, oldPasswordEl);
 
+  const inviteEl  = document.getElementById("authInvite");
+  inviteEl.style.display = "none";   // only shown on the Register tab
   const errorEl   = document.getElementById("authError");
   const titleEl   = document.getElementById("authModalTitle");
   const subtitleEl = document.getElementById("authModalSubtitle");
@@ -394,6 +396,7 @@ async function initAuth() {
 
     tabLogin.addEventListener("click", () => {
       mode = "login";
+      inviteEl.style.display = "none";
       tabLogin.classList.add("active");
       tabRegister.classList.remove("active");
       submitBtn.textContent  = "Sign In";
@@ -404,6 +407,7 @@ async function initAuth() {
 
     tabRegister.addEventListener("click", () => {
       mode = "register";
+      inviteEl.style.display = "";
       tabRegister.classList.add("active");
       tabLogin.classList.remove("active");
       submitBtn.textContent  = "Create Account";
@@ -415,10 +419,15 @@ async function initAuth() {
     submitBtn.addEventListener("click", async () => {
       const username = document.getElementById("authUsername").value.trim();
       const password = document.getElementById("authPassword").value.trim();
+      const inviteCode = inviteEl.value.trim();
       errorEl.textContent = "";
 
       if (!username || !password) {
         errorEl.textContent = "Please enter a username and password.";
+        return;
+      }
+      if (mode === "register" && !inviteCode) {
+        errorEl.textContent = "Please enter your invite code.";
         return;
       }
 
@@ -430,7 +439,7 @@ async function initAuth() {
         const res = await fetch(`${WORKER_URL}${endpoint}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password }),
+          body: JSON.stringify(mode === "register" ? { username, password, inviteCode } : { username, password }),
         });
 
         const data = await res.json();
