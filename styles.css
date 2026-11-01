@@ -2430,3 +2430,23 @@ body.dark-mode .delete-btn {
   color: var(--text-muted);
   font-size: 0.85rem;
 }
+
+/* Response style (browser settings) */
+.settings-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1.5px solid var(--color-3);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.95rem;
+  resize: vertical;
+  outline: none;
+}
+
+/* Help links: light blue so they are readable on dark and Amoled backgrounds. */
+body.dark-mode .settings-help a {
+  color: #8fd0ff;
+}

@@ -45,6 +45,36 @@ const nativeSettings = (() => {
   return parsed;
 })();
 
+// Response style and reasoning level are sent to the Worker as `style` and `reasoning`.
+const STYLE_PRESETS = {
+  default: "",
+  concise: "Answer briefly and directly. Skip preamble, apologies and recaps. Prefer short sentences.",
+  bullets: "Format answers as short bullet points, one idea per line. Avoid long paragraphs.",
+  caveman: "Respond tersely. Drop filler words, greetings and hedging. Keep all technical facts, code, numbers and commands exact. Sentence fragments are fine."
+};
+// In the Android app the native Settings screen supplies these; in a browser they
+// come from the Settings dialog and are kept in localStorage.
+function currentStyleText() {
+  if (nativeSettings) return nativeSettings.style || "";
+  const key = localStorage.getItem("response_style") || "default";
+  return key === "custom"
+    ? (localStorage.getItem("custom_style") || "").trim()
+    : (STYLE_PRESETS[key] || "");
+}
+function currentReasoning() {
+  return nativeSettings
+    ? (nativeSettings.reasoning || "default")
+    : (localStorage.getItem("reasoning") || "default");
+}
+// Extra fields the Worker reads: `style` (reply instruction) and `reasoning` (low/medium/high).
+function extraFields() {
+  const out = {};
+  const styleText = currentStyleText();
+  const reasoning = currentReasoning();
+  if (styleText) out.style = styleText;
+  if (reasoning !== "default") out.reasoning = reasoning;
+  return out;
+}
 const MODEL_PROVIDERS = [
   { key: "openai",     label: "OpenAI",     icon: "chatgptIcon" },
   { key: "anthropic",  label: "Anthropic",  icon: "claudeIcon" },
@@ -1566,6 +1596,7 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
         body: JSON.stringify({
           provider: currentProvider,
           model: currentModel,
+          ...extraFields(),
           messages: cleanMessages.map(m => ({
             role: m.role,
             content: m.content,
@@ -1752,6 +1783,7 @@ async function sendMessage() {
       body: JSON.stringify({
         provider: currentProvider,
         model: currentModel,
+        ...extraFields(),
         messages: cleanMessages,
       }),
       signal: activeAbortController.signal,
@@ -1863,6 +1895,7 @@ async function sendMessageRetry() {
       body: JSON.stringify({
         provider: currentProvider,
         model: currentModel,
+        ...extraFields(),
         messages: cleanMessages.map(m => ({
           role: m.role,
           content: m.content,
@@ -2149,6 +2182,20 @@ function syncSettingsControls() {
   });
   settingsFontSlider.value = fontScale;
   settingsFontValue.textContent = `${Math.round(fontScale * 100)}%`;
+
+  const styleKey = localStorage.getItem("response_style") || "default";
+  document.querySelectorAll("#settingsStyleChips .settings-chip").forEach(chip => {
+    chip.classList.toggle("active", chip.dataset.style === styleKey);
+  });
+  const customBox = document.getElementById("settingsCustomStyle");
+  customBox.hidden = styleKey !== "custom";
+  customBox.value = localStorage.getItem("custom_style") || "";
+  document.getElementById("settingsStyleHint").textContent =
+    styleKey === "custom" ? "" : (STYLE_PRESETS[styleKey] || "No extra instruction.");
+  const reasoningKey = localStorage.getItem("reasoning") || "default";
+  document.querySelectorAll("#settingsReasoningChips .settings-chip").forEach(chip => {
+    chip.classList.toggle("active", chip.dataset.reasoning === reasoningKey);
+  });
 }
 
 // Provider key whose models are being reordered (null = none).
@@ -2351,6 +2398,22 @@ document.querySelectorAll("#settingsModeChips .settings-chip").forEach(chip => {
   chip.addEventListener("click", () => {
     currentMode = chip.dataset.mode;
     applyTheme();
+    syncSettingsControls();
+  });
+});
+
+document.querySelectorAll("#settingsStyleChips .settings-chip").forEach(chip => {
+  chip.addEventListener("click", () => {
+    localStorage.setItem("response_style", chip.dataset.style);
+    syncSettingsControls();
+  });
+});
+document.getElementById("settingsCustomStyle").addEventListener("input", (e) => {
+  localStorage.setItem("custom_style", e.target.value.slice(0, 500));
+});
+document.querySelectorAll("#settingsReasoningChips .settings-chip").forEach(chip => {
+  chip.addEventListener("click", () => {
+    localStorage.setItem("reasoning", chip.dataset.reasoning);
     syncSettingsControls();
   });
 });

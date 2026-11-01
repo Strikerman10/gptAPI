@@ -7,7 +7,7 @@ HEAD - Meta, Title, Styles
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
   <title>Sulis Intelligence</title>
-  <link rel="stylesheet" href="styles.css?v=25">
+  <link rel="stylesheet" href="styles.css?v=27">
   <style>
     .icon {
       width: 20px;
@@ -316,6 +316,28 @@ MODEL SELECTOR BOTTOM SHEET (MOBILE)
       </section>
 
       <section class="settings-card">
+        <h4>Response style</h4>
+        <div class="settings-chips" id="settingsStyleChips">
+          <button class="settings-chip" data-style="default">Default</button>
+          <button class="settings-chip" data-style="concise">Concise</button>
+          <button class="settings-chip" data-style="bullets">Bullet points</button>
+          <button class="settings-chip" data-style="caveman">Caveman</button>
+          <button class="settings-chip" data-style="custom">Custom</button>
+        </div>
+        <textarea id="settingsCustomStyle" class="settings-textarea" maxlength="500" rows="3"
+          placeholder="e.g. Be succinct and use British English" hidden></textarea>
+        <div class="settings-hint" id="settingsStyleHint"></div>
+        <div class="settings-label">Reasoning</div>
+        <div class="settings-chips" id="settingsReasoningChips">
+          <button class="settings-chip" data-reasoning="default">Default</button>
+          <button class="settings-chip" data-reasoning="low">Low</button>
+          <button class="settings-chip" data-reasoning="medium">Medium</button>
+          <button class="settings-chip" data-reasoning="high">High</button>
+        </div>
+        <div class="settings-hint">How much the AI thinks before answering. Models that do not support it ignore it.</div>
+      </section>
+
+      <section class="settings-card">
         <h4>Sulis Intelligence models</h4>
         <div class="settings-hint" id="settingsModelsUpdated"></div>
         <div id="settingsModelList"></div>
@@ -373,7 +395,7 @@ MODEL SELECTOR BOTTOM SHEET (MOBILE)
     </div>
   </div>
 </div>
-  <script src="app.js?v=16" defer></script>
+  <script src="app.js?v=20" defer></script>
 <!-- Data and storage -->
 <div id="dataModal" class="auth-modal-overlay hidden">
   <div class="auth-modal-box">
