@@ -1912,7 +1912,7 @@ body.amoled-mode .code-block-wrapper pre {
   align-items: center;
   justify-content: space-between;
   padding: 14px 16px;
-  background: var(--color-3);
+  background: var(--color-6);
   color: #fff;
 }
 
@@ -1927,8 +1927,6 @@ body.amoled-mode .code-block-wrapper pre {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  /* Same colour as the settings buttons. */
-  background: var(--color-6);
 }
 
 .settings-card {
@@ -2087,7 +2085,7 @@ body.amoled-mode .code-block-wrapper pre {
     margin: 0;
     border-radius: 16px;
     overflow: hidden;
-    background: var(--color-6);
+    background: var(--bg);
     border: 1px solid var(--border);
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
   }
