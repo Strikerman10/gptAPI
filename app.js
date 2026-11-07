@@ -83,16 +83,16 @@ const MODEL_PROVIDERS = [
 ];
 
 const DEFAULT_MODELS = [
-  { provider: "openai",     id: "gpt-5.6-terra",             name: "GPT-5.6 Terra" },
-  { provider: "openai",     id: "gpt-5.5-2026-04-23",        name: "GPT-5.5" },
-  { provider: "openai",     id: "gpt-5.4-2026-03-05",        name: "GPT-5.4" },
-  { provider: "openai",     id: "gpt-5.3-codex",             name: "GPT-5.3 Codex" },
-  { provider: "anthropic",  id: "claude-opus-5",             name: "Claude Opus 5" },
-  { provider: "anthropic",  id: "claude-sonnet-5",           name: "Claude Sonnet 5" },
-  { provider: "anthropic",  id: "claude-haiku-4-5-20251001", name: "Claude Haiku 4.5" },
-  { provider: "gemini",     id: "gemini-3.5-flash",          name: "Gemini 3.5 Flash" },
-  { provider: "gemini",     id: "gemini-2.5-flash",          name: "Gemini 2.5 Flash" },
-  { provider: "gemini",     id: "gemini-3.1-flash-lite",     name: "Gemini 3.1 Flash Lite" },
+  { provider: "openai",     id: "gpt-6-astra",               name: "GPT 6 Astra" },
+  { provider: "openai",     id: "gpt-6.1-Sol",               name: "GPT 6.1 Sol" },
+  { provider: "openai",     id: "gpt-6.1-terra",             name: "GPT 6.1 Terra" },
+  { provider: "openai",     id: "gpt-6-luna",                name: "GPT 6 Luna" },
+  { provider: "anthropic",  id: "claude-opus-5-5",           name: "Claude Opus 5.5" },
+  { provider: "anthropic",  id: "claude-sonnet-5-5",         name: "Claude Sonnet 5.5" },
+  { provider: "anthropic",  id: "claude-haiku-5-5",          name: "Claude Haiku 5.5" },
+  { provider: "gemini",     id: "gemini-4-argon",            name: "Gemini 4 Argon" },
+  { provider: "gemini",     id: "gemini-3.8-flash",          name: "Gemini 3.8 Flash" },
+  { provider: "gemini",     id: "gemini-3.6-flash",          name: "Gemini 3.6 Flash" },
   { provider: "openrouter", id: "free-model",                name: "OpenRouter Free" }
 ];
 
