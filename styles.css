@@ -309,7 +309,7 @@ body.amoled-mode .sidebar-header {
   border-radius: 6px;
   border: none;
   background: transparent;
-  color: var(--primary);
+  color: var(--color-6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1483,7 +1483,7 @@ body.dark-mode .message p {
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--primary);
+  color: var(--color-6);
   padding: 4px;
   border-radius: 4px;
   opacity: 1;
@@ -2268,10 +2268,9 @@ body.dark-mode.amoled-mode .sidebar-header {
   border-top-color: transparent;
 }
 
-/* Pin icon: main colour; in dark mode a bright version of its hue (as in Sulis LLM). */
+/* Pin icon: buttons/banners colour (--color-6) in every theme; pinned stays red. */
 body.dark-mode .pin-btn {
-  color: var(--primary);
-  color: hsl(from var(--color-3) h 88% 59%);
+  color: var(--color-6);
 }
 
 body.dark-mode .pin-btn.active {
@@ -2299,10 +2298,9 @@ body.dark-mode.black-bg .sidebar {
   background: #000;
 }
 
-/* Delete button: same colour as the pin icon. */
+/* Delete button: buttons/banners colour (--color-6) in every theme. */
 body.dark-mode .delete-btn {
-  color: var(--primary);
-  color: hsl(from var(--color-3) h 88% 59%);
+  color: var(--color-6);
 }
 
 /* Links in AI messages */
