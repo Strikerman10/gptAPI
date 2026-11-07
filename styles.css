@@ -1927,6 +1927,8 @@ body.amoled-mode .code-block-wrapper pre {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  /* Same colour as the settings buttons. */
+  background: var(--color-6);
 }
 
 .settings-card {
@@ -2085,7 +2087,7 @@ body.amoled-mode .code-block-wrapper pre {
     margin: 0;
     border-radius: 16px;
     overflow: hidden;
-    background: var(--bg);
+    background: var(--color-6);
     border: 1px solid var(--border);
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
   }
