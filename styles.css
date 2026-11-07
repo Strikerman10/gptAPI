@@ -2098,37 +2098,38 @@ body.amoled-mode .code-block-wrapper pre {
     font-size: 1.15rem;
   }
 
-  /* Left column: appearance, text size, account. Right column: models. */
+  /* Row 1-2: appearance + text size on the left, response style on the right
+     (its bottom lines up with the bottom of text size). Then models, account
+     and help run full width underneath. */
   .settings-body {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
-    /* The tall models card spans all three rows; the last row absorbs the
-       extra height so the left cards stay packed together. */
-    grid-template-rows: auto auto 1fr auto;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto auto auto auto auto;
     align-items: start;
     gap: 18px;
     padding: 22px;
   }
 
-  .settings-card:nth-child(1),
-  .settings-card:nth-child(2),
-  .settings-card:nth-child(4) {
+  .settings-card:nth-child(1) { grid-column: 1; grid-row: 1; }
+
+  .settings-card:nth-child(2) {
     grid-column: 1;
+    grid-row: 2;
+    align-self: stretch;
   }
 
-  /* The models card matches the height of the left column and scrolls its
-     list inside, so it never spills into the Help card below. */
   .settings-card:nth-child(3) {
     grid-column: 2;
-    grid-row: 1 / span 3;
+    grid-row: 1 / span 2;
     align-self: stretch;
-    min-height: 0;
-    overflow: hidden;
   }
 
+  .settings-card:nth-child(4) { grid-column: 1 / -1; grid-row: 3; }
+  .settings-card:nth-child(5) { grid-column: 1 / -1; grid-row: 4; }
+
+  /* The model list scrolls inside its card. */
   #settingsModelList {
-    flex: 1 1 0;
-    min-height: 0;
+    max-height: 320px;
     overflow-y: auto;
     padding-right: 4px;
     scrollbar-width: thin;
