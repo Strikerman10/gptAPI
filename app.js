@@ -892,7 +892,7 @@ function renderMessageContent(content) {
 	  "--color-3": "#3a3a3a",
 	  "--color-4": "#111111",
 	  "--color-5": "#000000",
-	  "--color-6": "#362239",
+	  "--color-6": "#E05F00",
 	  "--color-7": "#266D69" 
 	  },
   };
