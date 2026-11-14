@@ -2067,6 +2067,11 @@ body.amoled-mode .code-block-wrapper pre {
   height: 28px;
 }
 
+/* Model delete (trash): theme button colour (--color-6), as the toggle chips. */
+.settings-icon-btn.model-delete-btn {
+  color: var(--color-6);
+}
+
 .settings-icon-btn:disabled {
   opacity: 0.3;
   cursor: default;
@@ -2231,6 +2236,11 @@ body.amoled-mode .code-block-wrapper pre {
 .settings-help-title {
   margin: 0;
   font-size: 1.1rem;
+}
+
+/* Amoled: help subheadings in the theme's second colour (--color-6). */
+.palette-amoled .settings-help-title {
+  color: var(--color-6);
 }
 
 

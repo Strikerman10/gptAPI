@@ -892,7 +892,7 @@ function renderMessageContent(content) {
 	  "--color-3": "#3a3a3a",
 	  "--color-4": "#111111",
 	  "--color-5": "#000000",
-	  "--color-6": "#E05F00",
+	  "--color-6": "#A9860F",
 	  "--color-7": "#266D69" 
 	  },
     // From the Sulis Intelligence design.md (light theme), matches the Android Sulis palette.
@@ -962,6 +962,7 @@ syncAndroidStatusBar();
     const root = document.documentElement;
     const palette = palettes[currentPalette] || palettes.Red;
     root.classList.toggle("palette-sulis", currentPalette === "Sulis");
+    root.classList.toggle("palette-amoled", currentPalette === "Amoled");
    const neutralSet = neutrals[currentMode];
 
     for (const [key, value] of Object.entries(palette)) {
@@ -2287,9 +2288,10 @@ function renderSettingsModels() {
         edit.addEventListener("click", () => openModelEditor(index));
 
         const del = document.createElement("button");
-        del.className = "settings-icon-btn";
+        del.className = "settings-icon-btn model-delete-btn";
         del.setAttribute("aria-label", `Delete ${model.name}`);
-        del.textContent = "🗑";
+        // SVG rather than the emoji: emoji ignore CSS colour, so the icon can't be themed.
+        del.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>';
         del.addEventListener("click", () => {
           if (modelCatalog.length === 1) return;
           modelCatalog = modelCatalog.filter((_, i) => i !== index);
