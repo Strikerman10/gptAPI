@@ -895,6 +895,16 @@ function renderMessageContent(content) {
 	  "--color-6": "#E05F00",
 	  "--color-7": "#266D69" 
 	  },
+    // From the Sulis Intelligence design.md (light theme), matches the Android Sulis palette.
+    Sulis: {
+      "--color-1": "#bdf1e8",
+      "--color-2": "#1e5389",
+      "--color-3": "#16406e",
+      "--color-4": "#102a4c",
+      "--color-5": "#060f22",
+      "--color-6": "#0e7c74",
+      "--color-7": "#0b615c"
+    },
   };
 
 // ==========================

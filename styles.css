@@ -1805,6 +1805,7 @@ body.dark-mode .message p {
 .palette-option[data-palette="Teal"]    { background: #006d65; }
 .palette-option[data-palette="Red"]     { background: #8b0000; }
 .palette-option[data-palette="Amoled"]  { background: #3a3a3a; }
+.palette-option[data-palette="Sulis"]   { background: #16406e; }
 
 .footer-actions {
   display: flex;
