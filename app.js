@@ -961,6 +961,7 @@ syncAndroidStatusBar();
   function applyTheme() {
     const root = document.documentElement;
     const palette = palettes[currentPalette] || palettes.Red;
+    root.classList.toggle("palette-sulis", currentPalette === "Sulis");
    const neutralSet = neutrals[currentMode];
 
     for (const [key, value] of Object.entries(palette)) {
