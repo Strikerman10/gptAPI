@@ -892,7 +892,7 @@ function renderMessageContent(content) {
 	  "--color-3": "#3a3a3a",
 	  "--color-4": "#111111",
 	  "--color-5": "#000000",
-	  "--color-6": "#A9860F",
+	  "--color-6": "#850046",
 	  "--color-7": "#266D69" 
 	  },
     // From the Sulis Intelligence design.md (light theme), matches the Android Sulis palette.
